@@ -1,71 +1,125 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-public class Player : MonoBehaviour
-{
-    [Header("ˆÚ“®İ’è")]
-    public float moveSpeed = 3f;         // ˆÚ“®‘¬“x
 
-    [Header("ƒJƒƒ‰İ’è")]
-    public Transform cameraTransform;    // ˆêlÌ‹“_ƒJƒƒ‰
-    public float lookSpeed = 1f;         // ‹“_ˆÚ“®‘¬“xiƒXƒeƒBƒbƒN—pj
-    public float mouseSensitivity = 2f;  // ƒ}ƒEƒX‹“_‘¬“x
-    public float cameraPitchLimit = 80f; // ã‰º‹“_‚Ì§ŒÀŠp“x
+public class Player : MonoBehaviour
+
+{
+
+    [Header("ç§»å‹•è¨­å®š")]
+    public float moveSpeed = 3f;          // ç§»å‹•é€Ÿåº¦
+    public float gravity = -9.81f;        // é‡åŠ›åŠ é€Ÿåº¦
+
+    [Header("ã‚«ãƒ¡ãƒ©è¨­å®š")]
+    public Transform cameraTransform;     // ä¸€äººç§°è¦–ç‚¹ã‚«ãƒ¡ãƒ©
+    public float lookSpeed = 1f;          // ã‚¹ãƒ†ã‚£ãƒƒã‚¯è¦–ç‚¹é€Ÿåº¦
+    public float mouseSensitivity = 2f;   // ãƒã‚¦ã‚¹æ„Ÿåº¦
+    public float cameraPitchLimit = 80f;  // ä¸Šä¸‹è¦–ç‚¹ã®åˆ¶é™è§’åº¦
 
     private CharacterController controller;
-    private Vector3 velocity;            // —‰º‘¬“x
+    private Vector3 velocity;             // é‡åŠ›ã«ã‚ˆã‚‹é€Ÿåº¦
     private float cameraPitch = 0f;
 
     void Start()
+
     {
         controller = GetComponent<CharacterController>();
 
-        // ƒJ[ƒ\ƒ‹ŒÅ’è•”ñ•\¦
+        // ã‚«ãƒ¼ã‚½ãƒ«å›ºå®šï¼†éè¡¨ç¤º
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
     }
 
     void Update()
+
     {
         HandleLook();
         HandleMove();
+        HandleInteract();
+
     }
 
     void HandleMove()
-    {
-        // ¶ƒXƒeƒBƒbƒN‚Ü‚½‚ÍWASD“ü—Í‚ğæ“¾
-        float horizontal = Input.GetAxis("Horizontal"); // A,D or ¶ƒXƒeƒBƒbƒNX
-        float vertical = Input.GetAxis("Vertical");     // W,S or ¶ƒXƒeƒBƒbƒNY
 
-        // ƒJƒƒ‰‚ÌŒü‚«‚ğŠî€‚É‘OŒã¶‰E‚ğŒvZ
+    {
+        float horizontal;
+        float vertical;
+
+        // ğŸ® ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼æ¥ç¶šåˆ¤å®šï¼ˆæ¥ç¶šä¸­ãªã‚‰æ»‘ã‚‰ã‹å…¥åŠ›ï¼‰
+        if (Input.GetJoystickNames().Length > 0)
+        {
+            horizontal = Input.GetAxis("Horizontal");
+            vertical = Input.GetAxis("Vertical");
+        }
+        else
+        {
+            // âŒ¨ï¸ ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æ“ä½œæ™‚ã¯ãƒ”ã‚¿ãƒƒã¨æ­¢ã¾ã‚‹
+            horizontal = Input.GetAxisRaw("Horizontal");
+            vertical = Input.GetAxisRaw("Vertical");
+        }
+
+        // ã‚«ãƒ¡ãƒ©ã®å‘ãã‚’åŸºæº–ã«å‰å¾Œå·¦å³ã‚’è¨ˆç®—
         Vector3 move = (cameraTransform.forward * vertical + cameraTransform.right * horizontal);
         move.y = 0f;
         move.Normalize();
 
-        // ˆÚ“®ˆ—
+        // ç§»å‹•å‡¦ç†
         controller.Move(move * moveSpeed * Time.deltaTime);
+
+        // === é‡åŠ›å‡¦ç† ===
+        bool isGrounded = controller.isGrounded;
+        if (isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f; // åœ°é¢ã«æŠ¼ã—ä»˜ã‘ã‚‹ã‚ˆã†ãªè»½ã„å€¤
+        }
+
+        velocity.y += gravity * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
+
     }
 
     void HandleLook()
-    {
-        // Xbox‰EƒXƒeƒBƒbƒN“ü—Í
-        float stickX = Input.GetAxis("RightStickHorizontal"); // ‰EƒXƒeƒBƒbƒN‰¡
-        float stickY = Input.GetAxis("RightStickVertical");   // ‰EƒXƒeƒBƒbƒNc
 
-        // ƒ}ƒEƒX“ü—Í
+    {
+        // ğŸ® å³ã‚¹ãƒ†ã‚£ãƒƒã‚¯å…¥åŠ›
+        float stickX = Input.GetAxis("RightStickHorizontal");
+        float stickY = Input.GetAxis("RightStickVertical");
+
+        // ğŸ–±ï¸ ãƒã‚¦ã‚¹å…¥åŠ›
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
-        // ‹“_ˆÚ“®iƒXƒeƒBƒbƒN or ƒ}ƒEƒX‚Ì‡Œvj
+        // åˆæˆï¼ˆã‚¹ãƒ†ã‚£ãƒƒã‚¯ï¼‹ãƒã‚¦ã‚¹ï¼‰
         float lookX = stickX * lookSpeed + mouseX * mouseSensitivity;
         float lookY = stickY * lookSpeed + mouseY * mouseSensitivity;
 
-        // ƒvƒŒƒCƒ„[–{‘Ì‚Ì…•½‰ñ“]
+        // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æœ¬ä½“ã®æ°´å¹³å›è»¢
         transform.Rotate(Vector3.up * lookX);
 
-        // ƒJƒƒ‰‚Ìã‰º‰ñ“]iƒsƒbƒ`j
+        // ã‚«ãƒ¡ãƒ©ã®ä¸Šä¸‹å›è»¢ï¼ˆãƒ”ãƒƒãƒï¼‰
         cameraPitch -= lookY;
         cameraPitch = Mathf.Clamp(cameraPitch, -cameraPitchLimit, cameraPitchLimit);
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
+
     }
+    void HandleInteract()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 3f)) // 3mä»¥å†…
+            {
+                OpenDoor door = hit.collider.GetComponent<OpenDoor>();
+                if (door != null)
+                {
+                    door.ToggleDoor();
+                }
+            }
+        }
+    }
+
 }
+
