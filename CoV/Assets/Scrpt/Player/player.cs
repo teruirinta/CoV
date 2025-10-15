@@ -46,9 +46,13 @@ public class player : MonoBehaviour
 
             // ✅ 重力反転を即座に反映（慣性をリセット）
             velocity.y = 0f;
+
+            // ✅ プレイヤーごと反転（Z軸180°回転）
+            Vector3 euler = transform.eulerAngles;
+            euler.z = isUpsideDown ? 180f : 0f;
+            transform.eulerAngles = euler;
         }
     }
-
 
     void HandleMove()
     {
@@ -94,12 +98,11 @@ public class player : MonoBehaviour
         cameraPitch -= mouseY * lookSpeed * invertFactor;
         cameraPitch = Mathf.Clamp(cameraPitch, -cameraPitchLimit, cameraPitchLimit);
 
-        // 左右回転も反転時は反対方向に
+        // 左右回転も反転時は逆方向に
         transform.Rotate(Vector3.up * mouseX * lookSpeed * invertFactor);
 
-        // カメラのローカル回転を合成（Z軸180°反転を追加）
-        float zRot = isUpsideDown ? 180f : 0f;
-        cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, zRot);
+        // カメラはX軸（上下）だけ回転
+        cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
     }
 
     void HandleInteract()
