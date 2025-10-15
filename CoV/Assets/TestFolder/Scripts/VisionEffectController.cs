@@ -1,26 +1,28 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 public class VisionEffectController : MonoBehaviour
 {
-    [Header("Še‹ŠE—p‚ÌVolume")]
-    [Tooltip("’Êí‹ŠE—pi•W€‚ÌPostProcess Volumej")]
+    [Header("å„è¦–ç•Œç”¨ã®Volume")]
+    [Tooltip("é€šå¸¸è¦–ç•Œç”¨ï¼ˆæ¨™æº–ã®PostProcess Volumeï¼‰")]
     public Volume normalVolume;
 
-    [Tooltip("ƒiƒCƒgƒXƒR[ƒviˆÃ‹j—pVolume")]
+    [Tooltip("ãƒŠã‚¤ãƒˆã‚¹ã‚³ãƒ¼ãƒ—ï¼ˆæš—è¦–ï¼‰ç”¨Volume")]
     public Volume nightScopeVolume;
 
-    [Tooltip("ã‰º”½“]‹ŠE—pVolumei”½“]‰‰o‚â“ÁêƒGƒtƒFƒNƒg—pj")]
+    [Tooltip("ä¸Šä¸‹åè»¢è¦–ç•Œç”¨Volumeï¼ˆåè»¢æ¼”å‡ºã‚„ç‰¹æ®Šã‚¨ãƒ•ã‚§ã‚¯ãƒˆç”¨ï¼‰")]
     public Volume invertVolume;
 
-    [Tooltip("ƒT[ƒ‚ƒOƒ‰ƒtƒB‹ŠE—pVolume")]
+    [Tooltip("ã‚µãƒ¼ãƒ¢ã‚°ãƒ©ãƒ•ã‚£è¦–ç•Œç”¨Volume")]
     public Volume thermalVolume;
+
+    private bool defaultFogState; // èµ·å‹•æ™‚ã®ãƒ•ã‚©ã‚°è¨­å®šã‚’ä¿å­˜
 
     void Start()
     {
-        // ‰Šúó‘Ô‚ğNormal‚Éİ’è
-        SetActiveVolume(normalVolume);
+        // èµ·å‹•æ™‚ã®ãƒ•ã‚©ã‚°è¨­å®šã‚’è¨˜æ†¶
+        defaultFogState = RenderSettings.fog;
     }
 
     void Update()
@@ -31,15 +33,22 @@ public class VisionEffectController : MonoBehaviour
         {
             case VisionType.Normal:
                 SetActiveVolume(normalVolume);
+                SetFog(defaultFogState); // é€šå¸¸ã¯å…ƒã®è¨­å®š
                 break;
+
             case VisionType.NightScope:
                 SetActiveVolume(nightScopeVolume);
+                SetFog(false); // ğŸŒ™ ãƒŠã‚¤ãƒˆã‚¹ã‚³ãƒ¼ãƒ—æ™‚ã¯ãƒ•ã‚©ã‚°ã‚’ç„¡åŠ¹åŒ–
                 break;
+
             case VisionType.Inverted:
                 SetActiveVolume(invertVolume);
+                SetFog(defaultFogState); // ä»–ã¯é€šå¸¸é€šã‚Š
                 break;
+
             case VisionType.Thermal:
                 SetActiveVolume(thermalVolume);
+                SetFog(defaultFogState);
                 break;
         }
     }
@@ -50,5 +59,14 @@ public class VisionEffectController : MonoBehaviour
         if (nightScopeVolume) nightScopeVolume.enabled = (active == nightScopeVolume);
         if (invertVolume) invertVolume.enabled = (active == invertVolume);
         if (thermalVolume) thermalVolume.enabled = (active == thermalVolume);
+    }
+
+    void SetFog(bool enabled)
+    {
+        if (RenderSettings.fog != enabled)
+        {
+            RenderSettings.fog = enabled;
+            Debug.Log($"ğŸŒ«ï¸ FogçŠ¶æ…‹å¤‰æ›´: {(enabled ? "æœ‰åŠ¹" : "ç„¡åŠ¹")}");
+        }
     }
 }
