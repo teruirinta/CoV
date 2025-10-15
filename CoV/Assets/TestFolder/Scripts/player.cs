@@ -30,6 +30,7 @@ public class player : MonoBehaviour
         HandleVisionInversion();
         HandleMove();
         HandleLook();
+        HandleInteract();
     }
 
     void HandleVisionInversion()
@@ -102,5 +103,23 @@ public class player : MonoBehaviour
 
         // カメラはX軸（上下）だけ回転
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
+    }
+
+    void HandleInteract()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 3f)) // 3m以内
+            {
+                OpenDoor door = hit.collider.GetComponent<OpenDoor>();
+                if (door != null)
+                {
+                    door.ToggleDoor();
+                }
+            }
+        }
     }
 }
