@@ -22,14 +22,12 @@ public class VisionManager : MonoBehaviour
 
     void Awake()
     {
-        // シングルトン的にアクセス可能にする
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
 
     void Update()
     {
-        // クールダウンの経過処理
         cooldownTimer -= Time.deltaTime;
 
         if (cooldownTimer <= 0f)
@@ -40,31 +38,20 @@ public class VisionManager : MonoBehaviour
 
     void HandleInput()
     {
-        // 🎮 Xboxコントローラー対応
-        if (Input.GetButtonDown("Fire3")) // Bボタン
+        // === 🎮 Xboxコントローラー ===
+        if (Input.GetKeyDown(KeyCode.JoystickButton1) || Input.GetKeyDown(KeyCode.Alpha1))
         {
+            // Bボタン・1キー → ナイトスコープ
             ToggleVision(VisionType.NightScope);
         }
-        else if (Input.GetButtonDown("Fire1")) // Xボタン
+        else if (Input.GetKeyDown(KeyCode.JoystickButton2) || Input.GetKeyDown(KeyCode.Alpha2))
         {
+            // Xボタン・2キー → 上下反転
             ToggleVision(VisionType.Inverted);
         }
-        else if (Input.GetButtonDown("Fire2")) // Yボタン
+        else if (Input.GetKeyDown(KeyCode.JoystickButton3) || Input.GetKeyDown(KeyCode.Alpha3))
         {
-            ToggleVision(VisionType.Thermal);
-        }
-
-        // ⌨️ キーボード対応（1,2,3キー）
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            ToggleVision(VisionType.NightScope);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            ToggleVision(VisionType.Inverted);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
+            // Yボタン・3キー → サーモグラフィ
             ToggleVision(VisionType.Thermal);
         }
     }
@@ -77,7 +64,6 @@ public class VisionManager : MonoBehaviour
         else
             CurrentVision = vision;
 
-        // クールダウン再設定
         cooldownTimer = visionCooldown;
 
         Debug.Log($"▶ 現在の視界: {CurrentVision}");

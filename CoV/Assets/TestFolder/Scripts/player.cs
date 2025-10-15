@@ -1,0 +1,103 @@
+﻿using UnityEngine;
+
+[RequireComponent(typeof(CharacterController))]
+public class player : MonoBehaviour
+{
+    [Header("移動設定")]
+    public float moveSpeed = 5f;
+    public float gravity = 9.81f;
+
+    [Header("カメラ設定")]
+    public Transform cameraTransform;
+    public float lookSpeed = 2f;
+    public float cameraPitchLimit = 80f;
+
+    private CharacterController controller;
+    private Vector3 velocity;
+    private float cameraPitch = 0f;
+
+    private bool isUpsideDown = false; // 上下反転フラグ
+
+    void Start()
+    {
+        controller = GetComponent<CharacterController>();
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    void Update()
+    {
+        HandleVisionInversion();
+        HandleMove();
+        HandleLook();
+    }
+
+    void HandleVisionInversion()
+    {
+        if (VisionManager.Instance == null) return;
+
+        bool shouldBeInverted = (VisionManager.Instance.CurrentVision == VisionType.Inverted);
+
+        if (shouldBeInverted != isUpsideDown)
+        {
+            isUpsideDown = shouldBeInverted;
+            Debug.Log(isUpsideDown ? "🌀 上下反転モード ON" : "⬇ 上下反転モード OFF");
+
+            // ✅ 重力反転を即座に反映（慣性をリセット）
+            velocity.y = 0f;
+        }
+    }
+
+
+    void HandleMove()
+    {
+        float horizontal;
+        float vertical;
+
+        if (Input.GetJoystickNames().Length > 0)
+        {
+            horizontal = Input.GetAxis("Horizontal");
+            vertical = Input.GetAxis("Vertical");
+        }
+        else
+        {
+            horizontal = Input.GetAxisRaw("Horizontal");
+            vertical = Input.GetAxisRaw("Vertical");
+        }
+
+        // カメラ基準で移動方向を決定
+        Vector3 move = cameraTransform.forward * vertical + cameraTransform.right * horizontal;
+        move.y = 0f;
+        move.Normalize();
+
+        controller.Move(move * moveSpeed * Time.deltaTime);
+
+        // 重力処理（反転時は逆方向）
+        bool isGrounded = controller.isGrounded;
+        if (isGrounded && Mathf.Abs(velocity.y) < 0.1f)
+            velocity.y = -2f;
+
+        velocity.y += (isUpsideDown ? gravity : -gravity) * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
+    }
+
+    void HandleLook()
+    {
+        float mouseX = Input.GetAxis("Mouse X");
+        float mouseY = Input.GetAxis("Mouse Y");
+
+        // 上下反転時も自然な操作感にする
+        float invertFactor = isUpsideDown ? -1f : 1f;
+
+        // 上下回転
+        cameraPitch -= mouseY * lookSpeed * invertFactor;
+        cameraPitch = Mathf.Clamp(cameraPitch, -cameraPitchLimit, cameraPitchLimit);
+
+        // 左右回転も反転時は反対方向に
+        transform.Rotate(Vector3.up * mouseX * lookSpeed * invertFactor);
+
+        // カメラのローカル回転を合成（Z軸180°反転を追加）
+        float zRot = isUpsideDown ? 180f : 0f;
+        cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, zRot);
+    }
+}
