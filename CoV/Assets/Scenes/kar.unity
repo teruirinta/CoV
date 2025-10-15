@@ -473,6 +473,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: cameraSpotlight
+      value: 
+      objectReference: {fileID: 700874558}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: wallsToHide.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -2727,6 +2731,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openAngle: -90
   openDuration: 1.5
+--- !u!108 &700874558 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 5880036548274625934, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+  m_PrefabInstance: {fileID: 99388905}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &705997432 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8604516355249169868, guid: beef3bcde1610f04aa96275436147bb9, type: 3}
@@ -3231,7 +3240,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftDoor: {fileID: 773681387}
   rightDoor: {fileID: 1632111369}
-  player: {fileID: 0}
+  player: {fileID: 99388906}
   openAngle: 90
   openDuration: 1.5
   activationDistance: 3
@@ -4117,7 +4126,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftDoor: {fileID: 1844219228}
   rightDoor: {fileID: 1230841594}
-  player: {fileID: 0}
+  player: {fileID: 99388906}
   openAngle: 90
   openDuration: 1.5
   activationDistance: 3

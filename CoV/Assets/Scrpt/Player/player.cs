@@ -20,7 +20,7 @@ public class player : MonoBehaviour
 
     [Header("ナイトスコープ時に消える壁")]
     public GameObject[] wallsToDisable;
-
+    public Light cameraSpotlight;
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -35,6 +35,7 @@ public class player : MonoBehaviour
         HandleLook();
         HandleInteract();
         HandleWallVisibility();
+        HandleSpotlight();
     }
 
     void HandleVisionInversion()
@@ -145,5 +146,12 @@ public class player : MonoBehaviour
                 if (collider != null) collider.enabled = !shouldDisable;
             }
         }
+    }
+    void HandleSpotlight()
+    {
+        if (VisionManager.Instance == null || cameraSpotlight == null) return;
+
+        bool shouldDisable = (VisionManager.Instance.CurrentVision == VisionType.NightScope);
+        cameraSpotlight.enabled = !shouldDisable;
     }
 }
