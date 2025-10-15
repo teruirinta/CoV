@@ -30,6 +30,7 @@ public class player : MonoBehaviour
         HandleVisionInversion();
         HandleMove();
         HandleLook();
+        HandleInteract();
     }
 
     void HandleVisionInversion()
@@ -99,5 +100,23 @@ public class player : MonoBehaviour
         // カメラのローカル回転を合成（Z軸180°反転を追加）
         float zRot = isUpsideDown ? 180f : 0f;
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, zRot);
+    }
+
+    void HandleInteract()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 3f)) // 3m以内
+            {
+                OpenDoor door = hit.collider.GetComponent<OpenDoor>();
+                if (door != null)
+                {
+                    door.ToggleDoor();
+                }
+            }
+        }
     }
 }
