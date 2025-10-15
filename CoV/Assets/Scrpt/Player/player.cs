@@ -18,6 +18,9 @@ public class player : MonoBehaviour
 
     private bool isUpsideDown = false; // 上下反転フラグ
 
+    [Header("ナイトスコープ時に消える壁")]
+    public GameObject[] wallsToDisable;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -31,6 +34,7 @@ public class player : MonoBehaviour
         HandleMove();
         HandleLook();
         HandleInteract();
+        HandleWallVisibility();
     }
 
     void HandleVisionInversion()
@@ -119,6 +123,26 @@ public class player : MonoBehaviour
                 {
                     door.ToggleDoor();
                 }
+            }
+        }
+    }
+    void HandleWallVisibility()
+    {
+        if (VisionManager.Instance == null || wallsToDisable == null) return;
+
+        bool shouldDisable = (VisionManager.Instance.CurrentVision == VisionType.NightScope);
+
+        foreach (GameObject wall in wallsToDisable)
+        {
+            if (wall != null)
+            {
+                // 見た目を消す
+                Renderer renderer = wall.GetComponent<Renderer>();
+                if (renderer != null) renderer.enabled = !shouldDisable;
+
+                // 当たり判定を消す
+                Collider collider = wall.GetComponent<Collider>();
+                if (collider != null) collider.enabled = !shouldDisable;
             }
         }
     }
