@@ -61,14 +61,13 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.0.45f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scrpt\Player.cs" />
     <Compile Include="Assets\Scrpt\Door\DoorTeleport.cs" />
-    <Compile Include="Assets\TestFolder\Scripts\player.cs" />
-    <Compile Include="Assets\TestFolder\Scripts\VisionEffectController.cs" />
+    <Compile Include="Assets\Scrpt\Player\VisionManager.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Compile Include="Assets\Scrpt\Door\OpenthaDoor.cs" />
+    <Compile Include="Assets\Scrpt\Player\VisionEffectController.cs" />
+    <Compile Include="Assets\Scrpt\Player\player.cs" />
     <Compile Include="Assets\Scrpt\Door\OpenDoor.cs" />
-    <Compile Include="Assets\TestFolder\Scripts\VisionManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
