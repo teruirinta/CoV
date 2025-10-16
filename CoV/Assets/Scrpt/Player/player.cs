@@ -21,6 +21,7 @@ public class player : MonoBehaviour
     [Header("ナイトスコープ時に消える壁")]
     public GameObject[] wallsToDisable;
     public Light cameraSpotlight;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -49,7 +50,7 @@ public class player : MonoBehaviour
             isUpsideDown = shouldBeInverted;
             Debug.Log(isUpsideDown ? "🌀 上下反転モード ON" : "⬇ 上下反転モード OFF");
 
-            // ✅ 重力反転を即座に反映（慣性をリセット）
+            // ✅ 重力反転を即座に反映（慣性リセット）
             velocity.y = 0f;
 
             // ✅ プレイヤーごと反転（Z軸180°回転）
@@ -96,17 +97,13 @@ public class player : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
-        // 上下反転時も自然な操作感にする
-        float invertFactor = isUpsideDown ? -1f : 1f;
-
-        // 上下回転
-        cameraPitch -= mouseY * lookSpeed * invertFactor;
+        // ✅ 反転時でもマウス操作方向は一定に保つ
+        cameraPitch -= mouseY * lookSpeed;
         cameraPitch = Mathf.Clamp(cameraPitch, -cameraPitchLimit, cameraPitchLimit);
 
-        // 左右回転も反転時は逆方向に
-        transform.Rotate(Vector3.up * mouseX * lookSpeed * invertFactor);
+        transform.Rotate(Vector3.up * mouseX * lookSpeed);
 
-        // カメラはX軸（上下）だけ回転
+        // カメラは上下のみ回転（Z軸180°はプレイヤーに適用されている）
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
     }
 
@@ -127,6 +124,7 @@ public class player : MonoBehaviour
             }
         }
     }
+
     void HandleWallVisibility()
     {
         if (VisionManager.Instance == null || wallsToDisable == null) return;
@@ -147,6 +145,7 @@ public class player : MonoBehaviour
             }
         }
     }
+
     void HandleSpotlight()
     {
         if (VisionManager.Instance == null || cameraSpotlight == null) return;

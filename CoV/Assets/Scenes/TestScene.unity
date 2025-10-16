@@ -411,7 +411,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!33 &1684164128998094086
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -999,6 +999,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ce09739e47c07f4da1791897b457e6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  normalVision: {fileID: 11400000, guid: 48eec46e46f4b0243b0425e3247019d2, type: 2}
+  nightScopeVision: {fileID: 11400000, guid: 602784684603e134e8631530debe9327, type: 2}
+  invertedVision: {fileID: 11400000, guid: 5a8d1ffd2e73ed24393d531dd9f83da1, type: 2}
+  thermalVision: {fileID: 11400000, guid: adf8c90fb33f4a84bacefb19329718a6, type: 2}
   visionCooldown: 3
 --- !u!4 &6778310599285671921
 Transform:
@@ -1026,7 +1030,7 @@ GameObject:
   - component: {fileID: 1724929400259371514}
   - component: {fileID: 4812932081835383281}
   m_Layer: 0
-  m_Name: invertVolume
+  m_Name: invertedVolume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1399,8 +1403,10 @@ MonoBehaviour:
   moveSpeed: 3
   gravity: 9.81
   cameraTransform: {fileID: 5411845269711764354}
-  lookSpeed: 1
+  lookSpeed: 2
   cameraPitchLimit: 80
+  wallsToDisable: []
+  cameraSpotlight: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
