@@ -7,8 +7,8 @@ public class BatteryUI : MonoBehaviour
     public Image gaugeImage; // 円形ゲージ
     public Image iconImage;  // アイコン画像
 
-    [Header("このUIが担当する視界タイプ")]
-    public VisionType targetVision; // NightScope / Inverted / Thermal
+    [Header("設定")]
+    public VisionType targetVision; // 対応する視界タイプ
 
     private VisionManager visionManager;
 
@@ -21,15 +21,15 @@ public class BatteryUI : MonoBehaviour
     {
         if (visionManager == null) return;
 
-        // このUIが担当する視界データを取得
+        // 対応する視界のデータ取得
         var vision = visionManager.GetVisionData(targetVision);
         if (vision == null) return;
 
-        // バッテリー残量（0～1に正規化）
+        // 現在の残量をゲージに反映
         float fillAmount = vision.currentBattery / vision.maxBattery;
         gaugeImage.fillAmount = Mathf.Clamp01(fillAmount);
 
-        // ゲージの色設定（任意）
+        // 視界ごとに色設定
         switch (targetVision)
         {
             case VisionType.NightScope:
