@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(QuickOutline))]
 public class BatteryItem : MonoBehaviour
 {
     [Header("設定")]
@@ -11,6 +13,9 @@ public class BatteryItem : MonoBehaviour
 
     private VisionManager visionManager;
     private Transform playerTransform;
+    private QuickOutline outline;
+
+    private bool isHighlighted = false; // 現在アウトラインが表示中かどうか
 
     void Start()
     {
@@ -21,22 +26,39 @@ public class BatteryItem : MonoBehaviour
             playerTransform = player.transform;
         else
             Debug.LogWarning("⚠ Playerタグのオブジェクトが見つかりません。BatteryItemが動作しません。");
+
+        outline = GetComponent<QuickOutline>();
+        outline.enabled = false; // 初期状態では非表示
     }
 
     void Update()
     {
         if (playerTransform == null || visionManager == null) return;
 
-        // プレイヤーとの距離をチェック
         float distance = Vector3.Distance(transform.position, playerTransform.position);
 
+        // 範囲内ならアウトラインON、範囲外ならOFF
         if (distance <= pickupRange)
         {
-            // XboxコントローラーのAボタン or Eキーで取得
+            if (!isHighlighted)
+            {
+                outline.enabled = true;
+                isHighlighted = true;
+            }
+
+            // Aボタン or Eキーで取得
             if (Input.GetKeyDown(pickupKey) || Input.GetKeyDown(KeyCode.JoystickButton0))
             {
                 RecoverAllVisions();
                 HandlePickup();
+            }
+        }
+        else
+        {
+            if (isHighlighted)
+            {
+                outline.enabled = false;
+                isHighlighted = false;
             }
         }
     }
@@ -53,19 +75,16 @@ public class BatteryItem : MonoBehaviour
 
     void HandlePickup()
     {
-        // エフェクトが設定されていれば再生
         if (pickupEffect != null)
         {
             Instantiate(pickupEffect, transform.position, Quaternion.identity);
         }
 
-        // 自身を削除
         Destroy(gameObject);
     }
 
     void OnDrawGizmosSelected()
     {
-        // シーンビューで取得範囲を可視化
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, pickupRange);
     }
