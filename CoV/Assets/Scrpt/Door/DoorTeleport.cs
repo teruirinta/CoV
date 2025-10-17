@@ -21,7 +21,7 @@ public class DoorTeleportToggle : MonoBehaviour
     {
         float distance = Vector3.Distance(player.position, transform.position);
 
-        if (distance <= activationDistance && Input.GetKeyDown(KeyCode.Q))
+        if (distance <= activationDistance && Input.GetKeyDown(KeyCode.E))
         {
             if (!isTeleported)
             {
