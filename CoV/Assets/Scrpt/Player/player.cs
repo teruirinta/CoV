@@ -15,12 +15,15 @@ public class player : MonoBehaviour
     private CharacterController controller;
     private Vector3 velocity;
     private float cameraPitch = 0f;
-
-    private bool isUpsideDown = false; // 上下反転フラグ
+    private bool isUpsideDown = false;
 
     [Header("ナイトスコープ時に消える壁")]
     public GameObject[] wallsToDisable;
     public Light cameraSpotlight;
+
+    // 🔋 追加: バッテリー検出用
+    private BatteryItem currentBatteryItem;
+    private float interactRange = 3f;
 
     void Start()
     {
@@ -37,6 +40,7 @@ public class player : MonoBehaviour
         HandleInteract();
         HandleWallVisibility();
         HandleSpotlight();
+        HandleBatteryHighlight(); // ← 追加
     }
 
     void HandleVisionInversion()
@@ -50,10 +54,7 @@ public class player : MonoBehaviour
             isUpsideDown = shouldBeInverted;
             Debug.Log(isUpsideDown ? "🌀 上下反転モード ON" : "⬇ 上下反転モード OFF");
 
-            // ✅ 重力反転を即座に反映（慣性リセット）
             velocity.y = 0f;
-
-            // ✅ プレイヤーごと反転（Z軸180°回転）
             Vector3 euler = transform.eulerAngles;
             euler.z = isUpsideDown ? 180f : 0f;
             transform.eulerAngles = euler;
@@ -76,14 +77,12 @@ public class player : MonoBehaviour
             vertical = Input.GetAxisRaw("Vertical");
         }
 
-        // カメラ基準で移動方向を決定
         Vector3 move = cameraTransform.forward * vertical + cameraTransform.right * horizontal;
         move.y = 0f;
         move.Normalize();
 
         controller.Move(move * moveSpeed * Time.deltaTime);
 
-        // 重力処理（反転時は逆方向）
         bool isGrounded = controller.isGrounded;
         if (isGrounded && Mathf.Abs(velocity.y) < 0.1f)
             velocity.y = -2f;
@@ -97,24 +96,27 @@ public class player : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
-        // ✅ 反転時でもマウス操作方向は一定に保つ
         cameraPitch -= mouseY * lookSpeed;
         cameraPitch = Mathf.Clamp(cameraPitch, -cameraPitchLimit, cameraPitchLimit);
-
         transform.Rotate(Vector3.up * mouseX * lookSpeed);
 
-        // カメラは上下のみ回転（Z軸180°はプレイヤーに適用されている）
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
     }
 
     void HandleInteract()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.JoystickButton0))
         {
+            if (currentBatteryItem != null)
+            {
+                // ✅ BatteryItemが自分の内部で処理するのでここでは何もしない
+                return;
+            }
+
             Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit, 3f)) // 3m以内
+            if (Physics.Raycast(ray, out hit, 3f))
             {
                 OpenDoor door = hit.collider.GetComponent<OpenDoor>();
                 if (door != null)
@@ -135,11 +137,9 @@ public class player : MonoBehaviour
         {
             if (wall != null)
             {
-                // 見た目を消す
                 Renderer renderer = wall.GetComponent<Renderer>();
                 if (renderer != null) renderer.enabled = !shouldDisable;
 
-                // 当たり判定を消す
                 Collider collider = wall.GetComponent<Collider>();
                 if (collider != null) collider.enabled = !shouldDisable;
             }
@@ -149,8 +149,39 @@ public class player : MonoBehaviour
     void HandleSpotlight()
     {
         if (VisionManager.Instance == null || cameraSpotlight == null) return;
-
         bool shouldDisable = (VisionManager.Instance.CurrentVision == VisionType.NightScope);
         cameraSpotlight.enabled = !shouldDisable;
+    }
+
+    // 🔋 バッテリーのアウトラインを制御する処理
+    void HandleBatteryHighlight()
+    {
+        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+        RaycastHit hit;
+
+        BatteryItem hitBattery = null;
+
+        if (Physics.Raycast(ray, out hit, interactRange))
+        {
+            hitBattery = hit.collider.GetComponent<BatteryItem>();
+        }
+
+        // 前に見ていたバッテリーと異なるなら、アウトラインを切り替える
+        if (currentBatteryItem != hitBattery)
+        {
+            if (currentBatteryItem != null)
+            {
+                QuickOutline outline = currentBatteryItem.GetComponent<QuickOutline>();
+                if (outline != null) outline.enabled = false;
+            }
+
+            currentBatteryItem = hitBattery;
+
+            if (currentBatteryItem != null)
+            {
+                QuickOutline outline = currentBatteryItem.GetComponent<QuickOutline>();
+                if (outline != null) outline.enabled = true;
+            }
+        }
     }
 }
