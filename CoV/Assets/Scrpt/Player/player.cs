@@ -17,9 +17,15 @@ public class player : MonoBehaviour
     private float cameraPitch = 0f;
     private bool isUpsideDown = false;
 
-    [Header("ナイトスコープ時に消える壁")]
-    public GameObject[] wallsToDisable;
+    [Header("ナイトスコープ時に表示する壁")]
+    public GameObject[] wallsToEnableInNightScope;
     public Light cameraSpotlight;
+
+    [Header("ナイトスコープ時に非表示にする壁")]
+    public GameObject[] wallsToDisableInNightScope;
+
+    [Header("インタラクト可能時の手表示")]
+    public GameObject handIndicator;
 
     // 🔋 追加: バッテリー検出用
     private BatteryItem currentBatteryItem;
@@ -40,7 +46,8 @@ public class player : MonoBehaviour
         HandleInteract();
         HandleWallVisibility();
         HandleSpotlight();
-        HandleBatteryHighlight(); // ← 追加
+        HandleBatteryHighlight();
+        HandleHandIndicator();
     }
 
     void HandleVisionInversion()
@@ -129,19 +136,39 @@ public class player : MonoBehaviour
 
     void HandleWallVisibility()
     {
-        if (VisionManager.Instance == null || wallsToDisable == null) return;
+        if (VisionManager.Instance == null) return;
 
-        bool shouldDisable = (VisionManager.Instance.CurrentVision == VisionType.NightScope);
+        bool isNightScope = (VisionManager.Instance.CurrentVision == VisionType.NightScope);
 
-        foreach (GameObject wall in wallsToDisable)
+        // ナイトスコープ時に非表示にする壁
+        if (wallsToDisableInNightScope != null)
         {
-            if (wall != null)
+            foreach (GameObject wall in wallsToDisableInNightScope)
             {
-                Renderer renderer = wall.GetComponent<Renderer>();
-                if (renderer != null) renderer.enabled = !shouldDisable;
+                if (wall != null)
+                {
+                    Renderer renderer = wall.GetComponent<Renderer>();
+                    if (renderer != null) renderer.enabled = !isNightScope;
 
-                Collider collider = wall.GetComponent<Collider>();
-                if (collider != null) collider.enabled = !shouldDisable;
+                    Collider collider = wall.GetComponent<Collider>();
+                    if (collider != null) collider.enabled = !isNightScope;
+                }
+            }
+        }
+
+        // ナイトスコープ時に表示する壁
+        if (wallsToEnableInNightScope != null)
+        {
+            foreach (GameObject wall in wallsToEnableInNightScope)
+            {
+                if (wall != null)
+                {
+                    Renderer renderer = wall.GetComponent<Renderer>();
+                    if (renderer != null) renderer.enabled = isNightScope;
+
+                    Collider collider = wall.GetComponent<Collider>();
+                    if (collider != null) collider.enabled = isNightScope;
+                }
             }
         }
     }
@@ -182,6 +209,27 @@ public class player : MonoBehaviour
                 QuickOutline outline = currentBatteryItem.GetComponent<QuickOutline>();
                 if (outline != null) outline.enabled = true;
             }
+        }
+    }
+    void HandleHandIndicator()
+    {
+        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+        RaycastHit hit;
+
+        bool canInteract = false;
+
+        if (Physics.Raycast(ray, out hit, interactRange))
+        {
+            if (hit.collider.GetComponent<BatteryItem>() != null || hit.collider.GetComponent<OpenDoor>() != null
+                || hit.collider.CompareTag("TP"))
+            {
+                canInteract = true;
+            }
+        }
+
+        if (handIndicator != null)
+        {
+            handIndicator.SetActive(canInteract);
         }
     }
 }
