@@ -5,8 +5,8 @@ public class KeyPickup : MonoBehaviour
 {
     [Header("設定")]
     public string keyId = "EscapeKey"; // 複数の鍵を区別したいとき用のID
-    public AudioClip pickupSfx;         // 鍵を拾った時の音
-    public ParticleSystem pickupVfx;    // 鍵を拾った時のエフェクト
+    public AudioClip pickupSound;         // 鍵を拾った時の音
+    public ParticleSystem pickupEfect;    // 鍵を拾った時のエフェクト
     public bool autoSaveOnPickup = true; // 拾った瞬間にセーブするか
 
     private void Reset()
@@ -33,10 +33,10 @@ public class KeyPickup : MonoBehaviour
         inv.AddKey();
 
         // 効果音再生
-        if (pickupSfx) AudioSource.PlayClipAtPoint(pickupSfx, transform.position);
+        if (pickupSound) AudioSource.PlayClipAtPoint(pickupSound, transform.position);
 
         // エフェクト再生
-        if (pickupVfx) Instantiate(pickupVfx, transform.position, Quaternion.identity);
+        if (pickupEfect) Instantiate(pickupEfect, transform.position, Quaternion.identity);
 
         // セーブデータに記録
         if (autoSaveOnPickup)
