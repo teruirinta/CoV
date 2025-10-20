@@ -9,7 +9,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <ProjectGuid>{E719E384-47C5-6905-296E-F982912D89F7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -66,6 +67,7 @@
     <Compile Include="Assets\Scrpt\OutLine\QuickOutLine.cs" />
     <Compile Include="Assets\Scrpt\Player\PlayerInventory.cs" />
     <Compile Include="Assets\Scrpt\Door\DoorTeleport.cs" />
+    <Compile Include="Assets\Scrpt\GameController\GameController.cs" />
     <Compile Include="Assets\Scrpt\Battery\VisionData.cs" />
     <Compile Include="Assets\Scrpt\Battery\BatteryUI.cs" />
     <Compile Include="Assets\Scrpt\Player\VisionManager.cs" />
