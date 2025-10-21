@@ -1,10 +1,10 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class DoorTeleportToggle : MonoBehaviour
 {
-    public Transform player;               // ƒvƒŒƒCƒ„[‚ÌTransformiCharacterController‚ª‚Â‚¢‚Ä‚éƒIƒuƒWƒFƒNƒgj
-    public Transform teleportTarget;       // ƒ[ƒvæ‚ÌTransform
-    public float activationDistance = 3f;  // ƒhƒA‚É‹ß‚Ã‚¢‚½‚Æ‚«‚¾‚¯”½‰
+    public Transform player;               // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®Transformï¼ˆCharacterControllerãŒã¤ã„ã¦ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼‰
+    public Transform teleportTarget;       // ãƒ¯ãƒ¼ãƒ—å…ˆã®Transform
+    public float activationDistance = 3f;  // ãƒ‰ã‚¢ã«è¿‘ã¥ã„ãŸã¨ãã ã‘åå¿œ
 
     private Vector3 originalPosition;
     private Quaternion originalRotation;
@@ -25,11 +25,11 @@ public class DoorTeleportToggle : MonoBehaviour
         {
             if (!isTeleported)
             {
-                // Œ³‚ÌˆÊ’u‚ğ•Û‘¶
+                // å…ƒã®ä½ç½®ã‚’ä¿å­˜
                 originalPosition = player.position;
                 originalRotation = player.rotation;
 
-                // ƒeƒŒƒ|[ƒg
+                // ãƒ†ãƒ¬ãƒãƒ¼ãƒˆ
                 if (controller != null) controller.enabled = false;
                 player.position = teleportTarget.position;
                 player.rotation = teleportTarget.rotation;
@@ -39,7 +39,7 @@ public class DoorTeleportToggle : MonoBehaviour
             }
             else
             {
-                // Œ³‚ÌˆÊ’u‚É–ß‚é
+                // å…ƒã®ä½ç½®ã«æˆ»ã‚‹
                 if (controller != null) controller.enabled = false;
                 player.position = originalPosition;
                 player.rotation = originalRotation;
