@@ -122,5 +122,13 @@ public class VisionManager : MonoBehaviour
         return GetVisionData(CurrentVision);
     }
 
+    public void ForceResetVision()
+    {
+        if (CurrentVision != VisionType.Normal)
+        {
+            Debug.Log("🔄 TPタグにより視界をノーマルに戻します");
+            CurrentVision = VisionType.Normal;
+        }
+    }
 
 }

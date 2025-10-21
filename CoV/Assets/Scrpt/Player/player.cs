@@ -123,12 +123,19 @@ public class player : MonoBehaviour
             Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit, 3f))
+            if (Physics.Raycast(ray, out hit, interactRange))
             {
+                // 🚪 ドアを開ける処理
                 OpenDoor door = hit.collider.GetComponent<OpenDoor>();
                 if (door != null)
                 {
                     door.ToggleDoor();
+                }
+
+                // 🌀 TPタグに触れていたら視界をノーマルに戻す
+                if (hit.collider.CompareTag("TP") && VisionManager.Instance != null)
+                {
+                    VisionManager.Instance.ForceResetVision();
                 }
             }
         }
@@ -231,5 +238,6 @@ public class player : MonoBehaviour
         {
             handIndicator.SetActive(canInteract);
         }
+
     }
 }
