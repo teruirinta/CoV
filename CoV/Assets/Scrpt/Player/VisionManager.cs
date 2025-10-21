@@ -4,9 +4,9 @@ using UnityEngine;
 public enum VisionType
 {
     Normal,
-    NightScope,  // A視界：暗視
-    Inverted,    // B視界：上下反転
-    Thermal      // C視界：サーモ
+    NightScope, // A視界：暗視
+    Inverted,   // B視界：上下反転
+    Thermal     // C視界：サーモ
 }
 
 public class VisionManager : MonoBehaviour
@@ -23,6 +23,9 @@ public class VisionManager : MonoBehaviour
     [Header("各視界データ (ScriptableObject)")]
     public List<VisionData> visionDataList = new List<VisionData>();
 
+    // ✅ TP中かどうかのフラグ
+    public bool IsTeleporting { get; set; } = false;
+
     void Awake()
     {
         if (Instance == null)
@@ -33,7 +36,6 @@ public class VisionManager : MonoBehaviour
 
     void Start()
     {
-        // ✅ ゲーム開始時に全バッテリーを満タンに
         foreach (var data in visionDataList)
         {
             data.currentBattery = data.maxBattery;
@@ -43,6 +45,7 @@ public class VisionManager : MonoBehaviour
     void Update()
     {
         cooldownTimer -= Time.deltaTime;
+
         if (cooldownTimer <= 0f)
         {
             HandleInput();
@@ -53,7 +56,6 @@ public class VisionManager : MonoBehaviour
 
     void HandleInput()
     {
-        // 🎮 Xboxボタン or ⌨️ キー入力対応
         if (Input.GetButtonDown("Fire3") || Input.GetKeyDown(KeyCode.Alpha1)) // B or 1
         {
             TryToggleVision(VisionType.NightScope);
@@ -70,15 +72,14 @@ public class VisionManager : MonoBehaviour
 
     void TryToggleVision(VisionType vision)
     {
-        // バッテリー残量チェック
         var data = GetVisionData(vision);
+
         if (data != null && data.IsDepleted)
         {
             Debug.LogWarning($"⚠ {data.visionName} のバッテリーが切れています！");
             return;
         }
 
-        // 同じキーで通常視界に戻す
         if (CurrentVision == vision)
             CurrentVision = VisionType.Normal;
         else
@@ -91,18 +92,18 @@ public class VisionManager : MonoBehaviour
 
     void UpdateBatteryUsage()
     {
-        if (CurrentVision == VisionType.Normal) return;
+        if (CurrentVision == VisionType.Normal || IsTeleporting)
+            return;
 
         var data = GetVisionData(CurrentVision);
         if (data == null) return;
 
-        // バッテリーを減少させる
         data.currentBattery -= data.drainRate * Time.deltaTime;
 
         if (data.currentBattery <= 0f)
         {
             data.currentBattery = 0f;
-            CurrentVision = VisionType.Normal; // バッテリー切れで自動解除
+            CurrentVision = VisionType.Normal;
             Debug.Log($"⚠ {data.visionName} のバッテリーが切れました。通常視界に戻ります。");
         }
     }
@@ -114,6 +115,7 @@ public class VisionManager : MonoBehaviour
             if (data.visionName.Equals(type.ToString(), System.StringComparison.OrdinalIgnoreCase))
                 return data;
         }
+
         return null;
     }
 
@@ -121,14 +123,4 @@ public class VisionManager : MonoBehaviour
     {
         return GetVisionData(CurrentVision);
     }
-
-    public void ForceResetVision()
-    {
-        if (CurrentVision != VisionType.Normal)
-        {
-            Debug.Log("🔄 TPタグにより視界をノーマルに戻します");
-            CurrentVision = VisionType.Normal;
-        }
-    }
-
 }

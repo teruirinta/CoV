@@ -2,14 +2,13 @@
 
 public class DoorTeleportToggle : MonoBehaviour
 {
-    public Transform player;               // プレイヤーのTransform（CharacterControllerがついてるオブジェクト）
-    public Transform teleportTarget;       // ワープ先のTransform
-    public float activationDistance = 3f;  // ドアに近づいたときだけ反応
+    public Transform player;              // プレイヤーのTransform（CharacterControllerがついてるオブジェクト）
+    public Transform teleportTarget;      // ワープ先のTransform
+    public float activationDistance = 0.5f; // ドアに近づいたときだけ反応
 
     private Vector3 originalPosition;
     private Quaternion originalRotation;
     private bool isTeleported = false;
-
     private CharacterController controller;
 
     void Start()
@@ -25,11 +24,9 @@ public class DoorTeleportToggle : MonoBehaviour
         {
             if (!isTeleported)
             {
-                // 元の位置を保存
                 originalPosition = player.position;
                 originalRotation = player.rotation;
 
-                // テレポート
                 if (controller != null) controller.enabled = false;
                 player.position = teleportTarget.position;
                 player.rotation = teleportTarget.rotation;
@@ -39,7 +36,6 @@ public class DoorTeleportToggle : MonoBehaviour
             }
             else
             {
-                // 元の位置に戻る
                 if (controller != null) controller.enabled = false;
                 player.position = originalPosition;
                 player.rotation = originalRotation;
@@ -47,6 +43,10 @@ public class DoorTeleportToggle : MonoBehaviour
 
                 isTeleported = false;
             }
+
+            // ✅ TP状態を VisionManager に通知
+            if (VisionManager.Instance != null)
+                VisionManager.Instance.IsTeleporting = isTeleported;
         }
     }
 }

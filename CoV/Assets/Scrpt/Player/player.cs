@@ -105,8 +105,8 @@ public class player : MonoBehaviour
 
         cameraPitch -= mouseY * lookSpeed;
         cameraPitch = Mathf.Clamp(cameraPitch, -cameraPitchLimit, cameraPitchLimit);
-        transform.Rotate(Vector3.up * mouseX * lookSpeed);
 
+        transform.Rotate(Vector3.up * mouseX * lookSpeed);
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
     }
 
@@ -123,19 +123,12 @@ public class player : MonoBehaviour
             Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit, interactRange))
+            if (Physics.Raycast(ray, out hit, 3f))
             {
-                // 🚪 ドアを開ける処理
                 OpenDoor door = hit.collider.GetComponent<OpenDoor>();
                 if (door != null)
                 {
                     door.ToggleDoor();
-                }
-
-                // 🌀 TPタグに触れていたら視界をノーマルに戻す
-                if (hit.collider.CompareTag("TP") && VisionManager.Instance != null)
-                {
-                    VisionManager.Instance.ForceResetVision();
                 }
             }
         }
@@ -183,6 +176,7 @@ public class player : MonoBehaviour
     void HandleSpotlight()
     {
         if (VisionManager.Instance == null || cameraSpotlight == null) return;
+
         bool shouldDisable = (VisionManager.Instance.CurrentVision == VisionType.NightScope);
         cameraSpotlight.enabled = !shouldDisable;
     }
@@ -192,7 +186,6 @@ public class player : MonoBehaviour
     {
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
         RaycastHit hit;
-
         BatteryItem hitBattery = null;
 
         if (Physics.Raycast(ray, out hit, interactRange))
@@ -218,17 +211,18 @@ public class player : MonoBehaviour
             }
         }
     }
+
     void HandleHandIndicator()
     {
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
         RaycastHit hit;
-
         bool canInteract = false;
 
         if (Physics.Raycast(ray, out hit, interactRange))
         {
-            if (hit.collider.GetComponent<BatteryItem>() != null || hit.collider.GetComponent<OpenDoor>() != null
-                || hit.collider.CompareTag("TP"))
+            if (hit.collider.GetComponent<BatteryItem>() != null ||
+                hit.collider.GetComponent<OpenDoor>() != null ||
+                hit.collider.CompareTag("TP"))
             {
                 canInteract = true;
             }
@@ -238,6 +232,5 @@ public class player : MonoBehaviour
         {
             handIndicator.SetActive(canInteract);
         }
-
     }
 }
