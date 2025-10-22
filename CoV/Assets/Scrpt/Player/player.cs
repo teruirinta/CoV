@@ -24,10 +24,26 @@ public class player : MonoBehaviour
     [Header("ナイトスコープ時に非表示にする壁")]
     public GameObject[] wallsToDisableInNightScope;
 
-    [Header("インタラクト可能時の手表示")]
-    public GameObject handIndicator;
+    [System.Serializable]
+    public class HandIndicatorByTag
+    {
+        public string tag;
+        public GameObject indicator;
+    }
 
-    // 🔋 追加: バッテリー検出用
+    [Header("インタラクト可能時の手表示")]
+    public HandIndicatorByTag[] handIndicatorsByTag;
+
+    [System.Serializable]
+    public class TMPIndicatorByTag
+    {
+        public string tag;
+        public GameObject indicator;
+    }
+
+    [Header("インタラクト可能時のTMP表示")]
+    public TMPIndicatorByTag[] tmpIndicatorsByTag;
+
     private BatteryItem currentBatteryItem;
     private float interactRange = 3f;
 
@@ -48,6 +64,7 @@ public class player : MonoBehaviour
         HandleSpotlight();
         HandleBatteryHighlight();
         HandleHandIndicator();
+        HandleTMPIndicator();
     }
 
     void HandleVisionInversion()
@@ -116,7 +133,6 @@ public class player : MonoBehaviour
         {
             if (currentBatteryItem != null)
             {
-                // ✅ BatteryItemが自分の内部で処理するのでここでは何もしない
                 return;
             }
 
@@ -140,7 +156,6 @@ public class player : MonoBehaviour
 
         bool isNightScope = (VisionManager.Instance.CurrentVision == VisionType.NightScope);
 
-        // ナイトスコープ時に非表示にする壁
         if (wallsToDisableInNightScope != null)
         {
             foreach (GameObject wall in wallsToDisableInNightScope)
@@ -156,7 +171,6 @@ public class player : MonoBehaviour
             }
         }
 
-        // ナイトスコープ時に表示する壁
         if (wallsToEnableInNightScope != null)
         {
             foreach (GameObject wall in wallsToEnableInNightScope)
@@ -181,7 +195,6 @@ public class player : MonoBehaviour
         cameraSpotlight.enabled = !shouldDisable;
     }
 
-    // 🔋 バッテリーのアウトラインを制御する処理
     void HandleBatteryHighlight()
     {
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
@@ -193,7 +206,6 @@ public class player : MonoBehaviour
             hitBattery = hit.collider.GetComponent<BatteryItem>();
         }
 
-        // 前に見ていたバッテリーと異なるなら、アウトラインを切り替える
         if (currentBatteryItem != hitBattery)
         {
             if (currentBatteryItem != null)
@@ -216,21 +228,69 @@ public class player : MonoBehaviour
     {
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
         RaycastHit hit;
-        bool canInteract = false;
+        string detectedTag = null;
 
         if (Physics.Raycast(ray, out hit, interactRange))
         {
-            if (hit.collider.GetComponent<BatteryItem>() != null ||
-                hit.collider.GetComponent<OpenDoor>() != null ||
-                hit.collider.CompareTag("TP"))
+            if (hit.collider.GetComponent<BatteryItem>() != null)
             {
-                canInteract = true;
+                detectedTag = "Battery";
+            }
+            else if (hit.collider.GetComponent<OpenDoor>() != null)
+            {
+                detectedTag = "Door";
+            }
+            else if (hit.collider.CompareTag("TP"))
+            {
+                detectedTag = "TP";
+            }
+            else
+            {
+                detectedTag = hit.collider.tag;
             }
         }
 
-        if (handIndicator != null)
+        foreach (var entry in handIndicatorsByTag)
         {
-            handIndicator.SetActive(canInteract);
+            if (entry.indicator != null)
+            {
+                entry.indicator.SetActive(entry.tag == detectedTag);
+            }
+        }
+    }
+
+    void HandleTMPIndicator()
+    {
+        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+        RaycastHit hit;
+        string detectedTag = null;
+
+        if (Physics.Raycast(ray, out hit, interactRange))
+        {
+            if (hit.collider.GetComponent<BatteryItem>() != null)
+            {
+                detectedTag = "Battery";
+            }
+            else if (hit.collider.GetComponent<OpenDoor>() != null)
+            {
+                detectedTag = "Door";
+            }
+            else if (hit.collider.CompareTag("TP"))
+            {
+                detectedTag = "TP";
+            }
+            else
+            {
+                detectedTag = hit.collider.tag;
+            }
+        }
+
+        foreach (var entry in tmpIndicatorsByTag)
+        {
+            if (entry.indicator != null)
+            {
+                entry.indicator.SetActive(entry.tag == detectedTag);
+            }
         }
     }
 }

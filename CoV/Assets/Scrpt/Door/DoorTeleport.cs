@@ -1,15 +1,17 @@
 ﻿using UnityEngine;
 
-public class DoorTeleportToggle : MonoBehaviour
+public class DoorTeleport : MonoBehaviour
 {
-    public Transform player;              // プレイヤーのTransform（CharacterControllerがついてるオブジェクト）
-    public Transform teleportTarget;      // ワープ先のTransform
-    public float activationDistance = 0.5f; // ドアに近づいたときだけ反応
+    public Transform player;
+    public Transform teleportTarget;
+    public float activationDistance = 0.5f;
+    public float teleportCooldown = 1.5f; //  クールタイム（秒）
 
     private Vector3 originalPosition;
     private Quaternion originalRotation;
     private bool isTeleported = false;
     private CharacterController controller;
+    private float lastTeleportTime = -Mathf.Infinity;
 
     void Start()
     {
@@ -20,8 +22,27 @@ public class DoorTeleportToggle : MonoBehaviour
     {
         float distance = Vector3.Distance(player.position, transform.position);
 
-        if (distance <= activationDistance && Input.GetKeyDown(KeyCode.E))
+        // ドアを見ているかどうかを判定（テレポートを防ぐため）
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        RaycastHit hit;
+        bool isLookingAtDoor = false;
+
+        if (Physics.Raycast(ray, out hit, 3f))
         {
+            if (hit.collider.GetComponent<OpenDoor>() != null)
+            {
+                isLookingAtDoor = true;
+            }
+        }
+
+        // クールタイム判定とドア優先判定
+        if (distance <= activationDistance &&
+            Input.GetKeyDown(KeyCode.E) &&
+            !isLookingAtDoor &&
+            Time.time - lastTeleportTime >= teleportCooldown)
+        {
+            lastTeleportTime = Time.time;
+
             if (!isTeleported)
             {
                 originalPosition = player.position;
@@ -44,7 +65,6 @@ public class DoorTeleportToggle : MonoBehaviour
                 isTeleported = false;
             }
 
-            // ✅ TP状態を VisionManager に通知
             if (VisionManager.Instance != null)
                 VisionManager.Instance.IsTeleporting = isTeleported;
         }
