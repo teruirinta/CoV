@@ -5,7 +5,7 @@ public class DoorTeleport : MonoBehaviour
     public Transform player;
     public Transform teleportTarget;
     public float activationDistance = 0.5f;
-    public float teleportCooldown = 1.5f; //  クールタイム（秒）
+    public float teleportCooldown = 1.5f; // クールタイム（秒）
 
     private Vector3 originalPosition;
     private Quaternion originalRotation;
@@ -48,22 +48,25 @@ public class DoorTeleport : MonoBehaviour
                 originalPosition = player.position;
                 originalRotation = player.rotation;
 
-                if (controller != null) controller.enabled = false;
+                if (controller != null) controller.enabled = false; // CharacterControllerを無効化
+
                 player.position = teleportTarget.position;
                 player.rotation = teleportTarget.rotation;
-                if (controller != null) controller.enabled = true;
 
                 isTeleported = true;
             }
             else
             {
                 if (controller != null) controller.enabled = false;
+
                 player.position = originalPosition;
                 player.rotation = originalRotation;
-                if (controller != null) controller.enabled = true;
 
                 isTeleported = false;
             }
+
+            // テレポート状態に応じてCharacterControllerを切り替え
+            if (controller != null) controller.enabled = !isTeleported;
 
             if (VisionManager.Instance != null)
                 VisionManager.Instance.IsTeleporting = isTeleported;
