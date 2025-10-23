@@ -56,6 +56,8 @@ public class VisionManager : MonoBehaviour
 
     void HandleInput()
     {
+        if (IsTeleporting) return; // TP中は視界切り替えを無効化
+
         if (Input.GetButtonDown("Fire3") || Input.GetKeyDown(KeyCode.Alpha1)) // B or 1
         {
             TryToggleVision(VisionType.NightScope);
