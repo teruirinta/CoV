@@ -47,11 +47,21 @@ public class player : MonoBehaviour
     private BatteryItem currentBatteryItem;
     private float interactRange = 3f;
 
+    // 🧱 追加: カメラ衝突回避設定
+    [Header("カメラ衝突設定")]
+    public LayerMask wallMask;        // 壁レイヤーを指定
+    public float cameraCollisionRadius = 0.2f;
+    public float cameraAdjustSpeed = 10f;
+    private Vector3 defaultCameraLocalPos;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        if (cameraTransform != null)
+            defaultCameraLocalPos = cameraTransform.localPosition;
     }
 
     void Update()
@@ -65,6 +75,7 @@ public class player : MonoBehaviour
         HandleBatteryHighlight();
         HandleHandIndicator();
         HandleTMPIndicator();
+        HandleCameraCollision(); // ✅ カメラ衝突処理を追加
     }
 
     void HandleVisionInversion()
@@ -292,5 +303,26 @@ public class player : MonoBehaviour
                 entry.indicator.SetActive(entry.tag == detectedTag);
             }
         }
+    }
+
+    // 🧱 カメラの透け防止処理
+    void HandleCameraCollision()
+    {
+        if (cameraTransform == null) return;
+
+        Vector3 desiredPos = defaultCameraLocalPos;
+        Vector3 worldPos = transform.TransformPoint(defaultCameraLocalPos);
+
+        // カメラが壁に近づきすぎたら押し戻す
+        if (Physics.CheckSphere(worldPos, cameraCollisionRadius, wallMask))
+        {
+            desiredPos = defaultCameraLocalPos - new Vector3(0, 0, 0.05f);
+        }
+
+        cameraTransform.localPosition = Vector3.Lerp(
+            cameraTransform.localPosition,
+            desiredPos,
+            Time.deltaTime * cameraAdjustSpeed
+        );
     }
 }
