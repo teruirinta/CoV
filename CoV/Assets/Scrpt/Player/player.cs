@@ -44,12 +44,21 @@ public class player : MonoBehaviour
     [Header("インタラクト可能時のTMP表示")]
     public TMPIndicatorByTag[] tmpIndicatorsByTag;
 
+    [System.Serializable]
+    public class PanelByTag
+    {
+        public string tag;
+        public GameObject panel;
+    }
+
+    [Header("インタラクト可能時のパネル表示")]
+    public PanelByTag[] panelsByTag;
+
     private BatteryItem currentBatteryItem;
     private float interactRange = 3f;
 
-    // 🧱 追加: カメラ衝突回避設定
     [Header("カメラ衝突設定")]
-    public LayerMask wallMask;        // 壁レイヤーを指定
+    public LayerMask wallMask;
     public float cameraCollisionRadius = 0.2f;
     public float cameraAdjustSpeed = 10f;
     private Vector3 defaultCameraLocalPos;
@@ -73,9 +82,8 @@ public class player : MonoBehaviour
         HandleWallVisibility();
         HandleSpotlight();
         HandleBatteryHighlight();
-        HandleHandIndicator();
-        HandleTMPIndicator();
-        HandleCameraCollision(); // ✅ カメラ衝突処理を追加
+        HandleIndicators(); // ✅ 統合された表示処理
+        HandleCameraCollision();
     }
 
     void HandleVisionInversion()
@@ -98,19 +106,8 @@ public class player : MonoBehaviour
 
     void HandleMove()
     {
-        float horizontal;
-        float vertical;
-
-        if (Input.GetJoystickNames().Length > 0)
-        {
-            horizontal = Input.GetAxis("Horizontal");
-            vertical = Input.GetAxis("Vertical");
-        }
-        else
-        {
-            horizontal = Input.GetAxisRaw("Horizontal");
-            vertical = Input.GetAxisRaw("Vertical");
-        }
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
 
         Vector3 move = cameraTransform.forward * vertical + cameraTransform.right * horizontal;
         move.y = 0f;
@@ -142,10 +139,7 @@ public class player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.JoystickButton0))
         {
-            if (currentBatteryItem != null)
-            {
-                return;
-            }
+            if (currentBatteryItem != null) return;
 
             Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
             RaycastHit hit;
@@ -167,33 +161,27 @@ public class player : MonoBehaviour
 
         bool isNightScope = (VisionManager.Instance.CurrentVision == VisionType.NightScope);
 
-        if (wallsToDisableInNightScope != null)
+        foreach (GameObject wall in wallsToDisableInNightScope)
         {
-            foreach (GameObject wall in wallsToDisableInNightScope)
+            if (wall != null)
             {
-                if (wall != null)
-                {
-                    Renderer renderer = wall.GetComponent<Renderer>();
-                    if (renderer != null) renderer.enabled = !isNightScope;
+                Renderer renderer = wall.GetComponent<Renderer>();
+                if (renderer != null) renderer.enabled = !isNightScope;
 
-                    Collider collider = wall.GetComponent<Collider>();
-                    if (collider != null) collider.enabled = !isNightScope;
-                }
+                Collider collider = wall.GetComponent<Collider>();
+                if (collider != null) collider.enabled = !isNightScope;
             }
         }
 
-        if (wallsToEnableInNightScope != null)
+        foreach (GameObject wall in wallsToEnableInNightScope)
         {
-            foreach (GameObject wall in wallsToEnableInNightScope)
+            if (wall != null)
             {
-                if (wall != null)
-                {
-                    Renderer renderer = wall.GetComponent<Renderer>();
-                    if (renderer != null) renderer.enabled = isNightScope;
+                Renderer renderer = wall.GetComponent<Renderer>();
+                if (renderer != null) renderer.enabled = isNightScope;
 
-                    Collider collider = wall.GetComponent<Collider>();
-                    if (collider != null) collider.enabled = isNightScope;
-                }
+                Collider collider = wall.GetComponent<Collider>();
+                if (collider != null) collider.enabled = isNightScope;
             }
         }
     }
@@ -235,77 +223,51 @@ public class player : MonoBehaviour
         }
     }
 
-    void HandleHandIndicator()
+    // ✅ タグ検出処理の共通化
+    string DetectInteractTag()
     {
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
         RaycastHit hit;
-        string detectedTag = null;
 
         if (Physics.Raycast(ray, out hit, interactRange))
         {
-            if (hit.collider.GetComponent<BatteryItem>() != null)
-            {
-                detectedTag = "Battery";
-            }
-            else if (hit.collider.GetComponent<OpenDoor>() != null)
-            {
-                detectedTag = "Door";
-            }
-            else if (hit.collider.CompareTag("TP"))
-            {
-                detectedTag = "TP";
-            }
-            else
-            {
-                detectedTag = hit.collider.tag;
-            }
+            if (hit.collider.GetComponent<BatteryItem>() != null) return "Battery";
+            if (hit.collider.GetComponent<OpenDoor>() != null) return "Door";
+            if (hit.collider.CompareTag("TP")) return "TP";
+            return hit.collider.tag;
         }
 
-        foreach (var entry in handIndicatorsByTag)
+        return null;
+    }
+
+    // ✅ 表示切り替え処理の共通化
+    void UpdateIndicators<T>(T[] indicators, string detectedTag) where T : class
+    {
+        foreach (var entry in indicators)
         {
-            if (entry.indicator != null)
+            var tagProp = entry.GetType().GetField("tag");
+            var objProp = entry.GetType().GetField("indicator") ?? entry.GetType().GetField("panel");
+
+            if (tagProp != null && objProp != null)
             {
-                entry.indicator.SetActive(entry.tag == detectedTag);
+                string tag = tagProp.GetValue(entry) as string;
+                GameObject go = objProp.GetValue(entry) as GameObject;
+
+                if (go != null)
+                    go.SetActive(tag == detectedTag);
             }
         }
     }
 
-    void HandleTMPIndicator()
+    // ✅ 統合された表示処理
+    void HandleIndicators()
     {
-        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-        RaycastHit hit;
-        string detectedTag = null;
-
-        if (Physics.Raycast(ray, out hit, interactRange))
-        {
-            if (hit.collider.GetComponent<BatteryItem>() != null)
-            {
-                detectedTag = "Battery";
-            }
-            else if (hit.collider.GetComponent<OpenDoor>() != null)
-            {
-                detectedTag = "Door";
-            }
-            else if (hit.collider.CompareTag("TP"))
-            {
-                detectedTag = "TP";
-            }
-            else
-            {
-                detectedTag = hit.collider.tag;
-            }
-        }
-
-        foreach (var entry in tmpIndicatorsByTag)
-        {
-            if (entry.indicator != null)
-            {
-                entry.indicator.SetActive(entry.tag == detectedTag);
-            }
-        }
+        string tag = DetectInteractTag();
+        UpdateIndicators(handIndicatorsByTag, tag);
+        UpdateIndicators(tmpIndicatorsByTag, tag);
+        UpdateIndicators(panelsByTag, tag);
     }
 
-    // 🧱 カメラの透け防止処理
     void HandleCameraCollision()
     {
         if (cameraTransform == null) return;
@@ -313,7 +275,6 @@ public class player : MonoBehaviour
         Vector3 desiredPos = defaultCameraLocalPos;
         Vector3 worldPos = transform.TransformPoint(defaultCameraLocalPos);
 
-        // カメラが壁に近づきすぎたら押し戻す
         if (Physics.CheckSphere(worldPos, cameraCollisionRadius, wallMask))
         {
             desiredPos = defaultCameraLocalPos - new Vector3(0, 0, 0.05f);

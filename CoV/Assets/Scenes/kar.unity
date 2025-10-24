@@ -549,6 +549,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 700874558}
     - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: panelsByTag.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: wallsToHide.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -573,12 +577,36 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 698796239}
     - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: panelsByTag.Array.data[0].tag
+      value: Door
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: panelsByTag.Array.data[1].tag
+      value: TP
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: panelsByTag.Array.data[2].tag
+      value: Battery
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: tmpIndicatorsByTag.Array.size
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: handIndicatorsByTag.Array.size
-      value: 3
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: panelsByTag.Array.data[0].panel
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: panelsByTag.Array.data[1].panel
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: panelsByTag.Array.data[2].panel
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: tmpIndicatorsByTag.Array.data[0].tag
@@ -606,6 +634,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: handIndicatorsByTag.Array.data[2].tag
+      value: Battery
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: handIndicatorsByTag.Array.data[3].tag
+      value: Door
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: handIndicatorsByTag.Array.data[4].tag
+      value: TP
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: handIndicatorsByTag.Array.data[5].tag
       value: Battery
       objectReference: {fileID: 0}
     - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
@@ -648,6 +688,18 @@ PrefabInstance:
       propertyPath: handIndicatorsByTag.Array.data[2].indicator
       value: 
       objectReference: {fileID: 1547480760}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: handIndicatorsByTag.Array.data[3].indicator
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: handIndicatorsByTag.Array.data[4].indicator
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: handIndicatorsByTag.Array.data[5].indicator
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8093686759717891466, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: m_Name
       value: Player
@@ -3082,7 +3134,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 138.40002, y: -94}
+  m_AnchoredPosition: {x: 266.40002, y: -94}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &813312796
@@ -3107,8 +3159,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u62FE\u3046"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 69de12e4d32962f44b868d5f04809cd2, type: 2}
-  m_sharedMaterial: {fileID: -2359654972203200180, guid: 69de12e4d32962f44b868d5f04809cd2, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5040efa9c2db2d443843ddb3230a55ca, type: 2}
+  m_sharedMaterial: {fileID: -6339496242072769530, guid: 5040efa9c2db2d443843ddb3230a55ca, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3891,7 +3943,7 @@ GameObject:
   - component: {fileID: 1059748014}
   - component: {fileID: 1059748013}
   m_Layer: 5
-  m_Name: RawImage
+  m_Name: E
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3948,7 +4000,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -100}
+  m_AnchoredPosition: {x: 128, y: -100}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1072755836
@@ -4799,7 +4851,7 @@ GameObject:
   - component: {fileID: 1436953989}
   - component: {fileID: 1436953988}
   m_Layer: 5
-  m_Name: RawImage (1)
+  m_Name: E
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4821,7 +4873,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -100}
+  m_AnchoredPosition: {x: 128, y: -100}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1436953988
@@ -5016,7 +5068,7 @@ GameObject:
   - component: {fileID: 1547480762}
   - component: {fileID: 1547480761}
   m_Layer: 5
-  m_Name: RawImage (2)
+  m_Name: E
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5035,7 +5087,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5073,7 +5125,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -100}
+  m_AnchoredPosition: {x: 128, y: -100}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1559437477 stripped
@@ -5227,7 +5279,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 138.40002, y: -94}
+  m_AnchoredPosition: {x: 266.40002, y: -94}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1678510452
@@ -5252,8 +5304,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u96A0\u308C\u308B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 69de12e4d32962f44b868d5f04809cd2, type: 2}
-  m_sharedMaterial: {fileID: -2359654972203200180, guid: 69de12e4d32962f44b868d5f04809cd2, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5040efa9c2db2d443843ddb3230a55ca, type: 2}
+  m_sharedMaterial: {fileID: -6339496242072769530, guid: 5040efa9c2db2d443843ddb3230a55ca, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6143,7 +6195,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 138.4, y: -94}
+  m_AnchoredPosition: {x: 266.4, y: -94}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2052724272
@@ -6168,8 +6220,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u958B\u304F"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 69de12e4d32962f44b868d5f04809cd2, type: 2}
-  m_sharedMaterial: {fileID: -2359654972203200180, guid: 69de12e4d32962f44b868d5f04809cd2, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5040efa9c2db2d443843ddb3230a55ca, type: 2}
+  m_sharedMaterial: {fileID: -6339496242072769530, guid: 5040efa9c2db2d443843ddb3230a55ca, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
