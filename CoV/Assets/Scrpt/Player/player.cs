@@ -63,6 +63,13 @@ public class player : MonoBehaviour
     public float cameraAdjustSpeed = 10f;
     private Vector3 defaultCameraLocalPos;
 
+    [Header("足音設定")]
+    public AudioSource footstepSource;
+    public AudioClip[] footstepClips;
+    public float footstepInterval = 0.5f;
+    private float footstepTimer = 0f;
+
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -121,7 +128,22 @@ public class player : MonoBehaviour
 
         velocity.y += (isUpsideDown ? gravity : -gravity) * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+
+        if (isGrounded && move.magnitude > 0.1f)
+        {
+            footstepTimer -= Time.deltaTime;
+            if (footstepTimer <= 0f)
+            {
+                PlayFootstep();
+                footstepTimer = footstepInterval;
+            }
+        }
+        else
+        {
+            footstepTimer = 0f;
+        }
     }
+
 
     void HandleLook()
     {
@@ -286,4 +308,13 @@ public class player : MonoBehaviour
             Time.deltaTime * cameraAdjustSpeed
         );
     }
+    void PlayFootstep()
+    {
+        if (footstepClips.Length == 0 || footstepSource == null) return;
+
+        int index = Random.Range(0, footstepClips.Length);
+        footstepSource.clip = footstepClips[index];
+        footstepSource.Play();
+    }
+
 }
