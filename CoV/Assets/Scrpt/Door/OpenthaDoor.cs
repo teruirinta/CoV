@@ -18,6 +18,8 @@ public class OpenTheDoor : MonoBehaviour
     private Quaternion leftOpenedRotation;
     private Quaternion rightOpenedRotation;
 
+    public AudioSource doorAudioSource;
+    public AudioClip openSound;
     void Start()
     {
         leftClosedRotation = leftDoor.localRotation;
@@ -42,6 +44,11 @@ public class OpenTheDoor : MonoBehaviour
         if (!isAnimating)
         {
             StartCoroutine(RotateDoors());
+            if (doorAudioSource != null && openSound != null)
+            {
+                doorAudioSource.clip = openSound;
+                doorAudioSource.Play();
+            }
         }
     }
 
