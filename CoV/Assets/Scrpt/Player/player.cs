@@ -66,9 +66,9 @@ public class player : MonoBehaviour
     [Header("足音設定")]
     public AudioSource footstepSource;
     public AudioClip[] footstepClips;
-    public float footstepInterval = 0.5f;
+    public float footstepInterval = 0.8f;
     private float footstepTimer = 0f;
-
+    
 
     void Start()
     {
@@ -89,7 +89,7 @@ public class player : MonoBehaviour
         HandleWallVisibility();
         HandleSpotlight();
         HandleBatteryHighlight();
-        HandleIndicators(); // ✅ 統合された表示処理
+        HandleIndicators();
         HandleCameraCollision();
     }
 
@@ -143,7 +143,6 @@ public class player : MonoBehaviour
             footstepTimer = 0f;
         }
     }
-
 
     void HandleLook()
     {
@@ -245,7 +244,6 @@ public class player : MonoBehaviour
         }
     }
 
-    // ✅ タグ検出処理の共通化
     string DetectInteractTag()
     {
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
@@ -262,7 +260,6 @@ public class player : MonoBehaviour
         return null;
     }
 
-    // ✅ 表示切り替え処理の共通化
     void UpdateIndicators<T>(T[] indicators, string detectedTag) where T : class
     {
         foreach (var entry in indicators)
@@ -281,7 +278,6 @@ public class player : MonoBehaviour
         }
     }
 
-    // ✅ 統合された表示処理
     void HandleIndicators()
     {
         string tag = DetectInteractTag();
@@ -302,19 +298,19 @@ public class player : MonoBehaviour
             desiredPos = defaultCameraLocalPos - new Vector3(0, 0, 0.05f);
         }
 
-        cameraTransform.localPosition = Vector3.Lerp(
-            cameraTransform.localPosition,
-            desiredPos,
-            Time.deltaTime * cameraAdjustSpeed
-        );
+        cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, desiredPos, Time.deltaTime * cameraAdjustSpeed);
     }
+
     void PlayFootstep()
     {
         if (footstepClips.Length == 0 || footstepSource == null) return;
 
-        int index = Random.Range(0, footstepClips.Length);
-        footstepSource.clip = footstepClips[index];
-        footstepSource.Play();
+        if (!footstepSource.isPlaying)
+        {
+            int index = Random.Range(0, footstepClips.Length);
+            footstepSource.pitch = Random.Range(0.5f, 1.5f);
+            footstepSource.clip = footstepClips[index];
+            footstepSource.Play();
+        }
     }
-
 }

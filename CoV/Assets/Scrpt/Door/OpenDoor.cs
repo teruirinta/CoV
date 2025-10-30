@@ -11,6 +11,9 @@ public class OpenDoor : MonoBehaviour
     private Quaternion closedRotation;
     private Quaternion openedRotation;
 
+    public AudioSource doorAudioSource;
+    public AudioClip openSound;
+
     void Start()
     {
         closedRotation = transform.rotation;
@@ -22,6 +25,11 @@ public class OpenDoor : MonoBehaviour
         if (!isAnimating)
         {
             StartCoroutine(RotateDoor());
+            if (doorAudioSource != null && openSound != null)
+            {
+                doorAudioSource.clip = openSound;
+                doorAudioSource.Play();
+            }
         }
     }
 
