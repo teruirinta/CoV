@@ -16,7 +16,7 @@ public class BatteryItem : MonoBehaviour
     private QuickOutline outline;
 
     private bool isHighlighted = false; // 現在アウトラインが表示中かどうか
-    public float lifetime;
+    
     void Start()
     {
         visionManager = VisionManager.Instance;
@@ -29,7 +29,7 @@ public class BatteryItem : MonoBehaviour
 
         outline = GetComponent<QuickOutline>();
         outline.enabled = false; // 初期状態では非表示
-        Destroy(gameObject, lifetime);
+        
     }
 
     void Update()
