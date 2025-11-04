@@ -1,46 +1,63 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Collider))]
 public class DoorController : MonoBehaviour
 {
     [Header("設定")]
-    public string requiredKeyId = "EscapeKey"; // この扉を開けるのに必要な鍵のID
-    public bool consumeKeyOnOpen = true;       // 扉を開けたときに鍵を消費するか
-    public float openDuration = 1.0f;          // 開くまでの時間
-    public Animator doorAnimator;              // 開閉アニメーションがある場合は割り当て
+    public string requiredKeyId = "EscapeKey";
+    public bool consumeKeyOnOpen = true;
+    public float openDuration = 1.0f;
+    public Animator doorAnimator;
 
-    private bool isOpen = false;               // 扉が開いているかどうか
+    private bool isOpen = false;
+    private bool playerInRange = false;
+    private PlayerInventory currentPlayer;
 
     private void Reset()
     {
-        // 自動で Trigger に設定
         var col = GetComponent<Collider>();
         col.isTrigger = true;
     }
 
+    private void Update()
+    {
+        if (playerInRange && !isOpen && Input.GetKeyDown(KeyCode.E))
+        {
+            if (currentPlayer != null && currentPlayer.HasKey &&
+                SaveManager.Instance != null &&
+                SaveManager.Instance.IsKeySaved(requiredKeyId))
+            {
+                StartCoroutine(OpenDoor(currentPlayer));
+            }
+            else
+            {
+                Debug.Log("[Door] 鍵が必要です。");
+            }
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        // 既に開いているなら何もしない
-        if (isOpen) return;
-
-        // Player 以外は無視
         if (!other.CompareTag("Player")) return;
 
-        // PlayerInventory を取得
-        var inv = other.GetComponent<PlayerInventory>();
-        if (inv == null) return;
-
-        // 鍵を持っていて、かつセーブに記録されているかチェック
-        if (inv.HasKey && SaveManager.Instance != null && SaveManager.Instance.IsKeySaved(requiredKeyId))
+        currentPlayer = other.GetComponent<PlayerInventory>();
+        if (currentPlayer != null)
         {
-            // 鍵があるので開ける
-            StartCoroutine(OpenDoor(inv));
+            playerInRange = true;
+            Debug.Log("[Door] 扉の前に来ました。Eキーで開けられます。");
         }
-        else
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+
+        if (other.GetComponent<PlayerInventory>() == currentPlayer)
         {
-            // 鍵がない場合のフィードバック（音やメッセージを出しても良い）
-            Debug.Log("[Door] 鍵が必要です。");
+            playerInRange = false;
+            currentPlayer = null;
         }
     }
 
@@ -49,25 +66,20 @@ public class DoorController : MonoBehaviour
         isOpen = true;
         Debug.Log("[Door] 扉を開けます。");
 
-        // アニメーション再生
         if (doorAnimator) doorAnimator.SetTrigger("Open");
 
-        // 開くまで待つ
         yield return new WaitForSeconds(openDuration);
 
-        // 鍵を使う設定なら消費
         if (consumeKeyOnOpen)
         {
             inv.UseKey();
             SaveManager.Instance?.ConsumeKey(requiredKeyId);
         }
 
-        // 扉を物理的に開放（コライダー無効化など）
         var col = GetComponent<Collider>();
         if (col) col.enabled = false;
 
-        // ゲームクリア処理を呼ぶ（例：ステージ遷移）
-        GameController.Instance?.OnPlayerEscaped();
+        SceneManager.LoadScene("Goal");
 
         Debug.Log("[Door] 扉が開きました。");
     }
