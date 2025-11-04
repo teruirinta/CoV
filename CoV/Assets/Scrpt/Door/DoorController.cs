@@ -79,7 +79,7 @@ public class DoorController : MonoBehaviour
         var col = GetComponent<Collider>();
         if (col) col.enabled = false;
 
-        SceneManager.LoadScene("Goal");
+        //SceneManager.LoadScene("Goal");
 
         Debug.Log("[Door] ”à‚ªŠJ‚«‚Ü‚µ‚½B");
     }
