@@ -308,7 +308,7 @@ public class player : MonoBehaviour
         if (!footstepSource.isPlaying)
         {
             int index = Random.Range(0, footstepClips.Length);
-            footstepSource.pitch = Random.Range(0.5f, 1.5f);
+            footstepSource.pitch = Random.Range(0.9f, 1.2f);
             footstepSource.clip = footstepClips[index];
             footstepSource.Play();
         }
