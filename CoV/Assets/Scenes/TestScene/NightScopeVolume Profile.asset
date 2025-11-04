@@ -1,5 +1,33 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8200500311455848634
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66f335fb1ffd8684294ad653bf1c7564, type: 3}
+  m_Name: ColorAdjustments
+  m_EditorClassIdentifier: 
+  active: 1
+  postExposure:
+    m_OverrideState: 1
+    m_Value: 2.5
+  contrast:
+    m_OverrideState: 1
+    m_Value: 40
+  colorFilter:
+    m_OverrideState: 1
+    m_Value: {r: 0, g: 0.509434, b: 0.28161567, a: 1}
+  hueShift:
+    m_OverrideState: 0
+    m_Value: 0
+  saturation:
+    m_OverrideState: 1
+    m_Value: -30
 --- !u!114 &-4738945720735185551
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -72,34 +100,6 @@ MonoBehaviour:
   dirtIntensity:
     m_OverrideState: 0
     m_Value: 0
---- !u!114 &-3331481961961705359
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66f335fb1ffd8684294ad653bf1c7564, type: 3}
-  m_Name: ColorAdjustments
-  m_EditorClassIdentifier: 
-  active: 1
-  postExposure:
-    m_OverrideState: 1
-    m_Value: 2.5
-  contrast:
-    m_OverrideState: 1
-    m_Value: -60
-  colorFilter:
-    m_OverrideState: 1
-    m_Value: {r: 0, g: 0.3967553, b: 0.2581829, a: 1}
-  hueShift:
-    m_OverrideState: 0
-    m_Value: 0
-  saturation:
-    m_OverrideState: 1
-    m_Value: 0
 --- !u!114 &-1946217650385599910
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -141,7 +141,7 @@ MonoBehaviour:
   m_Name: NightScopeVolume Profile
   m_EditorClassIdentifier: 
   components:
-  - {fileID: -3331481961961705359}
   - {fileID: -3828282646857258492}
   - {fileID: -1946217650385599910}
   - {fileID: -4738945720735185551}
+  - {fileID: -8200500311455848634}

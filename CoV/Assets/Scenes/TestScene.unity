@@ -639,7 +639,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &991588191351299795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1726,6 +1726,15 @@ MonoBehaviour:
   wallsToDisableInNightScope: []
   handIndicatorsByTag: []
   tmpIndicatorsByTag: []
+  panelsByTag: []
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 0
+  cameraCollisionRadius: 0.2
+  cameraAdjustSpeed: 10
+  footstepSource: {fileID: 0}
+  footstepClips: []
+  footstepInterval: 0.8
 --- !u!23 &6612543460427488085
 MeshRenderer:
   m_ObjectHideFlags: 0
