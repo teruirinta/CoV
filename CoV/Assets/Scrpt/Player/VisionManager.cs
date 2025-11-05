@@ -58,15 +58,15 @@ public class VisionManager : MonoBehaviour
     {
         if (IsTeleporting) return; // TP中は視界切り替えを無効化
 
-        if (Input.GetButtonDown("Fire3") || Input.GetKeyDown(KeyCode.Alpha1)) // B or 1
+        if (Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.Alpha1)) // B or 1
         {
             TryToggleVision(VisionType.NightScope);
         }
-        else if (Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.Alpha2)) // X or 2
+        else if (Input.GetButtonDown("Fire2") || Input.GetKeyDown(KeyCode.Alpha2)) // X or 2
         {
             TryToggleVision(VisionType.Inverted);
         }
-        else if (Input.GetButtonDown("Fire2") || Input.GetKeyDown(KeyCode.Alpha3)) // Y or 3
+        else if (Input.GetButtonDown("Fire3") || Input.GetKeyDown(KeyCode.Alpha3)) // Y or 3
         {
             TryToggleVision(VisionType.Thermal);
         }
