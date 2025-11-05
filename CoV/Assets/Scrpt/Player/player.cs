@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using UnityEngine.SceneManagement;
 [RequireComponent(typeof(CharacterController))]
 public class player : MonoBehaviour
 {
@@ -90,6 +90,7 @@ public class player : MonoBehaviour
         HandleBatteryHighlight();
         HandleIndicators();
         HandleCameraCollision();
+        HandleEnemyCollision();
     }
 
     void HandleVisionInversion()
@@ -304,6 +305,18 @@ public class player : MonoBehaviour
             footstepSource.pitch = Random.Range(0.9f, 1.2f);
             footstepSource.clip = footstepClips[index];
             footstepSource.Play();
+        }
+    }
+
+    void HandleEnemyCollision()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, 0.5f);
+        foreach (Collider hit in hits)
+        {
+            if (hit.CompareTag("Enemy"))
+            {
+                SceneManager.LoadScene("GameOver");
+            }
         }
     }
 }

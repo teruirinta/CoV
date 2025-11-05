@@ -1,12 +1,28 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class aEnemy : MonoBehaviour
 {
+    [Header("視界表示")]
+    public GameObject parentPart; // 通常視界で表示
+    public GameObject childPart;  // ナイトスコープで表示
 
-    public GameObject parentPart; // �ʏ펋�E�ŕ\��
-    public GameObject childPart;  // �i�C�g�X�R�[�v�ŕ\��
-    public Transform player;      // �v���C���[��Transform
-    public float detectionRange; // �v���C���[���߂��ɂ���Ɣ��肷�鋗��
+    [Header("プレイヤー関連")]
+    public Transform player;      // プレイヤーのTransform
+    public float detectionRange;  // プレイヤーが近くにいると判定する距離
+
+    [Header("移動ルート")]
+    public Transform[] waypoints; // 敵が移動するルート（ウェイポイント）
+    public float moveSpeed;       // 移動速度
+    public float chaseSpeed;      // プレイヤーを追いかけるときの速度
+    public float waypointThreshold = 0.5f; // 次のウェイポイントに切り替える距離
+    private int currentWaypointIndex = 0;
+
+    [Header("足音設定")]
+    public AudioSource footstepAudio;       // 足音用AudioSource
+    public float footstepTriggerRange;      // 足音を鳴らす最大距離
+    public float maxFootstepVolume;         // 足音の最大音量
+    public float normalFootstepPitch;       // 通常時のピッチ
+    public float chaseFootstepPitch;        // 追跡時のピッチ
 
     void Update()
     {
@@ -15,10 +31,20 @@ public class aEnemy : MonoBehaviour
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
         bool isPlayerNearby = distanceToPlayer <= detectionRange;
 
+        HandleFootstepAudio(distanceToPlayer);
+
+        if (isPlayerNearby)
+        {
+            ChasePlayer();
+        }
+        else
+        {
+            MoveAlongRoute();
+        }
+
         switch (VisionManager.Instance.CurrentVision)
         {
             case VisionType.Normal:
-                // �v���C���[���߂��ɂ�����q�����\��
                 SetVisibility(parentVisible: true, childVisible: isPlayerNearby);
                 break;
 
@@ -29,6 +55,62 @@ public class aEnemy : MonoBehaviour
             default:
                 SetVisibility(parentVisible: false, childVisible: false);
                 break;
+        }
+    }
+
+    void MoveAlongRoute()
+    {
+        if (waypoints == null || waypoints.Length == 0) return;
+
+        Transform targetWaypoint = waypoints[currentWaypointIndex];
+        Vector3 direction = (targetWaypoint.position - transform.position).normalized;
+        transform.position += direction * moveSpeed * Time.deltaTime;
+
+        float distanceToWaypoint = Vector3.Distance(transform.position, targetWaypoint.position);
+        if (distanceToWaypoint < waypointThreshold)
+        {
+            currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
+        }
+
+        if (direction != Vector3.zero)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), 5f * Time.deltaTime);
+        }
+    }
+
+    void ChasePlayer()
+    {
+        Vector3 direction = (player.position - transform.position).normalized;
+        transform.position += direction * chaseSpeed * Time.deltaTime;
+
+        if (direction != Vector3.zero)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), 5f * Time.deltaTime);
+        }
+    }
+
+    void HandleFootstepAudio(float distanceToPlayer)
+    {
+        if (footstepAudio == null) return;
+
+        if (distanceToPlayer <= footstepTriggerRange)
+        {
+            float volumeScale = 1f - (distanceToPlayer / footstepTriggerRange);
+            footstepAudio.volume = Mathf.Clamp(volumeScale * maxFootstepVolume, 0f, maxFootstepVolume);
+            footstepAudio.pitch = distanceToPlayer <= detectionRange ? chaseFootstepPitch : normalFootstepPitch;
+
+            if (!footstepAudio.isPlaying)
+            {
+                footstepAudio.loop = true;
+                footstepAudio.Play();
+            }
+        }
+        else
+        {
+            if (footstepAudio.isPlaying)
+            {
+                footstepAudio.Stop();
+            }
         }
     }
 
