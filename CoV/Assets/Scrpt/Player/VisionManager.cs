@@ -4,9 +4,9 @@ using UnityEngine;
 public enum VisionType
 {
     Normal,
-    NightScope, // A視界：暗視
-    Inverted,   // B視界：上下反転
-    Thermal     // C視界：サーモ
+    NightScope, // B視界：暗視
+    Inverted,   // Y視界：上下反転
+    Thermal     // X視界：サーモ
 }
 
 public class VisionManager : MonoBehaviour
@@ -58,15 +58,18 @@ public class VisionManager : MonoBehaviour
     {
         if (IsTeleporting) return; // TP中は視界切り替えを無効化
 
-        if (Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.Alpha1)) // B or 1
+        // --- Bボタン or キー1：ナイトスコープ視界 ---
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.JoystickButton1))
         {
             TryToggleVision(VisionType.NightScope);
         }
-        else if (Input.GetButtonDown("Fire2") || Input.GetKeyDown(KeyCode.Alpha2)) // X or 2
+        // --- Yボタン or キー2：反転視界 ---
+        else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.JoystickButton3))
         {
             TryToggleVision(VisionType.Inverted);
         }
-        else if (Input.GetButtonDown("Fire3") || Input.GetKeyDown(KeyCode.Alpha3)) // Y or 3
+        // --- Xボタン or キー3：サーモ視界 ---
+        else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.JoystickButton2))
         {
             TryToggleVision(VisionType.Thermal);
         }
