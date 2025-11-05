@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem; // ← 新Input System対応
 
 [RequireComponent(typeof(CharacterController))]
 public class player : MonoBehaviour
@@ -10,7 +9,7 @@ public class player : MonoBehaviour
 
     [Header("カメラ設定")]
     public Transform cameraTransform;
-    public float lookSpeed = 100f;
+    public float lookSpeed = 2f;
     public float cameraPitchLimit = 80f;
 
     private CharacterController controller;
@@ -18,10 +17,45 @@ public class player : MonoBehaviour
     private float cameraPitch = 0f;
     private bool isUpsideDown = false;
 
-    [Header("ナイトスコープ設定")]
+    [Header("ナイトスコープ時に表示する壁")]
     public GameObject[] wallsToEnableInNightScope;
-    public GameObject[] wallsToDisableInNightScope;
     public Light cameraSpotlight;
+
+    [Header("ナイトスコープ時に非表示にする壁")]
+    public GameObject[] wallsToDisableInNightScope;
+
+    [System.Serializable]
+    public class HandIndicatorByTag
+    {
+        public string tag;
+        public GameObject indicator;
+    }
+
+    [Header("インタラクト可能時の手表示")]
+    public HandIndicatorByTag[] handIndicatorsByTag;
+
+    [System.Serializable]
+    public class TMPIndicatorByTag
+    {
+        public string tag;
+        public GameObject indicator;
+    }
+
+    [Header("インタラクト可能時のTMP表示")]
+    public TMPIndicatorByTag[] tmpIndicatorsByTag;
+
+    [System.Serializable]
+    public class PanelByTag
+    {
+        public string tag;
+        public GameObject panel;
+    }
+
+    [Header("インタラクト可能時のパネル表示")]
+    public PanelByTag[] panelsByTag;
+
+    private BatteryItem currentBatteryItem;
+    private float interactRange = 3f;
 
     [Header("カメラ衝突設定")]
     public LayerMask wallMask;
@@ -34,14 +68,6 @@ public class player : MonoBehaviour
     public AudioClip[] footstepClips;
     public float footstepInterval = 0.8f;
     private float footstepTimer = 0f;
-
-    private BatteryItem currentBatteryItem;
-    private float interactRange = 3f;
-
-    // 新Input System入力値保持
-    private Vector2 moveInput;
-    private Vector2 lookInput;
-    private bool interactPressed;
 
     void Start()
     {
@@ -62,30 +88,14 @@ public class player : MonoBehaviour
         HandleWallVisibility();
         HandleSpotlight();
         HandleBatteryHighlight();
+        HandleIndicators();
         HandleCameraCollision();
     }
 
-    // ===== 新Input System入力イベント =====
-    public void OnMove(InputAction.CallbackContext context)
-    {
-        moveInput = context.ReadValue<Vector2>();
-    }
-
-    public void OnLook(InputAction.CallbackContext context)
-    {
-        lookInput = context.ReadValue<Vector2>();
-    }
-
-    public void OnInteract(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-            interactPressed = true;
-    }
-
-    // ======== 視点反転処理 ========
     void HandleVisionInversion()
     {
         if (VisionManager.Instance == null) return;
+
         bool shouldBeInverted = (VisionManager.Instance.CurrentVision == VisionType.Inverted);
 
         if (shouldBeInverted != isUpsideDown)
@@ -98,10 +108,13 @@ public class player : MonoBehaviour
         }
     }
 
-    // ======== 移動処理（左スティック + WASD対応）========
     void HandleMove()
     {
-        Vector3 move = cameraTransform.forward * moveInput.y + cameraTransform.right * moveInput.x;
+        // 🎮 Xbox左スティック or WASD 対応
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+
+        Vector3 move = cameraTransform.forward * vertical + cameraTransform.right * horizontal;
         move.y = 0f;
         move.Normalize();
 
@@ -114,7 +127,6 @@ public class player : MonoBehaviour
         velocity.y += (isUpsideDown ? gravity : -gravity) * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
 
-        // 足音
         if (isGrounded && move.magnitude > 0.1f)
         {
             footstepTimer -= Time.deltaTime;
@@ -124,106 +136,152 @@ public class player : MonoBehaviour
                 footstepTimer = footstepInterval;
             }
         }
-        else footstepTimer = 0f;
+        else
+        {
+            footstepTimer = 0f;
+        }
     }
 
-    // ======== カメラ回転処理（マウス & 右スティック）========
+    // 🎮 Xbox右スティック & マウス両対応
     void HandleLook()
     {
-        float lookX = lookInput.x * lookSpeed * Time.deltaTime;
-        float lookY = lookInput.y * lookSpeed * Time.deltaTime;
+        float lookX = 0f;
+        float lookY = 0f;
 
-        cameraPitch = Mathf.Clamp(cameraPitch - lookY, -cameraPitchLimit, cameraPitchLimit);
-        transform.Rotate(Vector3.up * lookX);
+        // マウス入力
+        lookX += Input.GetAxis("Mouse X");
+        lookY += Input.GetAxis("Mouse Y");
+
+        // Xbox右スティック（Input Manager 設定で追加した軸）
+        lookX += Input.GetAxis("RightStickX");
+        lookY -= Input.GetAxis("RightStickY");
+
+        cameraPitch = Mathf.Clamp(cameraPitch - lookY * lookSpeed, -cameraPitchLimit, cameraPitchLimit);
+        transform.Rotate(Vector3.up * lookX * lookSpeed);
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
     }
 
-    // ======== インタラクト処理（Eキー or Aボタン）========
     void HandleInteract()
     {
-        if (!interactPressed) return;
-        interactPressed = false;
-
-        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, 3f))
+        if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.JoystickButton0))
         {
-            var door = hit.collider.GetComponent<OpenDoor>();
-            if (door != null)
+            if (currentBatteryItem != null) return;
+
+            Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 3f))
             {
-                door.ToggleDoor();
+                OpenDoor door = hit.collider.GetComponent<OpenDoor>();
+                if (door != null)
+                {
+                    door.ToggleDoor();
+                }
             }
         }
     }
 
-    // ======== 壁ON/OFF ========
     void HandleWallVisibility()
     {
         if (VisionManager.Instance == null) return;
-
         bool isNightScope = (VisionManager.Instance.CurrentVision == VisionType.NightScope);
 
         foreach (GameObject wall in wallsToDisableInNightScope)
         {
-            if (wall)
+            if (wall != null)
             {
                 var renderer = wall.GetComponent<Renderer>();
-                if (renderer) renderer.enabled = !isNightScope;
+                if (renderer != null) renderer.enabled = !isNightScope;
+
                 var collider = wall.GetComponent<Collider>();
-                if (collider) collider.enabled = !isNightScope;
+                if (collider != null) collider.enabled = !isNightScope;
             }
         }
 
         foreach (GameObject wall in wallsToEnableInNightScope)
         {
-            if (wall)
+            if (wall != null)
             {
                 var renderer = wall.GetComponent<Renderer>();
-                if (renderer) renderer.enabled = isNightScope;
+                if (renderer != null) renderer.enabled = isNightScope;
+
                 var collider = wall.GetComponent<Collider>();
-                if (collider) collider.enabled = isNightScope;
+                if (collider != null) collider.enabled = isNightScope;
             }
         }
     }
 
-    // ======== スポットライト制御 ========
     void HandleSpotlight()
     {
         if (VisionManager.Instance == null || cameraSpotlight == null) return;
-        bool shouldDisable = (VisionManager.Instance.CurrentVision == VisionType.NightScope);
-        cameraSpotlight.enabled = !shouldDisable;
+        cameraSpotlight.enabled = (VisionManager.Instance.CurrentVision != VisionType.NightScope);
     }
 
-    // ======== バッテリーアウトライン ========
     void HandleBatteryHighlight()
     {
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, interactRange))
+        RaycastHit hit;
+        BatteryItem hitBattery = null;
+
+        if (Physics.Raycast(ray, out hit, interactRange))
+            hitBattery = hit.collider.GetComponent<BatteryItem>();
+
+        if (currentBatteryItem != hitBattery)
         {
-            BatteryItem battery = hit.collider.GetComponent<BatteryItem>();
-            if (currentBatteryItem != battery)
+            if (currentBatteryItem != null)
             {
-                if (currentBatteryItem)
-                {
-                    QuickOutline o = currentBatteryItem.GetComponent<QuickOutline>();
-                    if (o) o.enabled = false;
-                }
-                currentBatteryItem = battery;
-                if (currentBatteryItem)
-                {
-                    QuickOutline o = currentBatteryItem.GetComponent<QuickOutline>();
-                    if (o) o.enabled = true;
-                }
+                QuickOutline outline = currentBatteryItem.GetComponent<QuickOutline>();
+                if (outline != null) outline.enabled = false;
             }
-        }
-        else if (currentBatteryItem)
-        {
-            QuickOutline o = currentBatteryItem.GetComponent<QuickOutline>();
-            if (o) o.enabled = false;
-            currentBatteryItem = null;
+
+            currentBatteryItem = hitBattery;
+
+            if (currentBatteryItem != null)
+            {
+                QuickOutline outline = currentBatteryItem.GetComponent<QuickOutline>();
+                if (outline != null) outline.enabled = true;
+            }
         }
     }
 
-    // ======== カメラ衝突補正 ========
+    string DetectInteractTag()
+    {
+        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, interactRange))
+        {
+            if (hit.collider.GetComponent<BatteryItem>() != null) return "Battery";
+            if (hit.collider.GetComponent<OpenDoor>() != null) return "Door";
+            if (hit.collider.CompareTag("TP")) return "TP";
+            return hit.collider.tag;
+        }
+
+        return null;
+    }
+
+    void UpdateIndicators<T>(T[] indicators, string detectedTag) where T : class
+    {
+        foreach (var entry in indicators)
+        {
+            var tagProp = entry.GetType().GetField("tag");
+            var objProp = entry.GetType().GetField("indicator") ?? entry.GetType().GetField("panel");
+            if (tagProp == null || objProp == null) continue;
+
+            string tag = tagProp.GetValue(entry) as string;
+            GameObject go = objProp.GetValue(entry) as GameObject;
+            if (go != null) go.SetActive(tag == detectedTag);
+        }
+    }
+
+    void HandleIndicators()
+    {
+        string tag = DetectInteractTag();
+        UpdateIndicators(handIndicatorsByTag, tag);
+        UpdateIndicators(tmpIndicatorsByTag, tag);
+        UpdateIndicators(panelsByTag, tag);
+    }
+
     void HandleCameraCollision()
     {
         if (cameraTransform == null) return;
@@ -239,10 +297,13 @@ public class player : MonoBehaviour
 
     void PlayFootstep()
     {
-        if (footstepSource == null || footstepClips.Length == 0) return;
-        int index = Random.Range(0, footstepClips.Length);
-        footstepSource.pitch = Random.Range(0.9f, 1.1f);
-        footstepSource.clip = footstepClips[index];
-        footstepSource.Play();
+        if (footstepClips.Length == 0 || footstepSource == null) return;
+        if (!footstepSource.isPlaying)
+        {
+            int index = Random.Range(0, footstepClips.Length);
+            footstepSource.pitch = Random.Range(0.9f, 1.2f);
+            footstepSource.clip = footstepClips[index];
+            footstepSource.Play();
+        }
     }
 }
