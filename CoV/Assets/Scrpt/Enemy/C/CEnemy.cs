@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CEnemy : MonoBehaviour
 {
@@ -34,19 +35,17 @@ public class CEnemy : MonoBehaviour
         // --- Thermal視界なら敵が見える、その他は透明 ---
         if (enemyRenderer != null)
         {
+            // 現状のコードでは毎フレーム上書きされている
             enemyRenderer.enabled = (VisionManager.Instance.CurrentVision == VisionType.Thermal);
         }
 
-        // プレイヤーとの距離を測る
+        // ここで距離判定して攻撃開始
         float distance = Vector3.Distance(transform.position, player.position);
-
-        // プレイヤーが近くに入ったら襲い掛かる
         if (!isAttacking && distance <= detectionRange)
         {
             StartAttack();
         }
 
-        // 攻撃中はプレイヤーに向かって突進
         if (isAttacking)
         {
             transform.position = Vector3.MoveTowards(
@@ -54,8 +53,14 @@ public class CEnemy : MonoBehaviour
                 player.position,
                 attackSpeed * Time.deltaTime
             );
-        }
 
+            // 襲う間は常に見えるようにする
+            if (enemyRenderer != null)
+            {
+                enemyRenderer.enabled = true;
+            }
+                
+        }
     }
 
     // --- Thermal表示管理 ---
@@ -112,6 +117,7 @@ public class CEnemy : MonoBehaviour
         {
             Debug.Log("Player Dead");
             // プレイヤー死亡処理をここに
+            SceneManager.LoadScene("GameOver");
         }
 
         if (other.CompareTag("Salt"))
