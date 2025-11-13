@@ -1,109 +1,81 @@
 ﻿using UnityEngine;
 
-public class BEnemy : MonoBehaviour
+public class aEnemy : MonoBehaviour
 {
-    [Header("視界反転設定")]
-    private bool isUpsideDown = false;
-
-    [Header("がたがた動き設定")]
-    public bool enableShake = true;
-    public float shakeIntensity = 0.1f;
-    public float shakeDuration = 0.1f;
-    public float minShakeInterval = 10f;
-    public float maxShakeInterval = 30f;
+    [Header("視界表示")]
+    public GameObject parentPart; // 通常視界で表示
+    public GameObject childPart;  // ナイトスコープで表示
 
     [Header("プレイヤー関連")]
-    public Transform player;          // プレイヤーのTransform
-    public float detectionRange;
-    public float chaseSpeed = 3.1f;
-    public GameObject visibleObjectNear;
-    public GameObject visibleObjectFar;
+    public Transform player;      // プレイヤーのTransform
+    public float detectionRange;  // プレイヤーが近くにいると判定する距離
 
-    private Vector3 originalLocalPosition;
-    private float shakeTimer = 0f;
-    private float shakeTimeRemaining = 0f;
+    [Header("移動ルート")]
+    public Transform[] waypoints; // 敵が移動するルート（ウェイポイント）
+    public float moveSpeed;       // 移動速度
+    public float chaseSpeed;      // プレイヤーを追いかけるときの速度
+    public float waypointThreshold = 0.5f; // 次のウェイポイントに切り替える距離
+    private int currentWaypointIndex = 0;
 
-    void Start()
-    {
-        originalLocalPosition = transform.localPosition;
-        ResetShakeTimer();
-    }
+    [Header("足音設定")]
+    public AudioSource footstepAudio;       // 足音用AudioSource
+    public float footstepTriggerRange;      // 足音を鳴らす最大距離
+    public float maxFootstepVolume;         // 足音の最大音量
+    public float normalFootstepPitch;       // 通常時のピッチ
+    public float chaseFootstepPitch;        // 追跡時のピッチ
 
     void Update()
     {
-        if (player == null) return;
-
-        HandleVisionInversion();
-        HandleProximityVisibility();
+        if (VisionManager.Instance == null || player == null) return;
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        if (distanceToPlayer <= detectionRange)
+        bool isPlayerNearby = distanceToPlayer <= detectionRange;
+
+        HandleFootstepAudio(distanceToPlayer);
+
+        if (isPlayerNearby)
         {
             ChasePlayer();
         }
-
-        if (enableShake)
-        {
-            HandleShake();
-        }
         else
         {
-            transform.localPosition = originalLocalPosition;
+            MoveAlongRoute();
+        }
+
+        switch (VisionManager.Instance.CurrentVision)
+        {
+            case VisionType.Normal:
+                SetVisibility(parentVisible: true, childVisible: isPlayerNearby);
+                break;
+
+            case VisionType.NightScope:
+                SetVisibility(parentVisible: false, childVisible: true);
+                break;
+
+            default:
+                SetVisibility(parentVisible: false, childVisible: false);
+                break;
         }
     }
 
-    void HandleVisionInversion()
+    void MoveAlongRoute()
     {
-        if (VisionManager.Instance == null) return;
+        if (waypoints == null || waypoints.Length == 0) return;
 
-        bool shouldBeInverted = (VisionManager.Instance.CurrentVision == VisionType.Inverted);
+        Transform targetWaypoint = waypoints[currentWaypointIndex];
+        Vector3 direction = (targetWaypoint.position - transform.position).normalized;
+        transform.position += direction * moveSpeed * Time.deltaTime;
 
-        if (shouldBeInverted != isUpsideDown)
+        float distanceToWaypoint = Vector3.Distance(transform.position, targetWaypoint.position);
+        if (distanceToWaypoint < waypointThreshold)
         {
-            isUpsideDown = shouldBeInverted;
-
-            Vector3 euler = transform.eulerAngles;
-            euler.z = isUpsideDown ? 180f : 0f;
-            transform.eulerAngles = euler;
-        }
-    }
-
-    void HandleShake()
-    {
-        shakeTimer -= Time.deltaTime;
-
-        if (shakeTimer <= 0f)
-        {
-            shakeTimeRemaining = shakeDuration;
-            ResetShakeTimer();
+            currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
         }
 
-        if (shakeTimeRemaining > 0f)
+        if (direction != Vector3.zero)
         {
-            shakeTimeRemaining -= Time.deltaTime;
-            Vector3 shakeOffset = Random.insideUnitSphere * shakeIntensity;
-            transform.localPosition = originalLocalPosition + shakeOffset;
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), 5f * Time.deltaTime);
         }
-        else
-        {
-            transform.localPosition = originalLocalPosition;
-        }
-    }
-
-    void HandleProximityVisibility()
-    {
-        if (visibleObjectNear == null || visibleObjectFar == null) return;
-
-        float distance = Vector3.Distance(transform.position, player.position);
-        bool isNear = distance <= detectionRange;
-
-        visibleObjectNear.SetActive(isNear);
-        visibleObjectFar.SetActive(!isNear);
-    }
-
-    void ResetShakeTimer()
-    {
-        shakeTimer = Random.Range(minShakeInterval, maxShakeInterval);
     }
 
     void ChasePlayer()
@@ -113,8 +85,51 @@ public class BEnemy : MonoBehaviour
 
         if (direction != Vector3.zero)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 5f * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), 5f * Time.deltaTime);
+        }
+    }
+
+    void HandleFootstepAudio(float distanceToPlayer)
+    {
+        if (footstepAudio == null) return;
+
+        if (distanceToPlayer <= footstepTriggerRange)
+        {
+            float volumeScale = 1f - (distanceToPlayer / footstepTriggerRange);
+            footstepAudio.volume = Mathf.Clamp(volumeScale * maxFootstepVolume, 0f, maxFootstepVolume);
+            footstepAudio.pitch = distanceToPlayer <= detectionRange ? chaseFootstepPitch : normalFootstepPitch;
+
+            if (!footstepAudio.isPlaying)
+            {
+                footstepAudio.loop = true;
+                footstepAudio.Play();
+            }
+        }
+        else
+        {
+            if (footstepAudio.isPlaying)
+            {
+                footstepAudio.Stop();
+            }
+        }
+    }
+
+    void SetVisibility(bool parentVisible, bool childVisible)
+    {
+        if (parentPart)
+        {
+            var renderer = parentPart.GetComponent<Renderer>();
+            if (renderer) renderer.enabled = parentVisible;
+            var collider = parentPart.GetComponent<Collider>();
+            if (collider) collider.enabled = parentVisible;
+        }
+
+        if (childPart)
+        {
+            var renderer = childPart.GetComponent<Renderer>();
+            if (renderer) renderer.enabled = childVisible;
+            var collider = childPart.GetComponent<Collider>();
+            if (collider) collider.enabled = childVisible;
         }
     }
 }
