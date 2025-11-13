@@ -133,14 +133,21 @@ public class aEnemy : MonoBehaviour
     }
     bool CanSeePlayer()
     {
+        //float viewAngle = 0f;
         Vector3 directionToPlayer = (player.position - transform.position).normalized;
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        if (Physics.Raycast(transform.position, directionToPlayer, out RaycastHit hit, distanceToPlayer))
+        // 視野角チェック
+        //if (Vector3.Angle(transform.forward, directionToPlayer) < viewAngle / 2f)
         {
-            return hit.transform == player;
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, directionToPlayer, out hit, distanceToPlayer))
+            {
+                return hit.transform == player;
+            }
         }
 
         return false;
     }
+
 }
