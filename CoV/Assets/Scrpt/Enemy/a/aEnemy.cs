@@ -29,8 +29,7 @@ public class aEnemy : MonoBehaviour
         if (VisionManager.Instance == null || player == null) return;
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        bool isPlayerNearby = distanceToPlayer <= detectionRange;
-
+        bool isPlayerNearby = distanceToPlayer <= detectionRange && CanSeePlayer();
         HandleFootstepAudio(distanceToPlayer);
 
         if (isPlayerNearby)
@@ -131,5 +130,17 @@ public class aEnemy : MonoBehaviour
             var collider = childPart.GetComponent<Collider>();
             if (collider) collider.enabled = childVisible;
         }
+    }
+    bool CanSeePlayer()
+    {
+        Vector3 directionToPlayer = (player.position - transform.position).normalized;
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+        if (Physics.Raycast(transform.position, directionToPlayer, out RaycastHit hit, distanceToPlayer))
+        {
+            return hit.transform == player;
+        }
+
+        return false;
     }
 }

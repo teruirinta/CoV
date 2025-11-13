@@ -1,46 +1,60 @@
-using UnityEngine;
-using System.Collections;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+
 public class Fade : MonoBehaviour
 {
-    public RectTransform topPanel;
-    public RectTransform bottomPanel;
-    public float speed = 500f;
-    public float delay = 0.5f;
+    public Image fadeImage;
+    public float fadeDuration = 1.0f;
 
-    private Vector2 topStartPos;
-    private Vector2 bottomStartPos;
-    private Vector2 topClosedPos;
-    private Vector2 bottomClosedPos;
-
-    void Start()
+    // フェードアウト→処理→フェードイン
+    public void FadeOutIn(System.Action onMidFade = null)
     {
-        topStartPos = topPanel.anchoredPosition;
-        bottomStartPos = bottomPanel.anchoredPosition;
-        topClosedPos = new Vector2(topStartPos.x, 0);
-        bottomClosedPos = new Vector2(bottomStartPos.x, 0);
-
-        StartCoroutine(Blink());
+        StartCoroutine(FadeRoutine(onMidFade));
     }
 
-    IEnumerator Blink()
+    private IEnumerator FadeRoutine(System.Action onMidFade)
     {
-        // ����
-        while (topPanel.anchoredPosition.y > topClosedPos.y)
+        yield return StartCoroutine(FadeAlpha(0f, 1f));
+        onMidFade?.Invoke();
+        yield return StartCoroutine(FadeAlpha(1f, 0f));
+    }
+
+    // 🌟 即座に真っ暗→処理→ゆっくりフェードイン
+    public void FadeInstantOutThenIn(System.Action onMidFade = null)
+    {
+        // すぐに真っ暗にする
+        fadeImage.color = new Color(0f, 0f, 0f, 1f);
+        onMidFade?.Invoke();
+        StartCoroutine(FadeAlpha(1f, 0f)); // ゆっくり明るく
+    }
+
+    private IEnumerator FadeAlpha(float from, float to)
+    {
+        float timer = 0f;
+        Color color = fadeImage.color;
+
+        while (timer < fadeDuration)
         {
-            topPanel.anchoredPosition -= new Vector2(0, speed * Time.deltaTime);
-            bottomPanel.anchoredPosition += new Vector2(0, speed * Time.deltaTime);
+            float alpha = Mathf.Lerp(from, to, timer / fadeDuration);
+            fadeImage.color = new Color(color.r, color.g, color.b, alpha);
+            timer += Time.deltaTime;
             yield return null;
         }
 
-        yield return new WaitForSeconds(delay);
+        fadeImage.color = new Color(color.r, color.g, color.b, to);
+    }
 
-        // �J��
-        while (topPanel.anchoredPosition.y < topStartPos.y)
+    // テスト用：Fキーでフェード確認
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            topPanel.anchoredPosition += new Vector2(0, speed * Time.deltaTime);
-            bottomPanel.anchoredPosition -= new Vector2(0, speed * Time.deltaTime);
-            yield return null;
+            // 通常のフェード
+            // FadeOutIn(() => Debug.Log("フェード中に何かするよ！"));
+
+            //  即座に暗転 → 明るく
+            FadeInstantOutThenIn(() => Debug.Log("真っ暗の中で処理！"));
         }
     }
 }
