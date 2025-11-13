@@ -6,23 +6,34 @@ public class player : MonoBehaviour
     [Header("移動設定")]
     public float moveSpeed = 5f;
     public float gravity = 9.81f;
+    private CharacterController controller;
+    private Vector3 velocity;
+    private bool isUpsideDown = false;
 
+    // === カメラ関連 ===
     [Header("カメラ設定")]
     public Transform cameraTransform;
     public float lookSpeed = 2f;
     public float cameraPitchLimit = 80f;
-
-    private CharacterController controller;
-    private Vector3 velocity;
     private float cameraPitch = 0f;
-    private bool isUpsideDown = false;
+    private VisionType previousVision;
+    private Vector3 defaultCameraLocalPos;
 
+    [Header("カメラ衝突設定")]
+    public LayerMask wallMask;
+    public float cameraCollisionRadius = 0.2f;
+    public float cameraAdjustSpeed = 10f;
+
+    // === ナイトスコープ関連 ===
     [Header("ナイトスコープ時に表示する壁")]
     public GameObject[] wallsToEnableInNightScope;
-    public Light cameraSpotlight;
-
     [Header("ナイトスコープ時に非表示にする壁")]
     public GameObject[] wallsToDisableInNightScope;
+    public Light cameraSpotlight;
+
+    // === インタラクト関連 ===
+    private BatteryItem currentBatteryItem;
+    private float interactRange = 3f;
 
     [System.Serializable]
     public class HandIndicatorByTag
@@ -31,18 +42,12 @@ public class player : MonoBehaviour
         public GameObject indicator;
     }
 
-    [Header("インタラクト可能時の手表示")]
-    public HandIndicatorByTag[] handIndicatorsByTag;
-
     [System.Serializable]
     public class TMPIndicatorByTag
     {
         public string tag;
         public GameObject indicator;
     }
-
-    [Header("インタラクト可能時のTMP表示")]
-    public TMPIndicatorByTag[] tmpIndicatorsByTag;
 
     [System.Serializable]
     public class PanelByTag
@@ -51,23 +56,12 @@ public class player : MonoBehaviour
         public GameObject panel;
     }
 
-    [Header("インタラクト可能時のパネル表示")]
+    [Header("インタラクト可能時の表示")]
+    public HandIndicatorByTag[] handIndicatorsByTag;
+    public TMPIndicatorByTag[] tmpIndicatorsByTag;
     public PanelByTag[] panelsByTag;
 
-    private BatteryItem currentBatteryItem;
-    private float interactRange = 3f;
 
-    [Header("カメラ衝突設定")]
-    public LayerMask wallMask;
-    public float cameraCollisionRadius = 0.2f;
-    public float cameraAdjustSpeed = 10f;
-    private Vector3 defaultCameraLocalPos;
-
-    [Header("足音設定")]
-    public AudioSource footstepSource;
-    public AudioClip[] footstepClips;
-    public float footstepInterval = 0.8f;
-    private float footstepTimer = 0f;
 
     void Start()
     {
@@ -77,11 +71,15 @@ public class player : MonoBehaviour
 
         if (cameraTransform != null)
             defaultCameraLocalPos = cameraTransform.localPosition;
+
+        if (VisionManager.Instance != null)
+            previousVision = VisionManager.Instance.CurrentVision;
     }
+
 
     void Update()
     {
-        HandleVisionInversion();
+        HandleVisionChangeWithFade();
         HandleMove();
         HandleLook();
         HandleInteract();
@@ -93,6 +91,7 @@ public class player : MonoBehaviour
         HandleEnemyCollision();
     }
 
+
     void HandleVisionInversion()
     {
         if (VisionManager.Instance == null) return;
@@ -103,15 +102,23 @@ public class player : MonoBehaviour
         {
             isUpsideDown = shouldBeInverted;
             velocity.y = 0f;
-            Vector3 euler = transform.eulerAngles;
-            euler.z = isUpsideDown ? 180f : 0f;
-            transform.eulerAngles = euler;
+
+            // フェード付きで視点切り替え
+            FindObjectOfType<Fade>().FadeOutIn(() =>
+            {
+                Vector3 euler = transform.eulerAngles;
+                euler.z = isUpsideDown ? 180f : 0f;
+                transform.eulerAngles = euler;
+            });
         }
     }
 
+
+
     void HandleMove()
     {
-        // 🎮 Xbox左スティック or WASD 対応
+        if (controller == null || !controller.enabled) return;
+
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
@@ -127,21 +134,8 @@ public class player : MonoBehaviour
 
         velocity.y += (isUpsideDown ? gravity : -gravity) * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
-
-        if (isGrounded && move.magnitude > 0.1f)
-        {
-            footstepTimer -= Time.deltaTime;
-            if (footstepTimer <= 0f)
-            {
-                PlayFootstep();
-                footstepTimer = footstepInterval;
-            }
-        }
-        else
-        {
-            footstepTimer = 0f;
-        }
     }
+
 
     // 🎮 Xbox右スティック & マウス両対応
     void HandleLook()
@@ -176,7 +170,7 @@ public class player : MonoBehaviour
                 OpenDoor door = hit.collider.GetComponent<OpenDoor>();
                 if (door != null)
                 {
-                    door.ToggleDoor(transform); // ← プレイヤーの位置を渡す
+                    door.ToggleDoor(transform);
                 }
             }
         }
@@ -296,17 +290,7 @@ public class player : MonoBehaviour
         cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, desiredPos, Time.deltaTime * cameraAdjustSpeed);
     }
 
-    void PlayFootstep()
-    {
-        if (footstepClips.Length == 0 || footstepSource == null) return;
-        if (!footstepSource.isPlaying)
-        {
-            int index = Random.Range(0, footstepClips.Length);
-            footstepSource.pitch = Random.Range(0.9f, 1.2f);
-            footstepSource.clip = footstepClips[index];
-            footstepSource.Play();
-        }
-    }
+
 
     void HandleEnemyCollision()
     {
@@ -319,4 +303,29 @@ public class player : MonoBehaviour
             }
         }
     }
+
+    void HandleVisionChangeWithFade()
+    {
+        if (VisionManager.Instance == null) return;
+
+        VisionType currentVision = VisionManager.Instance.CurrentVision;
+
+        if (currentVision != previousVision)
+        {
+            previousVision = currentVision;
+
+            FindObjectOfType<Fade>().FadeInstantOutThenIn(() =>
+            {
+                isUpsideDown = (currentVision == VisionType.Inverted);
+                velocity.y = 0f;
+                Vector3 euler = transform.eulerAngles;
+                euler.z = isUpsideDown ? 180f : 0f;
+                transform.eulerAngles = euler;
+
+                HandleWallVisibility();
+                HandleSpotlight();
+            });
+        }
+    }
+
 }

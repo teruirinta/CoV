@@ -14,7 +14,8 @@ public class Retry : MonoBehaviour
         if (Input.anyKeyDown)
         {
             // ƒV[ƒ“‚ğØ‚è‘Ö‚¦‚é
-            SceneManager.LoadScene("AlphaScene");
+            //SceneManager.LoadScene("AlphaScene");
+            SceneManager.LoadScene("kar");
         }
     }
 }

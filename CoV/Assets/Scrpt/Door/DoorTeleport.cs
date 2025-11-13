@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class DoorTeleport : MonoBehaviour
 {
     public Transform player;
     public Transform teleportTarget;
     public float activationDistance = 0.5f;
-    public float teleportCooldown = 1.5f; // クールタイム（秒）
+    public float teleportCooldown = 1.5f;
 
     private Vector3 originalPosition;
     private Quaternion originalRotation;
@@ -22,7 +23,7 @@ public class DoorTeleport : MonoBehaviour
     {
         float distance = Vector3.Distance(player.position, transform.position);
 
-        // ドアを見ているかどうかを判定（テレポートを防ぐため）
+        // ドアを見ているかどうかを判定
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
         RaycastHit hit;
         bool isLookingAtDoor = false;
@@ -35,7 +36,7 @@ public class DoorTeleport : MonoBehaviour
             }
         }
 
-        // クールタイム判定とドア優先判定
+        // テレポート条件判定
         if (distance <= activationDistance &&
             Input.GetKeyDown(KeyCode.E) &&
             !isLookingAtDoor &&
@@ -48,7 +49,7 @@ public class DoorTeleport : MonoBehaviour
                 originalPosition = player.position;
                 originalRotation = player.rotation;
 
-                if (controller != null) controller.enabled = false; // CharacterControllerを無効化
+                if (controller != null) controller.enabled = false;
 
                 player.position = teleportTarget.position;
                 player.rotation = teleportTarget.rotation;
@@ -65,11 +66,17 @@ public class DoorTeleport : MonoBehaviour
                 isTeleported = false;
             }
 
-            // テレポート状態に応じてCharacterControllerを切り替え
-            if (controller != null) controller.enabled = !isTeleported;
+            // 次のフレームでCharacterControllerを再有効化
+            StartCoroutine(ReenableControllerNextFrame());
 
             if (VisionManager.Instance != null)
                 VisionManager.Instance.IsTeleporting = isTeleported;
         }
+    }
+
+    IEnumerator ReenableControllerNextFrame()
+    {
+        yield return null;
+        if (controller != null) controller.enabled = true;
     }
 }
