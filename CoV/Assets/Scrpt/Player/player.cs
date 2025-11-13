@@ -176,7 +176,7 @@ public class player : MonoBehaviour
                 OpenDoor door = hit.collider.GetComponent<OpenDoor>();
                 if (door != null)
                 {
-                    door.ToggleDoor();
+                    door.ToggleDoor(transform); // ← プレイヤーの位置を渡す
                 }
             }
         }
