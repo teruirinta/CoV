@@ -4,7 +4,7 @@ using System.Collections;
 public class OpenDoor : MonoBehaviour
 {
     [Header("ドア設定")]
-    public float openAngle = 90f;        // 開く角度（正の値でOK、方向は自動判定）
+    public float openAngle = -90f;        // 開く角度（正の値でOK、方向は自動判定）
     public float openDuration = 1.5f;    // 開くまでの時間（秒）
 
     private bool isOpen = false;
