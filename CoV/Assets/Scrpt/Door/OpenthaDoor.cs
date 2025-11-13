@@ -1,32 +1,30 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class OpenTheDoor : MonoBehaviour
 {
+    [Header("ドア設定")]
     public Transform leftDoor;
     public Transform rightDoor;
-    public Transform player;              // �v���C���[��Transform��Inspector�Őݒ�
+    public Transform player;              // プレイヤーのTransformをInspectorで設定
     public float openAngle = 90f;
     public float openDuration = 1.5f;
-    public float activationDistance = 3f; // �v���C���[���߂Â�����
+    public float activationDistance = 3f; // プレイヤーが近づく距離
 
     private bool isOpen = false;
     private bool isAnimating = false;
 
     private Quaternion leftClosedRotation;
     private Quaternion rightClosedRotation;
-    private Quaternion leftOpenedRotation;
-    private Quaternion rightOpenedRotation;
 
+    [Header("サウンド設定")]
     public AudioSource doorAudioSource;
     public AudioClip openSound;
+
     void Start()
     {
         leftClosedRotation = leftDoor.localRotation;
         rightClosedRotation = rightDoor.localRotation;
-
-        leftOpenedRotation = Quaternion.Euler(leftDoor.localEulerAngles + new Vector3(0f, -openAngle, 0f));
-        rightOpenedRotation = Quaternion.Euler(rightDoor.localEulerAngles + new Vector3(0f, openAngle, 0f));
     }
 
     void Update()
@@ -41,18 +39,29 @@ public class OpenTheDoor : MonoBehaviour
 
     public void ToggleDoor()
     {
-        if (!isAnimating)
+        if (isAnimating) return;
+
+        // プレイヤーの位置からドアのどちら側にいるかを判定
+        Vector3 toPlayer = player.position - transform.position;
+        float dot = Vector3.Dot(transform.forward, toPlayer.normalized);
+
+        // プレイヤーが前面にいれば奥向き（＋）、背面なら手前向き（−）
+        float direction = (dot > 0) ? 1f : -1f;
+
+        // 各ドアの最終回転角を動的に計算
+        Quaternion leftOpenedRotation = Quaternion.Euler(leftDoor.localEulerAngles + new Vector3(0f, -openAngle * direction, 0f));
+        Quaternion rightOpenedRotation = Quaternion.Euler(rightDoor.localEulerAngles + new Vector3(0f, openAngle * direction, 0f));
+
+        StartCoroutine(RotateDoors(leftOpenedRotation, rightOpenedRotation));
+
+        if (doorAudioSource != null && openSound != null)
         {
-            StartCoroutine(RotateDoors());
-            if (doorAudioSource != null && openSound != null)
-            {
-                doorAudioSource.clip = openSound;
-                doorAudioSource.Play();
-            }
+            doorAudioSource.clip = openSound;
+            doorAudioSource.Play();
         }
     }
 
-    IEnumerator RotateDoors()
+    IEnumerator RotateDoors(Quaternion leftOpenedRotation, Quaternion rightOpenedRotation)
     {
         isAnimating = true;
 
