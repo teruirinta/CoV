@@ -11,7 +11,7 @@ public class Retry : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.anyKeyDown)
+        if (Input.GetKeyDown(KeyCode.R))
         {
             // ƒV[ƒ“‚ğØ‚è‘Ö‚¦‚é
             //SceneManager.LoadScene("AlphaScene");
