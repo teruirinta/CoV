@@ -72812,26 +72812,23 @@ MonoBehaviour:
   cameraTransform: {fileID: 8523734869827356522}
   lookSpeed: 2
   cameraPitchLimit: 80
-  wallsToEnableInNightScope:
-  - {fileID: 224740662}
-  - {fileID: 1765351027}
-  - {fileID: 1917180792}
-  - {fileID: 240421300}
-  cameraSpotlight: {fileID: 8580787665469380692}
-  wallsToDisableInNightScope:
-  - {fileID: 869404054}
-  - {fileID: 1682288211}
-  handIndicatorsByTag: []
-  tmpIndicatorsByTag: []
-  panelsByTag: []
   wallMask:
     serializedVersion: 2
     m_Bits: 0
   cameraCollisionRadius: 0.2
   cameraAdjustSpeed: 10
-  footstepSource: {fileID: 0}
-  footstepClips: []
-  footstepInterval: 0.5
+  wallsToEnableInNightScope:
+  - {fileID: 224740662}
+  - {fileID: 1765351027}
+  - {fileID: 1917180792}
+  - {fileID: 240421300}
+  wallsToDisableInNightScope:
+  - {fileID: 869404054}
+  - {fileID: 1682288211}
+  cameraSpotlight: {fileID: 8580787665469380692}
+  handIndicatorsByTag: []
+  tmpIndicatorsByTag: []
+  panelsByTag: []
 --- !u!114 &6229701691934336928
 MonoBehaviour:
   m_ObjectHideFlags: 0
