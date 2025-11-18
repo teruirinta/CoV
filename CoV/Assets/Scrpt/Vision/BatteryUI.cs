@@ -1,13 +1,14 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 
 public class BatteryUI : MonoBehaviour
 {
-    [Header("UIŽQÆ")]
-    public Image gaugeImage; // ‰~Œ`ƒQ[ƒW
-    public Image iconImage;  // ƒAƒCƒRƒ“‰æ‘œ
+    [Header("UIå‚ç…§")]
+    public Image gaugeImage; // å††å½¢ã‚²ãƒ¼ã‚¸
+    public Image iconImage;  // ã‚¢ã‚¤ã‚³ãƒ³ç”»åƒ
+    public Image batteryCD;  // â˜…è¿½åŠ ï¼šã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³è¡¨ç¤ºç”¨UI
 
-    [Header("‚±‚ÌUI‚ª’S“–‚·‚éŽ‹ŠEƒ^ƒCƒv")]
+    [Header("ã“ã®UIãŒæ‹…å½“ã™ã‚‹è¦–ç•Œã‚¿ã‚¤ãƒ—")]
     public VisionType targetVision; // NightScope / Inverted / Thermal
 
     private VisionManager visionManager;
@@ -15,21 +16,25 @@ public class BatteryUI : MonoBehaviour
     void Start()
     {
         visionManager = VisionManager.Instance;
+
+        // èµ·å‹•æ™‚ã¯éžè¡¨ç¤º
+        if (batteryCD != null)
+            batteryCD.enabled = false;
     }
 
     void Update()
     {
         if (visionManager == null) return;
 
-        // ‚±‚ÌUI‚ª’S“–‚·‚éŽ‹ŠEƒf[ƒ^‚ðŽæ“¾
-        var vision = visionManager.GetVisionData(targetVision);
-        if (vision == null) return;
+        // ã“ã®UIãŒæ‹…å½“ã™ã‚‹è¦–ç•Œãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
+        var visionData = visionManager.GetVisionData(targetVision);
+        if (visionData == null) return;
 
-        // ƒoƒbƒeƒŠ[Žc—Êi0`1‚É³‹K‰»j
-        float fillAmount = vision.currentBattery / vision.maxBattery;
+        // ãƒãƒƒãƒ†ãƒªãƒ¼æ®‹é‡ï¼ˆ0ï½ž1ã«æ­£è¦åŒ–ï¼‰
+        float fillAmount = visionData.currentBattery / visionData.maxBattery;
         gaugeImage.fillAmount = Mathf.Clamp01(fillAmount);
 
-        // ƒQ[ƒW‚ÌFÝ’èi”CˆÓj
+        // ã‚²ãƒ¼ã‚¸ã®è‰²
         switch (targetVision)
         {
             case VisionType.NightScope:
@@ -45,5 +50,11 @@ public class BatteryUI : MonoBehaviour
                 gaugeImage.color = Color.gray;
                 break;
         }
+
+        // â˜… ã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³ä¸­ãªã‚‰ BatteryCD ã‚’è¡¨ç¤º
+        bool isCooldown = visionManager.CooldownTimer > 0f;
+
+        if (batteryCD != null)
+            batteryCD.enabled = isCooldown;
     }
 }
