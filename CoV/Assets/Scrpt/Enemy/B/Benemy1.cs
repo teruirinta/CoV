@@ -32,7 +32,9 @@ public class Benemy1 : MonoBehaviour
     public float verticalOffset;
 
     private Vector3 mannequinStartPos;
-    private bool isReturning = false; // 戻り中フラグ
+    private bool isReturning = false;
+
+    private Rigidbody mannequinRb;
 
     void Start()
     {
@@ -52,6 +54,7 @@ public class Benemy1 : MonoBehaviour
         {
             mannequinObject.SetActive(false);
             mannequinStartPos = mannequinObject.transform.position;
+            mannequinRb = mannequinObject.GetComponent<Rigidbody>();
         }
     }
 
@@ -70,18 +73,18 @@ public class Benemy1 : MonoBehaviour
 
         if (mannequinObject == null || playerTransform == null) return;
 
-        float distance = Vector3.Distance(playerTransform.position, mannequinObject.transform.position);
+        Vector3 offset = playerTransform.position - mannequinObject.transform.position;
+        offset.y *= 0.5f;
+        float adjustedDistance = offset.magnitude;
 
-        // 一度表示されたら表示状態にする
-        if (!hasBeenShown && distance <= showDistance)
+        if (!hasBeenShown && adjustedDistance <= showDistance)
         {
             mannequinObject.SetActive(true);
             hasBeenShown = true;
 
             if (normalObject != null)
             {
-                Destroy(normalObject.gameObject);
-                normalObject = null;
+                normalObject.gameObject.SetActive(false);
             }
         }
 
@@ -108,27 +111,72 @@ public class Benemy1 : MonoBehaviour
 
             if (canSeePlayer)
             {
-                Vector3 direction = directionToPlayer.normalized;
-                mannequinObject.transform.position += direction * moveSpeed * Time.deltaTime;
+                Vector3 direction;
+
+                if (shouldInvert)
+                {
+                    direction = directionToPlayer.normalized;
+
+                    if (mannequinRb.useGravity)
+                    {
+                        mannequinRb.useGravity = false;
+                    }
+                }
+                else
+                {
+                    Vector3 flatDirection = directionToPlayer;
+                    flatDirection.y = 0;
+                    direction = flatDirection.normalized;
+
+                    if (!mannequinRb.useGravity)
+                    {
+                        mannequinRb.useGravity = true;
+                    }
+                }
+
+                mannequinRb.MovePosition(mannequinRb.position + direction * moveSpeed * Time.deltaTime);
                 isReturning = false;
             }
             else
             {
-                // 戻る処理
-                mannequinObject.transform.position = Vector3.MoveTowards(
-                    mannequinObject.transform.position,
+                if (!mannequinRb.useGravity)
+                {
+                    mannequinRb.useGravity = true;
+                }
+
+                Vector3 returnPos = Vector3.MoveTowards(
+                    mannequinRb.position,
                     mannequinStartPos,
                     moveSpeed * Time.deltaTime
                 );
+                mannequinRb.MovePosition(returnPos);
+
                 isReturning = true;
 
-                // 完全に戻ったら非表示＆リセット
                 if (Vector3.Distance(mannequinObject.transform.position, mannequinStartPos) < 0.01f)
                 {
                     mannequinObject.SetActive(false);
                     hasBeenShown = false;
                     isReturning = false;
+
+                    if (normalObject != null)
+                    {
+                        normalObject.gameObject.SetActive(true);
+                    }
                 }
+            }
+        }
+
+        if (normalObject != null && mannequinObject.activeSelf)
+        {
+            float moveDistance = Vector3.Distance(mannequinObject.transform.position, mannequinStartPos);
+            if (moveDistance > 0.01f)
+            {
+                normalObject.gameObject.SetActive(false);
+            }
+            else if (!normalObject.gameObject.activeSelf)
+            {
+                normalObject.gameObject.SetActive(true);
             }
         }
     }

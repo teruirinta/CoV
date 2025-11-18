@@ -14,7 +14,7 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 0, g: 0, b: 0, a: 1}
   m_FogMode: 2
   m_FogDensity: 0.4
@@ -1067,6 +1067,7 @@ GameObject:
   - component: {fileID: 186580375}
   - component: {fileID: 186580374}
   - component: {fileID: 186580373}
+  - component: {fileID: 186580376}
   m_Layer: 0
   m_Name: Cube (4)
   m_TagString: Untagged
@@ -1163,6 +1164,33 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 186580371}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &186580376
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186580371}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &188815323 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8605307280194468934, guid: beef3bcde1610f04aa96275436147bb9, type: 3}
@@ -3380,7 +3408,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8957123526836591599, guid: aff452878480a8846b5b4ea51c9a7411, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5733,15 +5761,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetObject: {fileID: 1795140972}
-  shelfVisual: {fileID: 0}
-  player: {fileID: 0}
-  breakDistance: 2
   shakeAmount: 0.1
   shakeSpeed: 10
   minShakeInterval: 2
   maxShakeInterval: 5
   shakeDuration: 1
-  moveSpeed: 1
 --- !u!1 &1797385567
 GameObject:
   m_ObjectHideFlags: 0
@@ -6202,7 +6226,7 @@ GameObject:
   - component: {fileID: 1957875047}
   - component: {fileID: 1957875046}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: bEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
