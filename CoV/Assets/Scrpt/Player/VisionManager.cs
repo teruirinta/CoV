@@ -4,9 +4,9 @@ using UnityEngine;
 public enum VisionType
 {
     Normal,
-    NightScope, // B視界：暗視
-    Inverted,   // Y視界：上下反転
-    Thermal     // X視界：サーモ
+    NightScope,
+    Inverted,
+    Thermal
 }
 
 public class VisionManager : MonoBehaviour
@@ -17,13 +17,15 @@ public class VisionManager : MonoBehaviour
     public VisionType CurrentVision { get; private set; } = VisionType.Normal;
 
     [Header("視界切り替え設定")]
-    public float visionCooldown = 3f; // クールダウン時間
+    public float visionCooldown = 3f;
     private float cooldownTimer = 0f;
+
+    // 🔥 外部から読み取り専用でアクセス可能にする
+    public float CooldownTimer => cooldownTimer;
 
     [Header("各視界データ (ScriptableObject)")]
     public List<VisionData> visionDataList = new List<VisionData>();
 
-    // ✅ TP中かどうかのフラグ
     public bool IsTeleporting { get; set; } = false;
 
     void Awake()
@@ -56,20 +58,17 @@ public class VisionManager : MonoBehaviour
 
     void HandleInput()
     {
-        if (IsTeleporting) return; // TP中は視界切り替えを無効化
+        if (IsTeleporting) return;
 
-        // --- Bボタン or キー1：ナイトスコープ視界 ---
-        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.JoystickButton1))
+        if (Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.Alpha1))
         {
             TryToggleVision(VisionType.NightScope);
         }
-        // --- Yボタン or キー2：反転視界 ---
-        else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.JoystickButton3))
+        else if (Input.GetButtonDown("Fire2") || Input.GetKeyDown(KeyCode.Alpha2))
         {
             TryToggleVision(VisionType.Inverted);
         }
-        // --- Xボタン or キー3：サーモ視界 ---
-        else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.JoystickButton2))
+        else if (Input.GetButtonDown("Fire3") || Input.GetKeyDown(KeyCode.Alpha3))
         {
             TryToggleVision(VisionType.Thermal);
         }
