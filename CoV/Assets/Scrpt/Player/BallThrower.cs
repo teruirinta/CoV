@@ -5,12 +5,37 @@ public class BallThrower : MonoBehaviour
     public GameObject ballPrefab;
     public Transform throwPoint;
     public float throwForce = 700f;
-    public int maxStock;
-    private int currentStock = 100; // 最初は2個！
+    public int maxStock = 100;
+    private int currentStock = 100;
+
+    private bool isAiming = false;
+
+    public float zoomFOV = 30f;
+    public float zoomSpeed = 5f;
+
+    private Camera mainCamera;
+    private float normalFOV;
+
+    void Start()
+    {
+        mainCamera = Camera.main;
+        normalFOV = mainCamera.fieldOfView; // Unityの初期設定をそのまま使う！
+    }
 
     void Update()
     {
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButton(1))
+        {
+            isAiming = true;
+            mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, zoomFOV, Time.deltaTime * zoomSpeed);
+        }
+        else
+        {
+            isAiming = false;
+            mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, normalFOV, Time.deltaTime * zoomSpeed);
+        }
+
+        if (isAiming && Input.GetMouseButtonDown(0))
         {
             if (currentStock > 0)
             {
@@ -33,7 +58,6 @@ public class BallThrower : MonoBehaviour
         rb.AddForce(throwDirection * throwForce);
     }
 
-    // アイテム取得時に呼び出す
     public void AddStock(int amount)
     {
         currentStock = Mathf.Min(currentStock + amount, maxStock);

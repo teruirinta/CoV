@@ -1,36 +1,39 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class PlayerInventory : MonoBehaviour
 {
-    // 所持品が変わったときに呼ばれるイベント（UI更新などに使える）
     public event Action OnInventoryChanged;
 
-    // 鍵を持っているかどうかのフラグ
-    private bool hasKey = false;
+    // 鍵IDを管理するセット（重複なし）
+    private HashSet<string> ownedKeys = new HashSet<string>();
 
-    // 他のスクリプトから読み取るためのプロパティ（読み取り専用）
-    public bool HasKey => hasKey;
-
-    // 鍵を手に入れた時に呼ぶ関数
-    public void AddKey()
+    // 鍵を追加
+    public void AddKey(string keyId)
     {
-        if (!hasKey)
+        if (!ownedKeys.Contains(keyId))
         {
-            hasKey = true;
-            OnInventoryChanged?.Invoke(); // イベント通知
-            Debug.Log("[Inventory] 鍵を取得しました。");
+            ownedKeys.Add(keyId);
+            OnInventoryChanged?.Invoke();
+            Debug.Log($"[Inventory] 鍵「{keyId}」を取得しました。");
         }
     }
 
-    // 鍵を使った時に呼ぶ関数
-    public void UseKey()
+    // 鍵を使用（削除）
+    public void UseKey(string keyId)
     {
-        if (hasKey)
+        if (ownedKeys.Contains(keyId))
         {
-            hasKey = false;
-            OnInventoryChanged?.Invoke(); // イベント通知
-            Debug.Log("[Inventory] 鍵を使用しました。");
+            ownedKeys.Remove(keyId);
+            OnInventoryChanged?.Invoke();
+            Debug.Log($"[Inventory] 鍵「{keyId}」を使用しました。");
         }
+    }
+
+    // 鍵を持っているか確認
+    public bool HasKey(string keyId)
+    {
+        return ownedKeys.Contains(keyId);
     }
 }

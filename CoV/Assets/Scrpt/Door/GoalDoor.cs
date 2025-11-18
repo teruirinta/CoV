@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Collider))]
-public class DoorController : MonoBehaviour
+public class GoalDoor : MonoBehaviour
 {
     [Header("設定")]
     public string requiredKeyId = "EscapeKey";
@@ -48,18 +48,18 @@ public class DoorController : MonoBehaviour
         var inv = player.GetComponent<PlayerInventory>();
         if (inv == null)
         {
-            Debug.LogWarning("[DoorController] PlayerInventory が見つかりません。");
+            Debug.LogWarning("[DoorTrigger] PlayerInventory が見つかりません。");
             return;
         }
 
         if (inv.HasKey(requiredKeyId))
         {
-            Debug.Log($"[DoorController] 鍵「{requiredKeyId}」が使われました。シーンを切り替えます！");
+            Debug.Log($"[DoorTrigger] 鍵「{requiredKeyId}」が使われました。シーンを切り替えます！");
             SceneManager.LoadScene(sceneToLoad);
         }
         else
         {
-            Debug.Log($"[DoorController] 鍵「{requiredKeyId}」が必要です！");
+            Debug.Log($"[DoorTrigger] 鍵「{requiredKeyId}」が必要です！");
         }
     }
 }
