@@ -1,14 +1,14 @@
-ï»¿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class BatteryUI : MonoBehaviour
+public class BattryUI2 : MonoBehaviour
 {
-    [Header("UIå‚ç…§")]
-    public Image gaugeImage; // å††å½¢ã‚²ãƒ¼ã‚¸
-    public Image iconImage;  // ã‚¢ã‚¤ã‚³ãƒ³ç”»åƒ
-    public Image batteryCD;  // â˜…å††å½¢ã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³UIï¼ˆFilled Imageï¼‰
+    [Header("UIQÆ")]
+    public Image gaugeImage; // ƒoƒbƒeƒŠ[–{‘ÌƒQ[ƒWi‰~Œ`‚Å‚à–_‚Å‚à‰Âj
+    public Image iconImage;  // ƒAƒCƒRƒ“‰æ‘œ
+    public Image batteryCD;  // šc•ûŒüƒN[ƒ‹ƒ_ƒEƒ“UIiFilled Image / Verticalj
 
-    [Header("ã“ã®UIãŒæ‹…å½“ã™ã‚‹è¦–ç•Œã‚¿ã‚¤ãƒ—")]
+    [Header("‚±‚ÌUI‚ª’S“–‚·‚é‹ŠEƒ^ƒCƒv")]
     public VisionType targetVision; // NightScope / Inverted / Thermal
 
     private VisionManager visionManager;
@@ -17,11 +17,16 @@ public class BatteryUI : MonoBehaviour
     {
         visionManager = VisionManager.Instance;
 
-        // èµ·å‹•æ™‚ã¯éè¡¨ç¤º
+        // ‹N“®‚Í”ñ•\¦
         if (batteryCD != null)
         {
             batteryCD.enabled = false;
             batteryCD.fillAmount = 0f;
+
+            // š •K{İ’èi•ÛŒ¯j
+            batteryCD.type = Image.Type.Filled;
+            batteryCD.fillMethod = Image.FillMethod.Vertical;
+            batteryCD.fillOrigin = 0; // Topiã‚©‚çŒ¸‚Á‚Ä‚¢‚­j
         }
     }
 
@@ -29,17 +34,17 @@ public class BatteryUI : MonoBehaviour
     {
         if (visionManager == null) return;
 
-        // â—† ã“ã®UIãŒæ‹…å½“ã™ã‚‹è¦–ç•Œãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
+        // Ÿ ‚±‚ÌUI‚ª’S“–‚·‚é‹ŠEƒf[ƒ^‚ğæ“¾
         var visionData = visionManager.GetVisionData(targetVision);
         if (visionData == null) return;
 
         // -------------------------
-        // â—† ãƒãƒƒãƒ†ãƒªãƒ¼ã‚²ãƒ¼ã‚¸æ›´æ–°
+        // Ÿ ƒoƒbƒeƒŠ[ƒQ[ƒWXV
         // -------------------------
         float fillAmount = visionData.currentBattery / visionData.maxBattery;
         gaugeImage.fillAmount = Mathf.Clamp01(fillAmount);
 
-        // ã‚²ãƒ¼ã‚¸ã®è‰²
+        // ƒQ[ƒWF
         switch (targetVision)
         {
             case VisionType.NightScope:
@@ -57,7 +62,7 @@ public class BatteryUI : MonoBehaviour
         }
 
         // -------------------------
-        // â—† ã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³å††å½¢ã‚²ãƒ¼ã‚¸
+        // Ÿ ƒN[ƒ‹ƒ_ƒEƒ“cƒQ[ƒW
         // -------------------------
         float cd = visionManager.CooldownTimer;
         float cdMax = visionManager.CooldownDuration;
@@ -66,16 +71,16 @@ public class BatteryUI : MonoBehaviour
         {
             if (cd > 0f)
             {
-                // è¡¨ç¤º
                 batteryCD.enabled = true;
 
-                // 1 â†’ 0 ã«æ¸›ã‚‹
+                // cd(3¨0) ¨ 1¨0 ‚ÖƒXƒP[ƒ‹
                 float ratio = Mathf.Clamp01(cd / cdMax);
+
+                // š ã‚©‚çŒ¸‚écƒQ[ƒW
                 batteryCD.fillAmount = ratio;
             }
             else
             {
-                // ã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³çµ‚äº† â†’ éè¡¨ç¤º
                 batteryCD.enabled = false;
                 batteryCD.fillAmount = 0f;
             }

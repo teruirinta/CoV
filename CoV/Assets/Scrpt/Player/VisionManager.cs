@@ -21,7 +21,9 @@ public class VisionManager : MonoBehaviour
     private float cooldownTimer = 0f;
 
     // 🔥 外部から読み取り専用でアクセス可能にする
-    public float CooldownTimer => cooldownTimer;
+    public float CooldownTimer;     // 現在のクールダウン残り時間
+    public float CooldownDuration;  // 最大のクールダウン時間（例：3秒）
+
 
     [Header("各視界データ (ScriptableObject)")]
     public List<VisionData> visionDataList = new List<VisionData>();
@@ -46,7 +48,12 @@ public class VisionManager : MonoBehaviour
 
     void Update()
     {
+        // クールダウン計算
         cooldownTimer -= Time.deltaTime;
+
+        // ★ BatteryUI用に値を同期
+        CooldownTimer = Mathf.Max(cooldownTimer, 0f); // マイナスに行かないように
+        CooldownDuration = visionCooldown;
 
         if (cooldownTimer <= 0f)
         {
@@ -55,6 +62,7 @@ public class VisionManager : MonoBehaviour
 
         UpdateBatteryUsage();
     }
+
 
     void HandleInput()
     {

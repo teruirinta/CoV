@@ -7471,16 +7471,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 215820697}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -510}
   m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 4348075413337096043}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Father: {fileID: 5037379846959460812}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 722, y: -202}
+  m_AnchoredPosition: {x: 73, y: 39}
   m_SizeDelta: {x: 310, y: 310}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &215820699
@@ -7504,13 +7504,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 0d2d8034add57a24bae2bfb21ace831d, type: 3}
-  m_Type: 0
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
   m_FillClockwise: 1
-  m_FillOrigin: 0
+  m_FillOrigin: 2
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
 --- !u!222 &215820700
@@ -33604,13 +33604,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1013156491}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: -510}
   m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 6177183238547492103}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 203, y: -161}
@@ -33637,13 +33637,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 0d2d8034add57a24bae2bfb21ace831d, type: 3}
-  m_Type: 0
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
   m_FillClockwise: 1
-  m_FillOrigin: 0
+  m_FillOrigin: 2
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
 --- !u!222 &1013156494
@@ -35806,13 +35806,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1086672671}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: -510}
   m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2476968962095549357}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -57, y: -161}
@@ -35839,13 +35839,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 0d2d8034add57a24bae2bfb21ace831d, type: 3}
-  m_Type: 0
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
   m_FillClockwise: 1
-  m_FillOrigin: 0
+  m_FillOrigin: 2
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
 --- !u!222 &1086672674
@@ -72210,9 +72210,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1086672672}
   - {fileID: 4755552750423553411}
   - {fileID: 9216792060184603009}
+  - {fileID: 1086672672}
   m_Father: {fileID: 4348075413337096043}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2562982555057451017
@@ -72977,6 +72977,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2476968962095549357}
   - component: {fileID: 5595932516747111807}
+  - component: {fileID: 5595932516747111808}
   m_Layer: 0
   m_Name: Battery_Th
   m_TagString: Untagged
@@ -73283,7 +73284,6 @@ Transform:
   m_Children:
   - {fileID: 6177183238547492103}
   - {fileID: 5037379846959460812}
-  - {fileID: 215820698}
   - {fileID: 2476968962095549357}
   m_Father: {fileID: 7992098313328129822}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -73348,6 +73348,7 @@ Transform:
   m_Children:
   - {fileID: 6819843722398361366}
   - {fileID: 1281214177884175256}
+  - {fileID: 215820698}
   m_Father: {fileID: 4348075413337096043}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &5039570708024842992
@@ -73570,7 +73571,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gaugeImage: {fileID: 3796505002534062917}
   iconImage: {fileID: 8784543825645531869}
-  batteryCD: {fileID: 0}
+  batteryCD: {fileID: 1086672673}
+  targetVision: 3
+--- !u!114 &5595932516747111808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3403303858086540249}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc864fa25a870eb4f87d213548935b4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gaugeImage: {fileID: 3796505002534062917}
+  iconImage: {fileID: 8784543825645531869}
+  batteryCD: {fileID: 1086672673}
   targetVision: 3
 --- !u!114 &5647124251583054450
 MonoBehaviour:
@@ -73717,9 +73734,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   requiredKeyId: EscapeKey
-  consumeKeyOnOpen: 1
-  openDuration: 1
-  doorAnimator: {fileID: 0}
+  sceneToLoad: NextScene
 --- !u!1 &6004232234305892578
 GameObject:
   m_ObjectHideFlags: 0
@@ -74018,6 +74033,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5037379846959460812}
   - component: {fileID: 6962314226026817664}
+  - component: {fileID: 6962314226026817665}
   m_Layer: 0
   m_Name: Battery_In
   m_TagString: Untagged
@@ -74035,6 +74051,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 832d4938baae2894aa6e531d8d5775bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gaugeImage: {fileID: 7641441346635569722}
+  iconImage: {fileID: 3573192062401942911}
+  batteryCD: {fileID: 215820699}
+  targetVision: 2
+--- !u!114 &6962314226026817665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6957380774693733737}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc864fa25a870eb4f87d213548935b4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   gaugeImage: {fileID: 7641441346635569722}
@@ -74280,6 +74312,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6177183238547492103}
   - component: {fileID: 6245627966012529580}
+  - component: {fileID: 7927828597578333416}
   m_Layer: 0
   m_Name: Battery_NS
   m_TagString: Untagged
@@ -74287,6 +74320,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &7927828597578333416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7927828597578333415}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc864fa25a870eb4f87d213548935b4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gaugeImage: {fileID: 1442754674531619513}
+  iconImage: {fileID: 917301943880709927}
+  batteryCD: {fileID: 1013156493}
+  targetVision: 1
 --- !u!224 &7992098313328129822
 RectTransform:
   m_ObjectHideFlags: 0
