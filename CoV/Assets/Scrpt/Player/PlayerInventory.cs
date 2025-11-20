@@ -1,39 +1,54 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class PlayerInventory : MonoBehaviour
 {
     public event Action OnInventoryChanged;
-
-    // 鍵IDを管理するセット（重複なし）
+    public EnemyManager enemyManager;
     private HashSet<string> ownedKeys = new HashSet<string>();
 
-    // 鍵を追加
+    // RawImage用の鍵UIデータ
+    [Serializable]
+    public class KeyUIData
+    {
+        public string keyId;               // 鍵のID
+    }
+
+    public List<KeyUIData> keyUIDatas = new List<KeyUIData>();
+
     public void AddKey(string keyId)
     {
         if (!ownedKeys.Contains(keyId))
         {
             ownedKeys.Add(keyId);
-            OnInventoryChanged?.Invoke();
             Debug.Log($"[Inventory] 鍵「{keyId}」を取得しました。");
+            OnInventoryChanged?.Invoke();
+
+            // 敵を出現させる
+            if (enemyManager != null)
+            {
+                enemyManager.SpawnEnemyOnce(); // ← EnemyManagerにこの関数を作ってね！
+            }
         }
     }
 
-    // 鍵を使用（削除）
     public void UseKey(string keyId)
     {
         if (ownedKeys.Contains(keyId))
         {
             ownedKeys.Remove(keyId);
-            OnInventoryChanged?.Invoke();
             Debug.Log($"[Inventory] 鍵「{keyId}」を使用しました。");
+            OnInventoryChanged?.Invoke();
+           
         }
     }
 
-    // 鍵を持っているか確認
     public bool HasKey(string keyId)
     {
         return ownedKeys.Contains(keyId);
     }
+
+    
 }

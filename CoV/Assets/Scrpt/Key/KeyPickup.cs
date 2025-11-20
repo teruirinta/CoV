@@ -55,8 +55,6 @@ public class KeyPickup : MonoBehaviour
         if (pickupSound)
             AudioSource.PlayClipAtPoint(pickupSound, transform.position);
 
-        // —áFŒ®‚ğE‚Á‚½‚ç "SecretRoom" ƒV[ƒ“‚ğ’Ç‰Á‚Å“Ç‚İ‚Ş
-        SceneManager.LoadScene("kar2", LoadSceneMode.Additive);
 
 
         if (pickupEfect)
