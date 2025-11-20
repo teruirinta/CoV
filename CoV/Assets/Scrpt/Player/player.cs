@@ -299,10 +299,12 @@ public class player : MonoBehaviour
         {
             if (hit.CompareTag("Enemy"))
             {
-                SceneManager.LoadScene("GameOver");
+                SceneController.CurrentSceneName(); // 今のシーン名を記録！
+                SceneManager.LoadScene("GameOver"); // ゲームオーバー画面へ
             }
         }
     }
+
 
     void HandleVisionChangeWithFade()
     {

@@ -6,8 +6,8 @@ using System.Collections.Generic;
 public class KeySwitchElement
 {
     public string keyId;
-    public GameObject objectWhenKeyIsPresent;
-    public GameObject objectWhenKeyIsAbsent;
+    public GameObject objectKey;
+    public GameObject objectNoKey;
 }
 
 public class ObjecManager : MonoBehaviour
@@ -30,10 +30,10 @@ public class ObjecManager : MonoBehaviour
         foreach (var element in switchElements)
         {
             bool hasKey = playerInventory.HasKey(element.keyId);
-            if (element.objectWhenKeyIsPresent != null)
-                element.objectWhenKeyIsPresent.SetActive(hasKey);
-            if (element.objectWhenKeyIsAbsent != null)
-                element.objectWhenKeyIsAbsent.SetActive(!hasKey);
+            if (element.objectKey != null)
+                element.objectKey.SetActive(hasKey);
+            if (element.objectNoKey != null)
+                element.objectNoKey.SetActive(!hasKey);
         }
     }
 
