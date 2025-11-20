@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(Collider))]
+
 public class KeyPickup : MonoBehaviour
 {
     [Header("設定")]
@@ -8,39 +9,35 @@ public class KeyPickup : MonoBehaviour
     public AudioClip pickupSound;
     public ParticleSystem pickupEfect;
     public bool autoSaveOnPickup = true;
+    public float pickupRange = 3f;
+    public float viewAngleThreshold = 30f; // 視線の角度許容範囲
 
-    private bool isPlayerNearby = false;
     private GameObject player;
+    private Camera playerCamera;
 
-    private void Reset()
+    private void Start()
     {
-        var col = GetComponent<Collider>();
-        col.isTrigger = true;
+        player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+            playerCamera = player.GetComponentInChildren<Camera>();
+
+        if (playerCamera == null)
+            Debug.LogWarning("[KeyPickup] プレイヤーのカメラが見つかりません！");
     }
 
     private void Update()
     {
-        if (isPlayerNearby && Input.GetKeyDown(KeyCode.E))
+        if (player == null || playerCamera == null) return;
+
+        float distance = Vector3.Distance(transform.position, player.transform.position);
+        if (distance > pickupRange) return;
+
+        Vector3 toKey = (transform.position - playerCamera.transform.position).normalized;
+        float angle = Vector3.Angle(playerCamera.transform.forward, toKey);
+
+        if (angle <= viewAngleThreshold && Input.GetKeyDown(KeyCode.E))
         {
             TryPickup();
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isPlayerNearby = true;
-            player = other.gameObject;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isPlayerNearby = false;
-            player = null;
         }
     }
 
@@ -58,8 +55,15 @@ public class KeyPickup : MonoBehaviour
         if (pickupSound)
             AudioSource.PlayClipAtPoint(pickupSound, transform.position);
 
+        // 例：鍵を拾ったら "SecretRoom" シーンを追加で読み込む
+        SceneManager.LoadScene("kar2", LoadSceneMode.Additive);
+
+
         if (pickupEfect)
-            Instantiate(pickupEfect, transform.position, Quaternion.identity);
+        {
+            var effect = Instantiate(pickupEfect, transform.position, Quaternion.identity);
+            Destroy(effect.gameObject, effect.main.duration);
+        }
 
         if (autoSaveOnPickup)
             SaveManager.Instance?.SaveKeyObtained(keyId);
