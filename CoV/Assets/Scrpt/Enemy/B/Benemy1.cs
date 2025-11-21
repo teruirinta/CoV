@@ -60,6 +60,12 @@ public class Benemy1 : MonoBehaviour
 
     void Update()
     {
+        // normalObject ‚ª‰ó‚ê‚½‚ç mannequinObject ‚à‰ó‚·
+        if (normalObject == null && mannequinObject != null)
+        {
+            Destroy(mannequinObject);
+        }
+
         if (VisionManager.Instance == null) return;
 
         bool shouldInvert = (VisionManager.Instance.CurrentVision == VisionType.Inverted);
@@ -178,6 +184,18 @@ public class Benemy1 : MonoBehaviour
             {
                 normalObject.gameObject.SetActive(true);
             }
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (normalObject != null)
+        {
+            Destroy(normalObject.gameObject);
+        }
+        if (mannequinObject != null)
+        {
+            Destroy(mannequinObject);
         }
     }
 }
