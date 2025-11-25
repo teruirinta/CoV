@@ -2,15 +2,25 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    void OnCollisionEnter(Collision collision)
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
     {
-        Debug.Log("ぶつかった相手: " + collision.gameObject.name);
+        
+    }
 
-        if (collision.gameObject.CompareTag("Enemy"))
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+    void OnParticleCollision(GameObject other)
+    {
+        Debug.Log("パーティクルが " + other.name + " に当たったよ！");
+        if (other.CompareTag("Enemy"))
         {
-            Destroy(collision.gameObject); // 相手も破壊！
+
+            Destroy(other);
         }
 
-        Destroy(gameObject); // 自分も破壊！
     }
 }
