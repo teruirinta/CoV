@@ -14,7 +14,7 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 0, g: 0, b: 0, a: 1}
   m_FogMode: 2
   m_FogDensity: 0.4
@@ -527,8 +527,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1598316146779731889, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.074
+      objectReference: {fileID: 0}
+    - target: {fileID: 1598316146779731889, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 1.002
       objectReference: {fileID: 0}
     - target: {fileID: 1598316146779731889, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -536,15 +540,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1778027445844186217, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 10.04
       objectReference: {fileID: 0}
     - target: {fileID: 1778027445844186217, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.812
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1778027445844186217, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -8.977
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1778027445844186217, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -574,6 +578,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2408682876727544307, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3296397458095480374, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: invertVolume
       value: 
@@ -590,9 +598,25 @@ PrefabInstance:
       propertyPath: nightScopeVolume
       value: 
       objectReference: {fileID: 1710579345}
+    - target: {fileID: 3559546518171584175, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: maxStock
+      value: 10000
+      objectReference: {fileID: 0}
+    - target: {fileID: 3559546518171584175, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: powderBallPrefab
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3559546518171584175, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: powderEffectPrefab
+      value: 
+      objectReference: {fileID: 3619280578767133182, guid: 46cc41c82caa6f54caaec3e02e9793aa, type: 3}
     - target: {fileID: 6029981923451554268, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: moveSpeed
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: 'wallsToEnableInNightScope.Array.data[0]'
@@ -3236,7 +3260,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8957123526836591599, guid: aff452878480a8846b5b4ea51c9a7411, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5248,7 +5272,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1626485459}
   - component: {fileID: 1626485458}
-  - component: {fileID: 1626485460}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -5287,18 +5310,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1626485460
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1626485457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa2de6aba1f55b44ebb52bd322c088bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1632111369 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8602331302000076926, guid: beef3bcde1610f04aa96275436147bb9, type: 3}
@@ -7272,6 +7283,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 99388906}
     - target: {fileID: 4848123410074515715, guid: 1351e26c9a9a29c44a906dfff0fe412e, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4848123410074515715, guid: 1351e26c9a9a29c44a906dfff0fe412e, type: 3}
       propertyPath: chaseSpeed
       value: 3.1
       objectReference: {fileID: 0}
@@ -7395,6 +7410,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: bEnemy
       objectReference: {fileID: 0}
+    - target: {fileID: 1634329822866494952, guid: ffb8198a5c2ef5a45acac05660d91ff4, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7065776380275350537, guid: ffb8198a5c2ef5a45acac05660d91ff4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9.85
@@ -7434,6 +7453,10 @@ PrefabInstance:
     - target: {fileID: 7065776380275350537, guid: ffb8198a5c2ef5a45acac05660d91ff4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7786828768540668029, guid: ffb8198a5c2ef5a45acac05660d91ff4, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7786828768540668029, guid: ffb8198a5c2ef5a45acac05660d91ff4, type: 3}
       propertyPath: playerTransform
