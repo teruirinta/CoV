@@ -2,22 +2,15 @@ using UnityEngine;
 
 public class PowderBall : MonoBehaviour
 {
-    public ParticleSystem hitEffect;
-
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("•²‚ª " + collision.gameObject.name + " ‚É“–‚½‚Á‚½I");
+        Debug.Log("‚Ô‚Â‚©‚Á‚½‘Šè: " + collision.gameObject.name);
 
-        if (hitEffect != null)
+        if (collision.gameObject.CompareTag("Enemy"))
         {
-            GameObject effect = Instantiate(hitEffect.gameObject, transform.position, Quaternion.identity);
-            ParticleSystem ps = effect.GetComponent<ParticleSystem>();
-            if (ps != null)
-            {
-                ps.Play();
-            }
+            Destroy(collision.gameObject); // ‘Šè‚à”j‰óI
         }
 
-        Destroy(gameObject);
+        Destroy(gameObject); // ©•ª‚à”j‰óI
     }
 }
