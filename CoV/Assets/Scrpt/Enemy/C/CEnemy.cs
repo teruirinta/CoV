@@ -4,48 +4,70 @@ using UnityEngine.SceneManagement;
 public class CEnemy : MonoBehaviour
 {
     [Header("攻撃判定の距離（プレイヤーとの距離）")]
-    public float detectionRange = 3f;   // プレイヤーに反応する距離
+    public float detectionRange = 3f;
 
     [Header("襲い掛かる時の移動速度")]
-    public float attackSpeed = 5f;      // 攻撃時の突進速度
+    public float attackSpeed = 5f;
+
+    [Header("元の位置に戻る速度")]
+    public float returnSpeed = 2f;   // ▼追加：戻るときの速度
 
     [Header("敵のRenderer（透明 → 可視化制御用）")]
-    public Renderer enemyRenderer;      // Thermal の時だけ表示する
+    public Renderer enemyRenderer;
 
     private Transform player;
     private bool isDead = false;
     private bool isAttacking = false;
 
+    private bool playerIsVisible = false;
+
+    // ▼追加：初期位置
+    private Vector3 initialPosition;
+
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
-        // 初期状態では透明
+        // ▼追加：開始位置を保存
+        initialPosition = transform.position;
+
         if (enemyRenderer != null)
-        {
             enemyRenderer.enabled = false;
-        }
-            
     }
 
     void Update()
     {
         if (isDead) return;
 
-        // --- Thermal視界なら敵が見える、その他は透明 ---
-        if (enemyRenderer != null)
+        // ① Thermal視界でプレイヤーが見えるか？
+        playerIsVisible = (VisionManager.Instance.CurrentVision == VisionType.Thermal);
+
+        // ② プレイヤーが見えない → 追跡停止 → 初期位置へ戻る
+        if (!playerIsVisible)
         {
-            // 現状のコードでは毎フレーム上書きされている
-            enemyRenderer.enabled = (VisionManager.Instance.CurrentVision == VisionType.Thermal);
+            isAttacking = false;
+
+            // 姿を消す
+            if (enemyRenderer != null)
+                enemyRenderer.enabled = false;
+
+            // ▼追加：初期位置へ戻る
+            ReturnToInitialPosition();
+            return;
         }
 
-        // ここで距離判定して攻撃開始
+        // ③ Thermal状態なら見える
+        if (enemyRenderer != null)
+            enemyRenderer.enabled = true;
+
+        // ④ 距離判定して追跡開始
         float distance = Vector3.Distance(transform.position, player.position);
         if (!isAttacking && distance <= detectionRange)
         {
             StartAttack();
         }
 
+        // ⑤ 追跡中はプレイヤーに向かって移動
         if (isAttacking)
         {
             transform.position = Vector3.MoveTowards(
@@ -53,47 +75,27 @@ public class CEnemy : MonoBehaviour
                 player.position,
                 attackSpeed * Time.deltaTime
             );
+        }
+    }
 
-            // 襲う間は常に見えるようにする
+    // ▼追加：初期位置に戻る処理
+    void ReturnToInitialPosition()
+    {
+        // 初期位置に近づく
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            initialPosition,
+            returnSpeed * Time.deltaTime
+        );
+
+        // 戻りきったら透明・待機状態
+        float dist = Vector3.Distance(transform.position, initialPosition);
+        if (dist < 0.1f)
+        {
             if (enemyRenderer != null)
-            {
-                enemyRenderer.enabled = true;
-            }
-                
-        }
-    }
+                enemyRenderer.enabled = false;
 
-    // --- Thermal表示管理 ---
-    void HandleVisibility()
-    {
-        // Thermal 以外の時は透明
-        bool shouldVisible = (VisionManager.Instance.CurrentVision == VisionType.Thermal);
-
-        if (enemyRenderer != null)
-        {
-            enemyRenderer.enabled = shouldVisible;
-        }
-           
-    }
-
-    // --- 一定距離に入ったら襲い掛かる ---
-    void CheckPlayerDistance()
-    {
-        float dist = Vector3.Distance(transform.position, player.position);
-
-        if (!isAttacking && dist <= detectionRange)
-        {
-            StartAttack();
-        }
-
-        // 襲い中はプレイヤーに向かって突進
-        if (isAttacking)
-        {
-            transform.position = Vector3.MoveTowards(
-                transform.position,
-                player.position,
-                attackSpeed * Time.deltaTime
-            );
+            isAttacking = false;
         }
     }
 
@@ -101,12 +103,8 @@ public class CEnemy : MonoBehaviour
     {
         isAttacking = true;
 
-        // Thermal に関係なく「襲い掛かる瞬間だけ姿が見える」演出したいならここで true にしても OK
-        bool shouldVisible = (VisionManager.Instance.CurrentVision == VisionType.Thermal);
-        {
+        if (enemyRenderer != null)
             enemyRenderer.enabled = true;
-        }
-            
     }
 
     private void OnTriggerEnter(Collider other)
@@ -116,14 +114,11 @@ public class CEnemy : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             Debug.Log("Player Dead");
-            // プレイヤー死亡処理をここに
             SceneManager.LoadScene("GameOver");
         }
 
         if (other.CompareTag("Salt"))
-        {
             Die();
-        }
     }
 
     void Die()
@@ -132,9 +127,7 @@ public class CEnemy : MonoBehaviour
         isAttacking = false;
 
         if (enemyRenderer != null)
-        {
             enemyRenderer.enabled = false;
-        }
 
         GetComponent<Collider>().enabled = false;
 
