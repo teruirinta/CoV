@@ -23,8 +23,15 @@ public class BallThrower : MonoBehaviour
 
     void Update()
     {
-        // エイム中のズーム処理
-        if (Input.GetMouseButton(1))
+        // ★ Xbox LT 入力（旧 Input Manager）
+        float lt = Input.GetAxis("LT");   // 0〜1（または -1〜1 の場合あり）
+
+        // ★ Xbox RT 入力（旧 Input Manager）
+        float rt = Input.GetAxis("RT");
+
+        // ■ エイム（LT または マウス右）
+
+        if (lt > 0.2f || Input.GetMouseButton(1) || Input.GetButton("LT"))
         {
             isAiming = true;
             mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, zoomFOV, Time.deltaTime * zoomSpeed);
@@ -35,8 +42,9 @@ public class BallThrower : MonoBehaviour
             mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, normalFOV, Time.deltaTime * zoomSpeed);
         }
 
-        // 粉を投げる処理
-        if (isAiming && Input.GetMouseButtonDown(0))
+        // ■ 粉を投げる（RT または マウス左）
+
+        if (isAiming && (rt > 0.5f || Input.GetMouseButtonDown(0) || Input.GetButtonDown("RT")))
         {
             if (currentStock > 0)
             {
@@ -48,14 +56,12 @@ public class BallThrower : MonoBehaviour
             {
                 Debug.Log("粉がないよ〜！");
             }
-
         }
 
     }
 
     void ThrowPowder()
     {
-        // 画面中央からレイを飛ばす
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0));
         Vector3 direction = ray.direction;
         Quaternion rotation = Quaternion.LookRotation(direction);
@@ -63,10 +69,8 @@ public class BallThrower : MonoBehaviour
         ParticleSystem powder = Instantiate(powderEffectPrefab, throwPoint.position, rotation);
         powder.Play();
 
-        // パーティクルの寿命に合わせて削除
         Destroy(powder.gameObject, powder.main.duration + powder.main.startLifetime.constantMax);
 
-        // Rigidbodyがある場合は速度を設定
         Rigidbody rb = powder.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -75,15 +79,9 @@ public class BallThrower : MonoBehaviour
         }
     }
 
-
-
-
-
     public void AddStock(int amount)
     {
         currentStock = Mathf.Min(currentStock + amount, maxStock);
         Debug.Log("粉を補充！現在のストック: " + currentStock);
     }
-
- 
 }

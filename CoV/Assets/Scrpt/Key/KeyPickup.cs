@@ -35,7 +35,7 @@ public class KeyPickup : MonoBehaviour
         Vector3 toKey = (transform.position - playerCamera.transform.position).normalized;
         float angle = Vector3.Angle(playerCamera.transform.forward, toKey);
 
-        if (angle <= viewAngleThreshold && Input.GetKeyDown(KeyCode.E))
+        if (angle <= viewAngleThreshold && Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("Jump"))
         {
             TryPickup();
         }
