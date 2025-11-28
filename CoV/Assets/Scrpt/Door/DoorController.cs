@@ -19,7 +19,7 @@ public class DoorController : MonoBehaviour
 
     private void Update()
     {
-        if (isPlayerNearby && Input.GetKeyDown(KeyCode.E))
+        if (isPlayerNearby && Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("Jump"))
         {
             TryOpenDoor();
         }
