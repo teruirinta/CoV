@@ -53,7 +53,7 @@ public class BattryUI2 : MonoBehaviour
             case VisionType.Inverted:
                 gaugeImage.color = Color.cyan;
                 break;
-            case VisionType.Thermal:
+            case VisionType.MemoryVision:
                 gaugeImage.color = Color.red;
                 break;
             default:

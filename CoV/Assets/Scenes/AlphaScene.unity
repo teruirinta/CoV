@@ -320,8 +320,20 @@ PrefabInstance:
       value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: panelsByTag.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: wallsToEnableInNightScope.Array.size
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: wallsToEnableMemoryVision.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: wallsToDisableMemoryVision.Array.size
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: 'wallsToEnableInNightScope.Array.data[0]'
@@ -340,11 +352,35 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1917180792}
     - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: 'wallsToEnableMemoryVision.Array.data[0]'
+      value: 
+      objectReference: {fileID: 240421300}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: 'wallsToEnableMemoryVision.Array.data[1]'
+      value: 
+      objectReference: {fileID: 224740662}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: 'wallsToEnableMemoryVision.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1765351027}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: 'wallsToEnableMemoryVision.Array.data[3]'
+      value: 
+      objectReference: {fileID: 1917180792}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: 'wallsToDisableInNightScope.Array.data[0]'
       value: 
       objectReference: {fileID: 1682288211}
     - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
       propertyPath: 'wallsToDisableInNightScope.Array.data[1]'
+      value: 
+      objectReference: {fileID: 869404054}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: 'wallsToDisableMemoryVision.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1682288211}
+    - target: {fileID: 7475299262427973135, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+      propertyPath: 'wallsToDisableMemoryVision.Array.data[1]'
       value: 
       objectReference: {fileID: 869404054}
     - target: {fileID: 8093686759717891466, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
@@ -44419,6 +44455,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6574127760559966965, guid: aff452878480a8846b5b4ea51c9a7411, type: 3}
+      propertyPath: m_Name
+      value: MemoryVolume
+      objectReference: {fileID: 0}
     - target: {fileID: 8957123526836591599, guid: aff452878480a8846b5b4ea51c9a7411, type: 3}
       propertyPath: m_Name
       value: Volume
@@ -73701,12 +73741,28 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3570261108634532995, guid: 7bc4dd1242fad9e4a987e87f07155a94, type: 3}
+      propertyPath: m_Name
+      value: Battery_Me
+      objectReference: {fileID: 0}
+    - target: {fileID: 3570261108634532995, guid: 7bc4dd1242fad9e4a987e87f07155a94, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5307268760426617099, guid: 7bc4dd1242fad9e4a987e87f07155a94, type: 3}
+      propertyPath: m_Name
+      value: Icon_Me
       objectReference: {fileID: 0}
     - target: {fileID: 5710906173537467534, guid: 7bc4dd1242fad9e4a987e87f07155a94, type: 3}
       propertyPath: m_Name
       value: Canvas (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6615283168056358585, guid: 7bc4dd1242fad9e4a987e87f07155a94, type: 3}
+      propertyPath: m_Name
+      value: Cd_Me
+      objectReference: {fileID: 0}
+    - target: {fileID: 7678172664649538436, guid: 7bc4dd1242fad9e4a987e87f07155a94, type: 3}
+      propertyPath: m_Name
+      value: Gauge_Me
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

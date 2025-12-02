@@ -61,6 +61,13 @@ public class player : MonoBehaviour
     public TMPIndicatorByTag[] tmpIndicatorsByTag;
     public PanelByTag[] panelsByTag;
 
+    // === ナイトスコープ関連 ===
+    [Header("記憶メガネ時に表示するオブジェクト、ヒント")]
+    public GameObject[] wallsToEnableMemoryVision;
+    [Header("記憶メガネ時に非表示にするオブジェクト")]
+    public GameObject[] wallsToDisableMemoryVision;
+   
+
 
 
     void Start()
@@ -84,6 +91,7 @@ public class player : MonoBehaviour
         HandleLook();
         HandleInteract();
         HandleWallVisibility();
+        HandleMemoryVisionVisibility();
         HandleSpotlight();
         HandleBatteryHighlight();
         HandleIndicators();
@@ -206,6 +214,40 @@ public class player : MonoBehaviour
         }
     }
 
+    void HandleMemoryVisionVisibility()
+    {
+        if (VisionManager.Instance == null) return;
+
+        bool isMemory = (VisionManager.Instance.CurrentVision == VisionType.MemoryVision);
+
+        // MemoryVision 時に非表示
+        foreach (GameObject obj in wallsToDisableMemoryVision)
+        {
+            if (obj != null)
+            {
+                var renderer = obj.GetComponent<Renderer>();
+                if (renderer != null) renderer.enabled = !isMemory;
+
+                var collider = obj.GetComponent<Collider>();
+                if (collider != null) collider.enabled = !isMemory;
+            }
+        }
+
+        // MemoryVision 時に表示
+        foreach (GameObject obj in wallsToEnableMemoryVision)
+        {
+            if (obj != null)
+            {
+                var renderer = obj.GetComponent<Renderer>();
+                if (renderer != null) renderer.enabled = isMemory;
+
+                var collider = obj.GetComponent<Collider>();
+                if (collider != null) collider.enabled = isMemory;
+            }
+        }
+    }
+
+
     void HandleSpotlight()
     {
         if (VisionManager.Instance == null || cameraSpotlight == null) return;
@@ -320,14 +362,17 @@ public class player : MonoBehaviour
             {
                 isUpsideDown = (currentVision == VisionType.Inverted);
                 velocity.y = 0f;
+
                 Vector3 euler = transform.eulerAngles;
                 euler.z = isUpsideDown ? 180f : 0f;
                 transform.eulerAngles = euler;
 
                 HandleWallVisibility();
+                HandleMemoryVisionVisibility();  // ← ★ 追加
                 HandleSpotlight();
             });
         }
     }
+
 
 }

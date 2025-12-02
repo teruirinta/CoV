@@ -46,7 +46,7 @@ public class VisionEffectController : MonoBehaviour
                 SetFog(defaultFogState); // 他は通常通り
                 break;
 
-            case VisionType.Thermal:
+            case VisionType.MemoryVision:
                 SetActiveVolume(thermalVolume);
                 SetFog(defaultFogState);
                 break;

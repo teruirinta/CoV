@@ -6,7 +6,7 @@ public enum VisionType
     Normal,
     NightScope,
     Inverted,
-    Thermal
+    MemoryVision
 }
 
 public class VisionManager : MonoBehaviour
@@ -78,7 +78,7 @@ public class VisionManager : MonoBehaviour
         }
         else if (Input.GetButtonDown("Fire3") || Input.GetKeyDown(KeyCode.Alpha3))
         {
-            TryToggleVision(VisionType.Thermal);
+            TryToggleVision(VisionType.MemoryVision);
         }
     }
 

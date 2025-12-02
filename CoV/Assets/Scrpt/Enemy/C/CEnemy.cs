@@ -40,7 +40,7 @@ public class CEnemy : MonoBehaviour
         if (isDead) return;
 
         // ① Thermal視界でプレイヤーが見えるか？
-        playerIsVisible = (VisionManager.Instance.CurrentVision == VisionType.Thermal);
+        playerIsVisible = (VisionManager.Instance.CurrentVision == VisionType.MemoryVision);
 
         // ② プレイヤーが見えない → 追跡停止 → 初期位置へ戻る
         if (!playerIsVisible)
