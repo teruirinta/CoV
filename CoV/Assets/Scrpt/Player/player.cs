@@ -167,7 +167,8 @@ public class player : MonoBehaviour
     void HandleInteract()
     {
         if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.JoystickButton0))
-        {
+        { 
+           
             if (currentBatteryItem != null) return;
 
             Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
