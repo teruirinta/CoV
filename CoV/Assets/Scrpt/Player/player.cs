@@ -61,7 +61,7 @@ public class player : MonoBehaviour
     public TMPIndicatorByTag[] tmpIndicatorsByTag;
     public PanelByTag[] panelsByTag;
 
-    // === ナイトスコープ関連 ===
+    // === 記憶メガネ関連 ===
     [Header("記憶メガネ時に表示するオブジェクト、ヒント")]
     public GameObject[] wallsToEnableMemoryVision;
     [Header("記憶メガネ時に非表示にするオブジェクト")]
