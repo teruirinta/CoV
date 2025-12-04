@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public enum VisionType
 {
@@ -20,10 +21,17 @@ public class VisionManager : MonoBehaviour
     public float visionCooldown = 3f;
     private float cooldownTimer = 0f;
 
-    // 🔥 外部から読み取り専用でアクセス可能にする
-    public float CooldownTimer;     // 現在のクールダウン残り時間
-    public float CooldownDuration;  // 最大のクールダウン時間（例：3秒）
+    // ★ BatteryUI用
+    public float CooldownTimer;
+    public float CooldownDuration;
 
+    [Header("Memory Vision")]
+    public Volume memoryVolume;
+    public VolumeProfile memoryProfile;
+    public float fogDencity = 0.8f;  // Fog 30%軽減 → density を 0.7倍にする
+
+    private float originalFogDensity;   // ← Fog 初期値保存用
+    private bool fogModified = false;   // ← 連続で書き換えないように制御
 
     [Header("各視界データ (ScriptableObject)")]
     public List<VisionData> visionDataList = new List<VisionData>();
@@ -44,15 +52,15 @@ public class VisionManager : MonoBehaviour
         {
             data.currentBattery = data.maxBattery;
         }
+
+        // Fog の初期値を記録
+        originalFogDensity = RenderSettings.fogDensity;
     }
 
     void Update()
     {
-        // クールダウン計算
         cooldownTimer -= Time.deltaTime;
-
-        // ★ BatteryUI用に値を同期
-        CooldownTimer = Mathf.Max(cooldownTimer, 0f); // マイナスに行かないように
+        CooldownTimer = Mathf.Max(cooldownTimer, 0f);
         CooldownDuration = visionCooldown;
 
         if (cooldownTimer <= 0f)
@@ -61,8 +69,31 @@ public class VisionManager : MonoBehaviour
         }
 
         UpdateBatteryUsage();
+        UpdateFogForMemoryVision();  // ★ Fog処理を毎フレーム実行
     }
 
+    // ============================
+    //      Fog の制御
+    // ============================
+    void UpdateFogForMemoryVision()
+    {
+        if (CurrentVision == VisionType.MemoryVision)
+        {
+            if (!fogModified)
+            {
+                fogModified = true;
+                RenderSettings.fogDensity = originalFogDensity * fogDencity;
+            }
+        }
+        else
+        {
+            if (fogModified)
+            {
+                fogModified = false;
+                RenderSettings.fogDensity = originalFogDensity;
+            }
+        }
+    }
 
     void HandleInput()
     {
@@ -135,4 +166,5 @@ public class VisionManager : MonoBehaviour
     {
         return GetVisionData(CurrentVision);
     }
+
 }
