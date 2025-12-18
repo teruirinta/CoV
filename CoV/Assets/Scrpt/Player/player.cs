@@ -35,12 +35,7 @@ public class player : MonoBehaviour
     private BatteryItem currentBatteryItem;
     private float interactRange = 3f;
 
-    [System.Serializable]
-    public class HandIndicatorByTag
-    {
-        public string tag;
-        public GameObject indicator;
-    }
+ 
 
     [System.Serializable]
     public class TMPIndicatorByTag
@@ -49,17 +44,9 @@ public class player : MonoBehaviour
         public GameObject indicator;
     }
 
-    [System.Serializable]
-    public class PanelByTag
-    {
-        public string tag;
-        public GameObject panel;
-    }
-
     [Header("インタラクト可能時の表示")]
-    public HandIndicatorByTag[] handIndicatorsByTag;
     public TMPIndicatorByTag[] tmpIndicatorsByTag;
-    public PanelByTag[] panelsByTag;
+   
 
     // === 記憶メガネ関連 ===
     [Header("記憶メガネ時に表示するオブジェクト、ヒント")]
@@ -292,6 +279,7 @@ public class player : MonoBehaviour
             if (hit.collider.GetComponent<BatteryItem>() != null) return "Battery";
             if (hit.collider.GetComponent<OpenDoor>() != null) return "Door";
             if (hit.collider.CompareTag("TP")) return "TP";
+
             return hit.collider.tag;
         }
 
@@ -315,9 +303,7 @@ public class player : MonoBehaviour
     void HandleIndicators()
     {
         string tag = DetectInteractTag();
-        UpdateIndicators(handIndicatorsByTag, tag);
         UpdateIndicators(tmpIndicatorsByTag, tag);
-        UpdateIndicators(panelsByTag, tag);
     }
 
     void HandleCameraCollision()
@@ -369,7 +355,7 @@ public class player : MonoBehaviour
                 transform.eulerAngles = euler;
 
                 HandleWallVisibility();
-                HandleMemoryVisionVisibility();  // ← ★ 追加
+                HandleMemoryVisionVisibility();
                 HandleSpotlight();
             });
         }

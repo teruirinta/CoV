@@ -15,6 +15,9 @@ public class CEnemy : MonoBehaviour
     [Header("敵のRenderer（透明 → 可視化制御用）")]
     public Renderer enemyRenderer;
 
+    [Header("表示される距離（プレイヤーとの距離）")]
+    public float appearRange = 6f;
+
     private Transform player;
     private bool isDead = false;
     private bool isAttacking = false;
@@ -39,35 +42,39 @@ public class CEnemy : MonoBehaviour
     {
         if (isDead) return;
 
-        // ① Thermal視界でプレイヤーが見えるか？
+        float distance = Vector3.Distance(transform.position, player.position);
+
+        // Thermal視界でプレイヤーが見えるか？
         playerIsVisible = (VisionManager.Instance.CurrentVision == VisionType.MemoryVision);
 
-        // ② プレイヤーが見えない → 追跡停止 → 初期位置へ戻る
-        if (!playerIsVisible)
+        // ▼ 表示条件：Thermal視界 or プレイヤーが表示距離内
+        bool shouldAppear = playerIsVisible || distance <= appearRange;
+
+        // ▼ 攻撃条件：プレイヤーが攻撃距離内
+        bool shouldAttack = distance <= detectionRange;
+
+        if (!shouldAppear)
         {
             isAttacking = false;
 
-            // 姿を消す
             if (enemyRenderer != null)
                 enemyRenderer.enabled = false;
 
-            // ▼追加：初期位置へ戻る
             ReturnToInitialPosition();
             return;
         }
 
-        // ③ Thermal状態なら見える
+        // 表示
         if (enemyRenderer != null)
             enemyRenderer.enabled = true;
 
-        // ④ 距離判定して追跡開始
-        float distance = Vector3.Distance(transform.position, player.position);
-        if (!isAttacking && distance <= detectionRange)
+        // 攻撃開始
+        if (!isAttacking && shouldAttack)
         {
             StartAttack();
         }
 
-        // ⑤ 追跡中はプレイヤーに向かって移動
+        // 追跡中はプレイヤーに向かって移動
         if (isAttacking)
         {
             transform.position = Vector3.MoveTowards(
@@ -77,6 +84,8 @@ public class CEnemy : MonoBehaviour
             );
         }
     }
+
+
 
     // ▼追加：初期位置に戻る処理
     void ReturnToInitialPosition()
