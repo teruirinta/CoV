@@ -38,8 +38,12 @@ public class BatteryItem : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, playerTransform.position);
 
-        // 範囲内ならアウトラインON、範囲外ならOFF
-        if (distance <= pickupRange)
+        // プレイヤーがこっちを向いているかチェック
+        Vector3 toBattery = (transform.position - playerTransform.position).normalized;
+        float dot = Vector3.Dot(playerTransform.forward, toBattery);
+        bool isLookingAt = dot > 0.7f; // 角度調整（0.7〜1.0が正面）
+
+        if (distance <= pickupRange && isLookingAt)
         {
             if (!isHighlighted)
             {
@@ -47,7 +51,7 @@ public class BatteryItem : MonoBehaviour
                 isHighlighted = true;
             }
 
-            // Aボタン or Eキーで取得
+            // 向いているときだけ拾える！
             if (Input.GetKeyDown(pickupKey) || Input.GetKeyDown(KeyCode.JoystickButton0))
             {
                 RecoverAllVisions();
@@ -63,6 +67,7 @@ public class BatteryItem : MonoBehaviour
             }
         }
     }
+
 
     void RecoverAllVisions()
     {

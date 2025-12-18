@@ -24,9 +24,11 @@ public class aEnemy : MonoBehaviour
     public float normalFootstepPitch;       // 通常時のピッチ
     public float chaseFootstepPitch;        // 追跡時のピッチ
 
+    private bool isDead = false; // 敵が倒されたかどうか
+
     void Update()
     {
-        if (VisionManager.Instance == null || player == null) return;
+        if (isDead || VisionManager.Instance == null || player == null) return;
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
         bool isPlayerNearby = distanceToPlayer <= detectionRange && CanSeePlayer();
@@ -92,7 +94,9 @@ public class aEnemy : MonoBehaviour
     {
         if (footstepAudio == null) return;
 
-        if (distanceToPlayer <= footstepTriggerRange)
+        bool isMoving = (player.position - transform.position).magnitude > 0.01f;
+
+        if (distanceToPlayer <= footstepTriggerRange && isMoving)
         {
             float volumeScale = 1f - (distanceToPlayer / footstepTriggerRange);
             footstepAudio.volume = Mathf.Clamp(volumeScale * maxFootstepVolume, 0f, maxFootstepVolume);
@@ -131,23 +135,32 @@ public class aEnemy : MonoBehaviour
             if (collider) collider.enabled = childVisible;
         }
     }
+
     bool CanSeePlayer()
     {
-        //float viewAngle = 0f;
         Vector3 directionToPlayer = (player.position - transform.position).normalized;
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        // 視野角チェック
-        //if (Vector3.Angle(transform.forward, directionToPlayer) < viewAngle / 2f)
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, directionToPlayer, out hit, distanceToPlayer))
         {
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, directionToPlayer, out hit, distanceToPlayer))
-            {
-                return hit.transform == player;
-            }
+            return hit.transform == player;
         }
 
         return false;
     }
 
+    public void Die()
+    {
+        isDead = true;
+
+        // 足音を止める
+        if (footstepAudio != null && footstepAudio.isPlaying)
+        {
+            footstepAudio.Stop();
+        }
+
+        // 必要ならここでアニメーションやエフェクトも追加できるよ！
+        // Destroy(gameObject); とかもここで呼べる！
+    }
 }
