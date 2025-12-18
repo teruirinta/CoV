@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+
 [RequireComponent(typeof(CharacterController))]
 public class player : MonoBehaviour
 {
@@ -10,7 +11,6 @@ public class player : MonoBehaviour
     private Vector3 velocity;
     private bool isUpsideDown = false;
 
-    // === カメラ関連 ===
     [Header("カメラ設定")]
     public Transform cameraTransform;
     public float lookSpeed = 2f;
@@ -24,18 +24,14 @@ public class player : MonoBehaviour
     public float cameraCollisionRadius = 0.2f;
     public float cameraAdjustSpeed = 10f;
 
-    // === ナイトスコープ関連 ===
     [Header("ナイトスコープ時に表示する壁")]
     public GameObject[] wallsToEnableInNightScope;
     [Header("ナイトスコープ時に非表示にする壁")]
     public GameObject[] wallsToDisableInNightScope;
     public Light cameraSpotlight;
 
-    // === インタラクト関連 ===
     private BatteryItem currentBatteryItem;
     private float interactRange = 3f;
-
- 
 
     [System.Serializable]
     public class TMPIndicatorByTag
@@ -46,16 +42,11 @@ public class player : MonoBehaviour
 
     [Header("インタラクト可能時の表示")]
     public TMPIndicatorByTag[] tmpIndicatorsByTag;
-   
 
-    // === 記憶メガネ関連 ===
     [Header("記憶メガネ時に表示するオブジェクト、ヒント")]
     public GameObject[] wallsToEnableMemoryVision;
     [Header("記憶メガネ時に非表示にするオブジェクト")]
     public GameObject[] wallsToDisableMemoryVision;
-   
-
-
 
     void Start()
     {
@@ -69,7 +60,6 @@ public class player : MonoBehaviour
         if (VisionManager.Instance != null)
             previousVision = VisionManager.Instance.CurrentVision;
     }
-
 
     void Update()
     {
@@ -85,30 +75,6 @@ public class player : MonoBehaviour
         HandleCameraCollision();
         HandleEnemyCollision();
     }
-
-
-    void HandleVisionInversion()
-    {
-        if (VisionManager.Instance == null) return;
-
-        bool shouldBeInverted = (VisionManager.Instance.CurrentVision == VisionType.Inverted);
-
-        if (shouldBeInverted != isUpsideDown)
-        {
-            isUpsideDown = shouldBeInverted;
-            velocity.y = 0f;
-
-            // フェード付きで視点切り替え
-            FindObjectOfType<Fade>().FadeOutIn(() =>
-            {
-                Vector3 euler = transform.eulerAngles;
-                euler.z = isUpsideDown ? 180f : 0f;
-                transform.eulerAngles = euler;
-            });
-        }
-    }
-
-
 
     void HandleMove()
     {
@@ -131,20 +97,10 @@ public class player : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
     }
 
-
-    // 🎮 Xbox右スティック & マウス両対応
     void HandleLook()
     {
-        float lookX = 0f;
-        float lookY = 0f;
-
-        // マウス入力
-        lookX += Input.GetAxis("Mouse X");
-        lookY += Input.GetAxis("Mouse Y");
-
-        // Xbox右スティック（Input Manager 設定で追加した軸）
-        lookX += Input.GetAxis("RightStickX");
-        lookY -= Input.GetAxis("RightStickY");
+        float lookX = Input.GetAxis("Mouse X") + Input.GetAxis("RightStickX");
+        float lookY = Input.GetAxis("Mouse Y") - Input.GetAxis("RightStickY");
 
         cameraPitch = Mathf.Clamp(cameraPitch - lookY * lookSpeed, -cameraPitchLimit, cameraPitchLimit);
         transform.Rotate(Vector3.up * lookX * lookSpeed);
@@ -154,22 +110,92 @@ public class player : MonoBehaviour
     void HandleInteract()
     {
         if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.JoystickButton0))
-        { 
-           
-            if (currentBatteryItem != null) return;
+        {
+            GameObject target = RaycastInteractable();
+            if (target == null) return;
 
-            Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, 3f))
+            var door = target.GetComponent<OpenDoor>();
+            if (door != null)
             {
-                OpenDoor door = hit.collider.GetComponent<OpenDoor>();
-                if (door != null)
-                {
-                    door.ToggleDoor(transform);
-                }
+                door.ToggleDoor(transform);
+                return;
+            }
+
+            var battery = target.GetComponent<BatteryItem>();
+            if (battery != null)
+            {
+                Debug.Log("バッテリーを拾った！");
+                Destroy(battery.gameObject);
+                return;
             }
         }
+    }
+
+    void HandleBatteryHighlight()
+    {
+        GameObject target = RaycastInteractable();
+        BatteryItem hitBattery = target != null ? target.GetComponent<BatteryItem>() : null;
+
+        if (currentBatteryItem != hitBattery)
+        {
+            if (currentBatteryItem != null)
+            {
+                QuickOutline outline = currentBatteryItem.GetComponent<QuickOutline>();
+                if (outline != null) outline.enabled = false;
+            }
+
+            currentBatteryItem = hitBattery;
+
+            if (currentBatteryItem != null)
+            {
+                QuickOutline outline = currentBatteryItem.GetComponent<QuickOutline>();
+                if (outline != null) outline.enabled = true;
+            }
+        }
+    }
+
+    void HandleIndicators()
+    {
+        string tag = DetectInteractTag();
+        UpdateIndicators(tmpIndicatorsByTag, tag);
+    }
+
+    string DetectInteractTag()
+    {
+        GameObject target = RaycastInteractable();
+        if (target == null) return null;
+
+        if (target.GetComponent<BatteryItem>() != null) return "Battery";
+        if (target.GetComponent<OpenDoor>() != null) return "Door";
+        if (target.CompareTag("TP")) return "TP";
+
+        return target.tag;
+    }
+
+    void UpdateIndicators<T>(T[] indicators, string detectedTag) where T : class
+    {
+        foreach (var entry in indicators)
+        {
+            var tagProp = entry.GetType().GetField("tag");
+            var objProp = entry.GetType().GetField("indicator") ?? entry.GetType().GetField("panel");
+            if (tagProp == null || objProp == null) continue;
+
+            string tag = tagProp.GetValue(entry) as string;
+            GameObject go = objProp.GetValue(entry) as GameObject;
+            if (go != null) go.SetActive(tag == detectedTag);
+        }
+    }
+
+    GameObject RaycastInteractable()
+    {
+        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, interactRange))
+        {
+            Debug.Log("ヒット: " + hit.collider.name);
+            return hit.collider.gameObject;
+        }
+        return null;
     }
 
     void HandleWallVisibility()
@@ -208,7 +234,6 @@ public class player : MonoBehaviour
 
         bool isMemory = (VisionManager.Instance.CurrentVision == VisionType.MemoryVision);
 
-        // MemoryVision 時に非表示
         foreach (GameObject obj in wallsToDisableMemoryVision)
         {
             if (obj != null)
@@ -221,7 +246,6 @@ public class player : MonoBehaviour
             }
         }
 
-        // MemoryVision 時に表示
         foreach (GameObject obj in wallsToEnableMemoryVision)
         {
             if (obj != null)
@@ -235,75 +259,10 @@ public class player : MonoBehaviour
         }
     }
 
-
     void HandleSpotlight()
     {
         if (VisionManager.Instance == null || cameraSpotlight == null) return;
         cameraSpotlight.enabled = (VisionManager.Instance.CurrentVision != VisionType.NightScope);
-    }
-
-    void HandleBatteryHighlight()
-    {
-        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-        RaycastHit hit;
-        BatteryItem hitBattery = null;
-
-        if (Physics.Raycast(ray, out hit, interactRange))
-            hitBattery = hit.collider.GetComponent<BatteryItem>();
-
-        if (currentBatteryItem != hitBattery)
-        {
-            if (currentBatteryItem != null)
-            {
-                QuickOutline outline = currentBatteryItem.GetComponent<QuickOutline>();
-                if (outline != null) outline.enabled = false;
-            }
-
-            currentBatteryItem = hitBattery;
-
-            if (currentBatteryItem != null)
-            {
-                QuickOutline outline = currentBatteryItem.GetComponent<QuickOutline>();
-                if (outline != null) outline.enabled = true;
-            }
-        }
-    }
-
-    string DetectInteractTag()
-    {
-        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, interactRange))
-        {
-            if (hit.collider.GetComponent<BatteryItem>() != null) return "Battery";
-            if (hit.collider.GetComponent<OpenDoor>() != null) return "Door";
-            if (hit.collider.CompareTag("TP")) return "TP";
-
-            return hit.collider.tag;
-        }
-
-        return null;
-    }
-
-    void UpdateIndicators<T>(T[] indicators, string detectedTag) where T : class
-    {
-        foreach (var entry in indicators)
-        {
-            var tagProp = entry.GetType().GetField("tag");
-            var objProp = entry.GetType().GetField("indicator") ?? entry.GetType().GetField("panel");
-            if (tagProp == null || objProp == null) continue;
-
-            string tag = tagProp.GetValue(entry) as string;
-            GameObject go = objProp.GetValue(entry) as GameObject;
-            if (go != null) go.SetActive(tag == detectedTag);
-        }
-    }
-
-    void HandleIndicators()
-    {
-        string tag = DetectInteractTag();
-        UpdateIndicators(tmpIndicatorsByTag, tag);
     }
 
     void HandleCameraCollision()
@@ -319,8 +278,6 @@ public class player : MonoBehaviour
         cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, desiredPos, Time.deltaTime * cameraAdjustSpeed);
     }
 
-
-
     void HandleEnemyCollision()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, 0.5f);
@@ -333,7 +290,6 @@ public class player : MonoBehaviour
             }
         }
     }
-
 
     void HandleVisionChangeWithFade()
     {
@@ -360,6 +316,4 @@ public class player : MonoBehaviour
             });
         }
     }
-
-
 }
