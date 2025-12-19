@@ -1,72 +1,168 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using System.Collections;
 
 public class VisionEffectController : MonoBehaviour
 {
     [Header("各視界用のVolume")]
-    [Tooltip("通常視界用（標準のPostProcess Volume）")]
     public Volume normalVolume;
-
-    [Tooltip("ナイトスコープ（暗視）用Volume")]
     public Volume nightScopeVolume;
-
-    [Tooltip("上下反転視界用Volume（反転演出や特殊エフェクト用）")]
     public Volume invertVolume;
-
-    [Tooltip("サーモグラフィ視界用Volume")]
     public Volume thermalVolume;
 
-    private bool defaultFogState; // 起動時のフォグ設定を保存
+    [Header("メガネのモデル")]
+    public GameObject nightScopeModel;
+    public GameObject invertModel;
+    public GameObject thermalModel;
+
+    [Header("共通設定")]
+    [Tooltip("親オブジェクトにあるAnimator")]
+    public Animator glassesAnimator;
+    public float wearAnimationTime = 0.5f;
+
+    private bool defaultFogState;
+    private VisionType currentVision = VisionType.Normal;
+    private Coroutine visionRoutine;
 
     void Start()
     {
-        // 起動時のフォグ設定を記憶
         defaultFogState = RenderSettings.fog;
+        SetAllVolumesOff();
+        HideAllGlasses();
+
+        // ★起動時は「何もしない」状態にする
+        PlayIdleAnimation();
     }
 
-    void Update()
+    public void ChangeVision(VisionType newVision)
     {
-        if (VisionManager.Instance == null) return;
+        if (visionRoutine != null) StopCoroutine(visionRoutine);
+        visionRoutine = StartCoroutine(VisionSequence(newVision));
+    }
 
-        switch (VisionManager.Instance.CurrentVision)
+    IEnumerator VisionSequence(VisionType newVision)
+    {
+        // ① すでにメガネをかけている場合 → 外す
+        if (currentVision != VisionType.Normal)
         {
-            case VisionType.Normal:
-                SetActiveVolume(normalVolume);
-                SetFog(defaultFogState); // 通常は元の設定
-                break;
+            DisableVision(currentVision);
+            PlayRemoveAnimation(); // 外す動き
 
+            yield return new WaitForSeconds(wearAnimationTime);
+
+            // 外し終わったらモデルを非表示
+            GameObject oldGlasses = GetGlassesModel(currentVision);
+            if (oldGlasses != null) oldGlasses.SetActive(false);
+        }
+
+        // ② Normal（裸眼）に戻る場合
+        if (newVision == VisionType.Normal)
+        {
+            currentVision = VisionType.Normal;
+
+            // ★ここが重要：外し終わったら「何もしない(Empty)」状態へ移行
+            PlayIdleAnimation();
+
+            yield break;
+        }
+
+        // ③ 新しいメガネをかける
+        GameObject nextGlasses = GetGlassesModel(newVision);
+        if (nextGlasses != null) nextGlasses.SetActive(true);
+
+        PlayWearAnimation(newVision);
+
+        yield return new WaitForSeconds(wearAnimationTime);
+
+        // ④ 視界エフェクトON
+        EnableVision(newVision);
+        currentVision = newVision;
+    }
+
+    // ... (GetGlassesModel, HideAllGlasses, SetAllVolumesOff などは変更なし) ...
+    GameObject GetGlassesModel(VisionType type)
+    {
+        switch (type)
+        {
+            case VisionType.NightScope: return nightScopeModel;
+            case VisionType.Inverted: return invertModel;
+            case VisionType.MemoryVision: return thermalModel;
+            default: return null;
+        }
+    }
+
+    void HideAllGlasses()
+    {
+        if (nightScopeModel) nightScopeModel.SetActive(false);
+        if (invertModel) invertModel.SetActive(false);
+        if (thermalModel) thermalModel.SetActive(false);
+    }
+
+    #region Animation
+
+    // ★追加：何もしない状態へ遷移させる関数
+    void PlayIdleAnimation()
+    {
+        // Animatorで作った空のステート名（"Empty" や "Idle"）を指定してください
+        glassesAnimator.Play("Empty");
+    }
+
+    void PlayWearAnimation(VisionType vision)
+    {
+        glassesAnimator.SetInteger("VisionType", (int)vision);
+        glassesAnimator.SetFloat("Speed", 1f);
+        glassesAnimator.Play("A Animation", 0, 0f);
+    }
+
+    void PlayRemoveAnimation()
+    {
+        glassesAnimator.SetFloat("Speed", -1f);
+        glassesAnimator.Play("A Animation", 0, 1f);
+    }
+
+    #endregion
+
+    #region Vision Control
+    // ... (EnableVision, DisableVision, SetAllVolumesOff, SetFog はそのまま) ...
+
+    void EnableVision(VisionType vision)
+    {
+        SetAllVolumesOff();
+        switch (vision)
+        {
             case VisionType.NightScope:
-                SetActiveVolume(nightScopeVolume);
-                SetFog(false); // 🌙 ナイトスコープ時はフォグを無効化
+                if (nightScopeVolume) nightScopeVolume.enabled = true;
+                SetFog(false);
                 break;
-
             case VisionType.Inverted:
-                SetActiveVolume(invertVolume);
-                SetFog(defaultFogState); // 他は通常通り
+                if (invertVolume) invertVolume.enabled = true;
+                SetFog(defaultFogState);
                 break;
-
             case VisionType.MemoryVision:
-                SetActiveVolume(thermalVolume);
+                if (thermalVolume) thermalVolume.enabled = true;
                 SetFog(defaultFogState);
                 break;
         }
     }
 
-    void SetActiveVolume(Volume active)
+    void DisableVision(VisionType vision)
     {
-        if (normalVolume) normalVolume.enabled = (active == normalVolume);
-        if (nightScopeVolume) nightScopeVolume.enabled = (active == nightScopeVolume);
-        if (invertVolume) invertVolume.enabled = (active == invertVolume);
-        if (thermalVolume) thermalVolume.enabled = (active == thermalVolume);
+        SetAllVolumesOff();
+        SetFog(defaultFogState);
+    }
+
+    void SetAllVolumesOff()
+    {
+        if (normalVolume) normalVolume.enabled = false;
+        if (nightScopeVolume) nightScopeVolume.enabled = false;
+        if (invertVolume) invertVolume.enabled = false;
+        if (thermalVolume) thermalVolume.enabled = false;
     }
 
     void SetFog(bool enabled)
     {
-        if (RenderSettings.fog != enabled)
-        {
-            RenderSettings.fog = enabled;
-            Debug.Log($"🌫️ Fog状態変更: {(enabled ? "有効" : "無効")}");
-        }
+        if (RenderSettings.fog != enabled) RenderSettings.fog = enabled;
     }
+    #endregion
 }
