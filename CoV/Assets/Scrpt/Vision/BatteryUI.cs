@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class BatteryUI : MonoBehaviour
 {
-    [Header("UI参照 (子要素のパーツ)")]
+    [Header("UI参照 (子要素 de パーツ)")]
     public Image gaugeImage; // 円形ゲージ
     public Image iconImage;
     public Image batteryCD;
@@ -22,7 +22,6 @@ public class BatteryUI : MonoBehaviour
     void Start()
     {
         visionManager = VisionManager.Instance;
-        // このスクリプトがついているオブジェクト自身のRectTransformを取得
         rectTransform = GetComponent<RectTransform>();
 
         // 開始時は隠し位置にセット
@@ -40,18 +39,13 @@ public class BatteryUI : MonoBehaviour
         if (visionManager == null) return;
 
         // --- 1. 親オブジェクトのスライド処理 ---
-        // Playerの視界状態と、このUIの担当タイプを照らし合わせる
         bool isCurrentMode = (visionManager.CurrentVision == targetVision);
         Vector2 targetPos = isCurrentMode ? visibleAnchoredPos : hiddenAnchoredPos;
 
-        // 親ごと目標座標へ移動（子がまとめてついてくる）
         rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, targetPos, Time.deltaTime * lerpSpeed);
 
-        // クールタイムの現在値を取得
         float cd = visionManager.CooldownTimer;
 
-        // --- 修正ポイント：条件の最適化 ---
-        // 「非表示モード」かつ「移動がほぼ完了」かつ「クールタイムも終了(0)」の時だけ処理をスキップ
         if (!isCurrentMode &&
             Vector2.Distance(rectTransform.anchoredPosition, hiddenAnchoredPos) < 0.1f &&
             cd <= 0f)
@@ -59,7 +53,7 @@ public class BatteryUI : MonoBehaviour
             return;
         }
 
-        // --- 2. バッテリーデータの更新 (子要素への反映) ---
+        // --- 2. バッテリーデータの更新 ---
         var visionData = visionManager.GetVisionData(targetVision);
         if (visionData == null) return;
 
@@ -74,17 +68,30 @@ public class BatteryUI : MonoBehaviour
         else if (rawRatio > 0f) steppedFill = 0.25f;
         else steppedFill = 0f;
 
+        // --- 3. ゲージの色と残量の反映 ---
         if (gaugeImage != null)
         {
             gaugeImage.fillAmount = steppedFill;
-            gaugeImage.color = Color.green;
+
+            // ★追加：残量に応じた色の切り替え
+            if (rawRatio <= 0.25f)
+            {
+                gaugeImage.color = Color.red;    // 25%以下
+            }
+            else if (rawRatio <= 0.50f)
+            {
+                gaugeImage.color = Color.yellow; // 50%以下
+            }
+            else
+            {
+                gaugeImage.color = Color.green;  // 通常時
+            }
         }
 
         // クールダウン表示の更新
         UpdateCooldown(cd);
     }
 
-    // 引数として現在のタイマー値を受け取って更新
     void UpdateCooldown(float cd)
     {
         if (batteryCD == null) return;
@@ -98,7 +105,6 @@ public class BatteryUI : MonoBehaviour
         }
         else
         {
-            // タイマー終了時は確実に非表示＆0にリセット
             batteryCD.enabled = false;
             batteryCD.fillAmount = 0f;
         }
