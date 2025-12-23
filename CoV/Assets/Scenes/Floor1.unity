@@ -14,7 +14,7 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 0, g: 0, b: 0, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.4
@@ -21475,6 +21475,10 @@ PrefabInstance:
     - target: {fileID: 4570799985018986427, guid: 6c2f0fa7fd3e3064f83772a3aa6b931f, type: 3}
       propertyPath: m_Name
       value: 'NewCanvas '
+      objectReference: {fileID: 0}
+    - target: {fileID: 4570799985018986427, guid: 6c2f0fa7fd3e3064f83772a3aa6b931f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -63007,7 +63011,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8957123526836591599, guid: aff452878480a8846b5b4ea51c9a7411, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
