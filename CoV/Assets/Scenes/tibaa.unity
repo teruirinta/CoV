@@ -4448,6 +4448,7 @@ GameObject:
   - component: {fileID: 4229015770835837702}
   - component: {fileID: 7102469622812279459}
   - component: {fileID: 2842872904729707150}
+  - component: {fileID: 7102469622812279460}
   m_Layer: 0
   m_Name: megane_animation
   m_TagString: Untagged
@@ -6838,14 +6839,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: f195fb8ff967e8a42be8b0b1c0993ed7, type: 3}
+  m_Texture: {fileID: 2800000, guid: eeb9509b61d74474491c77a7a276f292, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -7959,6 +7960,20 @@ MonoBehaviour:
   tmpIndicatorsByTag: []
   wallsToEnableMemoryVision: []
   wallsToDisableMemoryVision: []
+--- !u!114 &7102469622812279460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3807254568713839949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1f7adbe73c4bef4c9c22c1071a8cc22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  glassesAnimator: {fileID: 0}
+  animationTime: 0.5
 --- !u!4 &7115759487522712807
 Transform:
   m_ObjectHideFlags: 0
@@ -9218,7 +9233,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 909, y: 490}
+  m_AnchoredPosition: {x: 909, y: 489.1}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8633989766006974794
@@ -9246,18 +9261,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7827705708856469686}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c60cf52ec12a96c48b3b688ee00d7d97, type: 3}
+  m_Script: {fileID: 11500000, guid: e69cb147b093b144088a6e74dc3f2982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   normalVolume: {fileID: 7020185712229217416}
   nightScopeVolume: {fileID: 3694000243328236562}
   invertVolume: {fileID: 4812932081835383281}
   thermalVolume: {fileID: 3764715497651744260}
-  nightScopeModel: {fileID: 4529728547427394547}
-  invertModel: {fileID: 2504403530274768343}
-  thermalModel: {fileID: 753200339229389519}
-  glassesAnimator: {fileID: 5134322698806072847}
-  wearAnimationTime: 1
 --- !u!1 &8636123916570880742
 GameObject:
   m_ObjectHideFlags: 0
