@@ -3,28 +3,28 @@
 public class aEnemy : MonoBehaviour
 {
     [Header("視界表示")]
-    public GameObject parentPart; // 通常視界で表示
-    public GameObject childPart;  // ナイトスコープで表示
+    public GameObject parentPart;
+    public GameObject childPart;
 
     [Header("プレイヤー関連")]
-    public Transform player;      // プレイヤーのTransform
-    public float detectionRange;  // プレイヤーが近くにいると判定する距離
+    public Transform player;
+    public float detectionRange;
 
     [Header("移動ルート")]
-    public Transform[] waypoints; // 敵が移動するルート（ウェイポイント）
-    public float moveSpeed;       // 移動速度
-    public float chaseSpeed;      // プレイヤーを追いかけるときの速度
-    public float waypointThreshold = 0.5f; // 次のウェイポイントに切り替える距離
+    public Transform[] waypoints;
+    public float moveSpeed;
+    public float chaseSpeed;
+    public float waypointThreshold = 0.5f;
     private int currentWaypointIndex = 0;
 
     [Header("足音設定")]
-    public AudioSource footstepAudio;       // 足音用AudioSource
-    public float footstepTriggerRange;      // 足音を鳴らす最大距離
-    public float maxFootstepVolume;         // 足音の最大音量
-    public float normalFootstepPitch;       // 通常時のピッチ
-    public float chaseFootstepPitch;        // 追跡時のピッチ
+    public AudioSource footstepAudio;
+    public float footstepTriggerRange;
+    public float maxFootstepVolume;
+    public float normalFootstepPitch;
+    public float chaseFootstepPitch;
 
-    private bool isDead = false; // 敵が倒されたかどうか
+    private bool isDead = false;
 
     void Update()
     {
@@ -48,11 +48,9 @@ public class aEnemy : MonoBehaviour
             case VisionType.Normal:
                 SetVisibility(parentVisible: true, childVisible: isPlayerNearby);
                 break;
-
             case VisionType.NightScope:
                 SetVisibility(parentVisible: false, childVisible: true);
                 break;
-
             default:
                 SetVisibility(parentVisible: false, childVisible: false);
                 break;
@@ -98,8 +96,7 @@ public class aEnemy : MonoBehaviour
 
         if (distanceToPlayer <= footstepTriggerRange && isMoving)
         {
-            float volumeScale = 1f - (distanceToPlayer / footstepTriggerRange);
-            footstepAudio.volume = Mathf.Clamp(volumeScale * maxFootstepVolume, 0f, maxFootstepVolume);
+            footstepAudio.volume = maxFootstepVolume;
             footstepAudio.pitch = distanceToPlayer <= detectionRange ? chaseFootstepPitch : normalFootstepPitch;
 
             if (!footstepAudio.isPlaying)
@@ -154,13 +151,11 @@ public class aEnemy : MonoBehaviour
     {
         isDead = true;
 
-        // 足音を止める
         if (footstepAudio != null && footstepAudio.isPlaying)
         {
             footstepAudio.Stop();
         }
 
         // 必要ならここでアニメーションやエフェクトも追加できるよ！
-        // Destroy(gameObject); とかもここで呼べる！
     }
 }
