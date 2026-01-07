@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -167,4 +168,8 @@ public class VisionManager : MonoBehaviour
         return GetVisionData(CurrentVision);
     }
 
+    internal void SetVision(VisionType normal)
+    {
+        throw new NotImplementedException();
+    }
 }
