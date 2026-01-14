@@ -1,119 +1,114 @@
 using UnityEngine;
 using System.Collections;
 
-/// <summary>
-/// メガネ装着アニメーション制御
-/// ・1 / 2 / 3 キーで A / B / C
-/// ・同じキーで外す
-/// ・別のキーなら「外す → かける」
-/// ・外す動きは逆再生
-/// ・アニメ完了後に視界を変更
-/// </summary>
 public class GlassesAnimationController : MonoBehaviour
 {
-    [Header("メガネ Animator")]
+    [Header("Animator")]
     public Animator glassesAnimator;
 
-    [Header("アニメーション名（Animator State名）")]
-    public string glassAAnimation = "Glass_A";
-    public string glassBAnimation = "Glass_B";
-    public string glassCAnimation = "Glass_C";
+    [Header("Animator Trigger / State 名")]
+    public string glassA = "Glass_A";
+    public string glassB = "Glass_B";
+    public string glassC = "Glass_C";
 
-    [Header("アニメーション時間（秒）")]
-    public float animationTime = 0.5f;
+    [Header("対応する視界")]
+    public VisionType visionA = VisionType.NightScope;
+    public VisionType visionB = VisionType.Inverted;
+    public VisionType visionC = VisionType.MemoryVision;
 
+    private string currentGlass = "";
+    private VisionType pendingVision = VisionType.Normal;
     private Coroutine currentRoutine;
-
-    // 現在かけているメガネ（"" = なし）
-    private string currentAnimation = "";
-
-    // 現在の視界
-    private VisionType currentVision = VisionType.Normal;
+    private bool isPlaying;
 
     void Update()
     {
-        if (VisionManager.Instance == null) return;
+        if (VisionManager.Instance == null || isPlaying) return;
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
-            ToggleGlasses(glassAAnimation, VisionType.NightScope);
+            Toggle(glassA, visionA);
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
-            ToggleGlasses(glassBAnimation, VisionType.Inverted);
+            Toggle(glassB, visionB);
 
         if (Input.GetKeyDown(KeyCode.Alpha3))
-            ToggleGlasses(glassCAnimation, VisionType.MemoryVision);
+            Toggle(glassC, visionC);
     }
 
-    // =============================
-    // メガネ切り替え（トグル）
-    // =============================
-    void ToggleGlasses(string animationName, VisionType nextVision)
+    void Toggle(string glassName, VisionType vision)
     {
         if (currentRoutine != null)
             StopCoroutine(currentRoutine);
 
-        // 同じメガネ → 外す
-        if (currentAnimation == animationName)
-        {
+        if (currentGlass == glassName)
             currentRoutine = StartCoroutine(RemoveRoutine());
-        }
-        // 何もかけていない → かける
-        else if (string.IsNullOrEmpty(currentAnimation))
-        {
-            currentRoutine = StartCoroutine(WearRoutine(animationName, nextVision));
-        }
-        // 別のメガネ → 外してからかける
+        else if (string.IsNullOrEmpty(currentGlass))
+            currentRoutine = StartCoroutine(WearRoutine(glassName, vision));
         else
-        {
-            currentRoutine = StartCoroutine(SwapRoutine(animationName, nextVision));
-        }
+            currentRoutine = StartCoroutine(SwapRoutine(glassName, vision));
     }
 
-    // =============================
-    // メガネをかける
-    // =============================
-    IEnumerator WearRoutine(string animationName, VisionType nextVision)
+    IEnumerator WearRoutine(string glassName, VisionType vision)
     {
-        currentAnimation = animationName;
+        isPlaying = true;
+        currentGlass = glassName;
+        pendingVision = vision;
 
-        // 正再生
+        ResetAllTriggers();
+
         glassesAnimator.SetFloat("Speed", 1f);
-        glassesAnimator.Play(animationName, 0, 0f);
+        glassesAnimator.SetTrigger(glassName);
 
-        yield return new WaitForSeconds(animationTime);
+        yield return new WaitForSeconds(GetClipLength(glassName));
 
-        // 視界変更
-        currentVision = nextVision;
-        VisionManager.Instance.SetVision(nextVision);
+        isPlaying = false;
     }
 
-    // =============================
-    // メガネを外す（逆再生）
-    // =============================
     IEnumerator RemoveRoutine()
     {
-        if (string.IsNullOrEmpty(currentAnimation))
+        if (string.IsNullOrEmpty(currentGlass))
             yield break;
 
-        // 視界を通常に戻す
-        currentVision = VisionType.Normal;
+        isPlaying = true;
+
         VisionManager.Instance.SetVision(VisionType.Normal);
 
-        // 逆再生
         glassesAnimator.SetFloat("Speed", -1f);
-        glassesAnimator.Play(currentAnimation, 0, 1f);
+        glassesAnimator.Play(currentGlass, 0, 0.999f);
 
-        yield return new WaitForSeconds(animationTime);
+        yield return new WaitForSeconds(GetClipLength(currentGlass));
 
-        currentAnimation = "";
+        glassesAnimator.SetFloat("Speed", 1f);
+        currentGlass = "";
+        isPlaying = false;
     }
 
-    // =============================
-    // メガネを入れ替える
-    // =============================
-    IEnumerator SwapRoutine(string nextAnimation, VisionType nextVision)
+    IEnumerator SwapRoutine(string nextGlass, VisionType nextVision)
     {
         yield return StartCoroutine(RemoveRoutine());
-        yield return StartCoroutine(WearRoutine(nextAnimation, nextVision));
+        yield return StartCoroutine(WearRoutine(nextGlass, nextVision));
+    }
+
+    // Animation Event から呼ぶ
+    public void OnGlassesEquipped()
+    {
+        VisionManager.Instance.SetVision(pendingVision);
+    }
+
+    void ResetAllTriggers()
+    {
+        glassesAnimator.ResetTrigger(glassA);
+        glassesAnimator.ResetTrigger(glassB);
+        glassesAnimator.ResetTrigger(glassC);
+    }
+
+    float GetClipLength(string clipName)
+    {
+        foreach (var clip in glassesAnimator.runtimeAnimatorController.animationClips)
+        {
+            if (clip.name == clipName)
+                return clip.length;
+        }
+        return 0.5f;
     }
 }
