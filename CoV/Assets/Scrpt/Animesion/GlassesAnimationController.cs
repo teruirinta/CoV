@@ -1,29 +1,28 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class GlassesAnimationController : MonoBehaviour
 {
     [Header("Animator")]
-    public Animator glassesAnimator;
+    public Animator animator;
 
-    [Header("Animator Trigger / State ��")]
+    [Header("Glass Animation State")]
     public string glassA = "Glass_A";
     public string glassB = "Glass_B";
     public string glassC = "Glass_C";
 
-    [Header("�Ή����鎋�E")]
-    public VisionType visionA = VisionType.NightScope;
-    public VisionType visionB = VisionType.Inverted;
-    public VisionType visionC = VisionType.MemoryVision;
+    [Header("Vision")]
+    public VisionType visionA;
+    public VisionType visionB;
+    public VisionType visionC;
 
-    private string currentGlass = "";
-    private VisionType pendingVision = VisionType.Normal;
-    private Coroutine currentRoutine;
-    private bool isPlaying;
+    string currentGlass = "";
+    VisionType pendingVision = VisionType.Normal;
+    bool isPlaying = false;
 
     void Update()
     {
-        if (VisionManager.Instance == null || isPlaying) return;
+        if (isPlaying || VisionManager.Instance == null) return;
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
             Toggle(glassA, visionA);
@@ -35,80 +34,96 @@ public class GlassesAnimationController : MonoBehaviour
             Toggle(glassC, visionC);
     }
 
-    void Toggle(string glassName, VisionType vision)
+    // =============================
+    // 切り替え
+    // =============================
+    void Toggle(string nextGlass, VisionType nextVision)
     {
-        if (currentRoutine != null)
-            StopCoroutine(currentRoutine);
+        if (isPlaying) return;
 
-        if (currentGlass == glassName)
-            currentRoutine = StartCoroutine(RemoveRoutine());
-        else if (string.IsNullOrEmpty(currentGlass))
-            currentRoutine = StartCoroutine(WearRoutine(glassName, vision));
+        if (string.IsNullOrEmpty(currentGlass))
+        {
+            StartCoroutine(WearRoutine(nextGlass, nextVision));
+        }
+        else if (currentGlass == nextGlass)
+        {
+            StartCoroutine(RemoveRoutine());
+        }
         else
-            currentRoutine = StartCoroutine(SwapRoutine(glassName, vision));
+        {
+            StartCoroutine(SwapRoutine(nextGlass, nextVision));
+        }
     }
 
+    // =============================
+    // 装着
+    // =============================
     IEnumerator WearRoutine(string glassName, VisionType vision)
     {
         isPlaying = true;
-        currentGlass = glassName;
         pendingVision = vision;
 
-        ResetAllTriggers();
+        Debug.Log($"👓 {glassName} 装着開始");
 
-        glassesAnimator.SetFloat("Speed", 1f);
-        glassesAnimator.SetTrigger(glassName);
+        animator.SetFloat("Speed", 1f);
+        animator.Play(glassName, 0, 0f);
 
         yield return new WaitForSeconds(GetClipLength(glassName));
 
+        VisionManager.Instance.SetVision(pendingVision);
+        currentGlass = glassName;
+
+        Debug.Log($"✅ {glassName} 装着完了");
+
         isPlaying = false;
     }
 
+    // =============================
+    // 取り外し
+    // =============================
     IEnumerator RemoveRoutine()
     {
-        if (string.IsNullOrEmpty(currentGlass))
-            yield break;
-
         isPlaying = true;
 
-        VisionManager.Instance.SetVision(VisionType.Normal);
+        Debug.Log($"🧤 {currentGlass} 取り外し開始");
 
-        glassesAnimator.SetFloat("Speed", -1f);
-        glassesAnimator.Play(currentGlass, 0, 0.999f);
+        animator.SetFloat("Speed", -1f);
+        animator.Play(currentGlass, 0, 0.999f);
 
         yield return new WaitForSeconds(GetClipLength(currentGlass));
 
-        glassesAnimator.SetFloat("Speed", 1f);
+        VisionManager.Instance.SetVision(VisionType.Normal);
         currentGlass = "";
+
+        Debug.Log("✅ メガネ取り外し完了");
+
         isPlaying = false;
     }
 
+    // =============================
+    // 切り替え
+    // =============================
     IEnumerator SwapRoutine(string nextGlass, VisionType nextVision)
     {
         yield return StartCoroutine(RemoveRoutine());
         yield return StartCoroutine(WearRoutine(nextGlass, nextVision));
     }
 
-    // Animation Event ����Ă�
-    public void OnGlassesEquipped()
+    // =============================
+    // クリップ長取得
+    // =============================
+    float GetClipLength(string stateName)
     {
-        VisionManager.Instance.SetVision(pendingVision);
-    }
-
-    void ResetAllTriggers()
-    {
-        glassesAnimator.ResetTrigger(glassA);
-        glassesAnimator.ResetTrigger(glassB);
-        glassesAnimator.ResetTrigger(glassC);
-    }
-
-    float GetClipLength(string clipName)
-    {
-        foreach (var clip in glassesAnimator.runtimeAnimatorController.animationClips)
+        foreach (AnimationClip clip in animator.runtimeAnimatorController.animationClips)
         {
-            if (clip.name == clipName)
+            if (clip.name == stateName)
+            {
+                Debug.Log($"🎞 {clip.name} / {clip.length} 秒");
                 return clip.length;
+            }
         }
-        return 0.5f;
+
+        Debug.LogWarning($"⚠ アニメーションクリップ未検出: {stateName}");
+        return 0f;
     }
 }

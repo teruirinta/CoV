@@ -2505,7 +2505,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1f7adbe73c4bef4c9c22c1071a8cc22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  glassesAnimator: {fileID: 1625044688}
+  animator: {fileID: 1625044688}
   glassA: Glass_A
   glassB: Glass_B
   glassC: Glass_C
@@ -2772,7 +2772,6 @@ GameObject:
   - component: {fileID: 2350304855842284462}
   - component: {fileID: 8247901521457948883}
   - component: {fileID: 3296397456386610205}
-  - component: {fileID: 8862275833910339279}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2969,7 +2968,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!95 &852684036634035139
 Animator:
   serializedVersion: 7
@@ -6076,18 +6075,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8862275833910339279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 468698338719702151}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &8929470681221163340
 GameObject:
   m_ObjectHideFlags: 0
