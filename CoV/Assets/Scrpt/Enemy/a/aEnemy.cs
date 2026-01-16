@@ -32,7 +32,7 @@ public class aEnemy : MonoBehaviour
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
         bool isPlayerNearby = distanceToPlayer <= detectionRange && CanSeePlayer();
-        HandleFootstepAudio(distanceToPlayer);
+        HandleFootstepAudio(distanceToPlayer, isPlayerNearby);
 
         if (isPlayerNearby)
         {
@@ -88,7 +88,7 @@ public class aEnemy : MonoBehaviour
         }
     }
 
-    void HandleFootstepAudio(float distanceToPlayer)
+    void HandleFootstepAudio(float distanceToPlayer, bool isChasing)
     {
         if (footstepAudio == null) return;
 
@@ -97,7 +97,7 @@ public class aEnemy : MonoBehaviour
         if (distanceToPlayer <= footstepTriggerRange && isMoving)
         {
             footstepAudio.volume = maxFootstepVolume;
-            footstepAudio.pitch = distanceToPlayer <= detectionRange ? chaseFootstepPitch : normalFootstepPitch;
+            footstepAudio.pitch = isChasing ? chaseFootstepPitch : normalFootstepPitch;
 
             if (!footstepAudio.isPlaying)
             {

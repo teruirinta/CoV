@@ -10,7 +10,7 @@ public class CEnemy : MonoBehaviour
     public float attackSpeed = 5f;
 
     [Header("元の位置に戻る速度")]
-    public float returnSpeed = 2f;   // ▼追加：戻るときの速度
+    public float returnSpeed = 2f;
 
     [Header("敵のRenderer（透明 → 可視化制御用）")]
     public Renderer enemyRenderer;
@@ -18,24 +18,28 @@ public class CEnemy : MonoBehaviour
     [Header("表示される距離（プレイヤーとの距離）")]
     public float appearRange = 6f;
 
+    [Header("呼吸音")]
+    public AudioSource breathingAudio;
+
     private Transform player;
     private bool isDead = false;
     private bool isAttacking = false;
-
     private bool playerIsVisible = false;
-
-    // ▼追加：初期位置
     private Vector3 initialPosition;
 
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
-
-        // ▼追加：開始位置を保存
         initialPosition = transform.position;
 
         if (enemyRenderer != null)
             enemyRenderer.enabled = false;
+
+        if (breathingAudio != null)
+        {
+            breathingAudio.loop = true;
+            breathingAudio.Play();
+        }
     }
 
     void Update()
@@ -43,14 +47,9 @@ public class CEnemy : MonoBehaviour
         if (isDead) return;
 
         float distance = Vector3.Distance(transform.position, player.position);
-
-        // Thermal視界でプレイヤーが見えるか？
         playerIsVisible = (VisionManager.Instance.CurrentVision == VisionType.MemoryVision);
 
-        // ▼ 表示条件：Thermal視界 or プレイヤーが表示距離内
         bool shouldAppear = playerIsVisible || distance <= appearRange;
-
-        // ▼ 攻撃条件：プレイヤーが攻撃距離内
         bool shouldAttack = distance <= detectionRange;
 
         if (!shouldAppear)
@@ -64,17 +63,14 @@ public class CEnemy : MonoBehaviour
             return;
         }
 
-        // 表示
         if (enemyRenderer != null)
             enemyRenderer.enabled = true;
 
-        // 攻撃開始
         if (!isAttacking && shouldAttack)
         {
             StartAttack();
         }
 
-        // 追跡中はプレイヤーに向かって移動
         if (isAttacking)
         {
             transform.position = Vector3.MoveTowards(
@@ -85,19 +81,14 @@ public class CEnemy : MonoBehaviour
         }
     }
 
-
-
-    // ▼追加：初期位置に戻る処理
     void ReturnToInitialPosition()
     {
-        // 初期位置に近づく
         transform.position = Vector3.MoveTowards(
             transform.position,
             initialPosition,
             returnSpeed * Time.deltaTime
         );
 
-        // 戻りきったら透明・待機状態
         float dist = Vector3.Distance(transform.position, initialPosition);
         if (dist < 0.1f)
         {
@@ -138,8 +129,14 @@ public class CEnemy : MonoBehaviour
         if (enemyRenderer != null)
             enemyRenderer.enabled = false;
 
+        // ▼ 呼吸音のオブジェクトごと削除！
+        if (breathingAudio != null)
+            Destroy(breathingAudio.gameObject);
+
         GetComponent<Collider>().enabled = false;
 
         Destroy(gameObject, 0.5f);
     }
+
+
 }

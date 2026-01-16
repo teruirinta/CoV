@@ -12,9 +12,13 @@ public class ShelfShaker : MonoBehaviour
     public float maxShakeInterval = 5f;
     public float shakeDuration = 1f;
 
+    [Header("ガタガタ音")]
+    public AudioSource shakeAudio;
+
     private Vector3 originalPos;
     private float shakeTimer = 0f;
     private float shakeTimeRemaining = 0f;
+    private bool isBroken = false; // ← 壊れたかどうかのフラグ
 
     void Start()
     {
@@ -28,9 +32,8 @@ public class ShelfShaker : MonoBehaviour
 
     void Update()
     {
-        if (targetObject == null) return;
+        if (targetObject == null || isBroken) return; // ← 壊れてたら何もしない！
 
-        // 揺れ処理
         if (shakeTimeRemaining > 0f)
         {
             Vector3 shakeOffset = new Vector3(
@@ -41,11 +44,22 @@ public class ShelfShaker : MonoBehaviour
 
             targetObject.localPosition = originalPos + shakeOffset;
             shakeTimeRemaining -= Time.deltaTime;
+
+            if (shakeAudio != null && !shakeAudio.isPlaying)
+            {
+                shakeAudio.loop = true;
+                shakeAudio.Play();
+            }
         }
         else
         {
             targetObject.localPosition = originalPos;
             shakeTimer -= Time.deltaTime;
+
+            if (shakeAudio != null && shakeAudio.isPlaying)
+            {
+                shakeAudio.Stop();
+            }
 
             if (shakeTimer <= 0f)
             {
@@ -58,5 +72,18 @@ public class ShelfShaker : MonoBehaviour
     void ResetShakeTimer()
     {
         shakeTimer = Random.Range(minShakeInterval, maxShakeInterval);
+    }
+
+    // 外部から呼び出して壊す処理
+    public void BreakShelf()
+    {
+        isBroken = true;
+
+        if (shakeAudio != null && shakeAudio.isPlaying)
+        {
+            shakeAudio.Stop();
+        }
+
+        // ここに壊れるアニメーションやエフェクトを追加してもOK！
     }
 }
