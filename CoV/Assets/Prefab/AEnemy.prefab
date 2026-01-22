@@ -278,7 +278,6 @@ MonoBehaviour:
   waypointThreshold: 0.5
   footstepAudio: {fileID: 7947868015461735686}
   footstepTriggerRange: 15
-  maxFootstepVolume: 0.1
   normalFootstepPitch: 1
   chaseFootstepPitch: 3
 --- !u!82 &7947868015461735686
@@ -291,10 +290,10 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 67d67b86d7c99514285c03e446996a52, type: 3}
-  m_Resource: {fileID: 8300000, guid: 67d67b86d7c99514285c03e446996a52, type: 3}
+  m_audioClip: {fileID: 8300000, guid: da31ce837fb285c4791fc8f09d0da92d, type: 3}
+  m_Resource: {fileID: 8300000, guid: da31ce837fb285c4791fc8f09d0da92d, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.55
   m_Pitch: 1
   Loop: 0
   Mute: 0

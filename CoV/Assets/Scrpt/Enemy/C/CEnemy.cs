@@ -50,7 +50,21 @@ public class CEnemy : MonoBehaviour
         playerIsVisible = (VisionManager.Instance.CurrentVision == VisionType.MemoryVision);
 
         bool shouldAppear = playerIsVisible || distance <= appearRange;
-        bool shouldAttack = distance <= detectionRange;
+
+        // Raycastで視線チェック
+        bool hasLineOfSight = false;
+        RaycastHit hit;
+        Vector3 directionToPlayer = (player.position - transform.position).normalized;
+
+        if (Physics.Raycast(transform.position, directionToPlayer, out hit, detectionRange))
+        {
+            if (hit.collider.CompareTag("Player"))
+            {
+                hasLineOfSight = true;
+            }
+        }
+
+        bool shouldAttack = distance <= detectionRange && hasLineOfSight;
 
         if (!shouldAppear)
         {
@@ -129,7 +143,6 @@ public class CEnemy : MonoBehaviour
         if (enemyRenderer != null)
             enemyRenderer.enabled = false;
 
-        // ▼ 呼吸音のオブジェクトごと削除！
         if (breathingAudio != null)
             Destroy(breathingAudio.gameObject);
 
@@ -137,6 +150,4 @@ public class CEnemy : MonoBehaviour
 
         Destroy(gameObject, 0.5f);
     }
-
-
 }
