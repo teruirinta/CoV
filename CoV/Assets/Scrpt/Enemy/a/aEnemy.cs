@@ -20,7 +20,6 @@ public class aEnemy : MonoBehaviour
     [Header("足音設定")]
     public AudioSource footstepAudio;
     public float footstepTriggerRange;
-    public float maxFootstepVolume;
     public float normalFootstepPitch;
     public float chaseFootstepPitch;
 
@@ -96,7 +95,7 @@ public class aEnemy : MonoBehaviour
 
         if (distanceToPlayer <= footstepTriggerRange && isMoving)
         {
-            footstepAudio.volume = maxFootstepVolume;
+            // 音量調整は削除済み
             footstepAudio.pitch = isChasing ? chaseFootstepPitch : normalFootstepPitch;
 
             if (!footstepAudio.isPlaying)
