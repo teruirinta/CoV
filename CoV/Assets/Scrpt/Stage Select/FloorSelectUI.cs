@@ -43,6 +43,7 @@ public class FloorSelectUI : MonoBehaviour
 
     [Header("サウンド")]
     public AudioSource decideSE;
+    public AudioSource backSE;
 
     [Header("フェード")]
     public CanvasGroup fadeCanvas;
@@ -57,6 +58,7 @@ public class FloorSelectUI : MonoBehaviour
     {
         startButtonBackground.gameObject.SetActive(false);
         UpdateUI();
+        UpdateStartButton(false);
 
         if (fadeCanvas != null)
         {
@@ -88,6 +90,10 @@ public class FloorSelectUI : MonoBehaviour
             Input.GetKeyDown(KeyCode.Space) ||
             Input.GetKeyDown(KeyCode.JoystickButton0);
 
+        bool back =
+            Input.GetKeyDown(KeyCode.Q) ||
+            Input.GetKeyDown(KeyCode.JoystickButton1);
+
         if (currentState == SelectState.FloorSelect)
         {
             if (up)
@@ -107,17 +113,25 @@ public class FloorSelectUI : MonoBehaviour
                 currentState = SelectState.StartSelect;
                 startButtonBackground.gameObject.SetActive(true);
                 UpdateStartButton(true);
+
+                if (decideSE != null)
+                    decideSE.Play();
+
                 lastInputTime = Time.time;
                 return;
             }
         }
         else if (currentState == SelectState.StartSelect)
         {
-            if (up || down)
+            if (back)
             {
                 currentState = SelectState.FloorSelect;
                 startButtonBackground.gameObject.SetActive(false);
                 UpdateStartButton(false);
+
+                if (backSE != null)
+                    backSE.Play();
+
                 lastInputTime = Time.time;
                 return;
             }
@@ -162,7 +176,7 @@ public class FloorSelectUI : MonoBehaviour
 
     void UpdateStartButton(bool selected)
     {
-        startButtonText.color = selected ? Color.red : Color.white;
+        startButtonText.color = selected ? selectedColor : normalColor;
     }
 
     string GetDifficultyStars(int level)
