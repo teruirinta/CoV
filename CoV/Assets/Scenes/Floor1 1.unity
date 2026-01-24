@@ -3232,7 +3232,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 328226524}
+  m_Mesh: {fileID: 810447150}
 --- !u!33 &84417220
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -18100,7 +18100,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1948857826}
+  m_Mesh: {fileID: 1166202005}
 --- !u!33 &380394587
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -28145,6 +28145,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3004189018324725605, guid: 6c2f0fa7fd3e3064f83772a3aa6b931f, type: 3}
+      propertyPath: ballThrower
+      value: 
+      objectReference: {fileID: 1841835711}
     - target: {fileID: 4570799985018986427, guid: 6c2f0fa7fd3e3064f83772a3aa6b931f, type: 3}
       propertyPath: m_Name
       value: 'NewCanvas '
@@ -44229,7 +44233,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 1229533907}
+  m_Mesh: {fileID: 1569996227}
 --- !u!33 &941913303
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -55070,7 +55074,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 113222326}
+  m_Mesh: {fileID: 584208495}
 --- !u!33 &1180885097
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -66625,7 +66629,7 @@ MeshCollider:
   serializedVersion: 5
   m_Convex: 0
   m_CookingOptions: 30
-  m_Mesh: {fileID: 113222326}
+  m_Mesh: {fileID: 2062924385}
 --- !u!33 &1481159075
 MeshFilter:
   m_ObjectHideFlags: 10
@@ -82708,6 +82712,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+--- !u!114 &1841835711 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3559546518171584175, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+  m_PrefabInstance: {fileID: 1841835710}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e299a3eef17373f40b492cacaf356023, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1842992140
 GameObject:
   m_ObjectHideFlags: 0
