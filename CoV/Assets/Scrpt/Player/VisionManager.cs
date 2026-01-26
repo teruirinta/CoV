@@ -22,23 +22,26 @@ public class VisionManager : MonoBehaviour
     public float visionCooldown = 3f;
     private float cooldownTimer = 0f;
 
-    // ★ BatteryUI用
+    // UI 用
     public float CooldownTimer;
     public float CooldownDuration;
 
     [Header("Memory Vision")]
     public Volume memoryVolume;
     public VolumeProfile memoryProfile;
-    public float fogDencity = 0.8f;  // Fog 30%軽減 → density を 0.7倍にする
+    public float fogDencity = 0.8f;
 
-    private float originalFogDensity;   // ← Fog 初期値保存用
-    private bool fogModified = false;   // ← 連続で書き換えないように制御
+    private float originalFogDensity;
+    private bool fogModified = false;
 
     [Header("各視界データ (ScriptableObject)")]
     public List<VisionData> visionDataList = new List<VisionData>();
 
     public bool IsTeleporting { get; set; } = false;
 
+    // =============================
+    // 初期化
+    // =============================
     void Awake()
     {
         if (Instance == null)
@@ -54,28 +57,25 @@ public class VisionManager : MonoBehaviour
             data.currentBattery = data.maxBattery;
         }
 
-        // Fog の初期値を記録
         originalFogDensity = RenderSettings.fogDensity;
     }
 
+    // =============================
+    // 更新
+    // =============================
     void Update()
     {
         cooldownTimer -= Time.deltaTime;
         CooldownTimer = Mathf.Max(cooldownTimer, 0f);
         CooldownDuration = visionCooldown;
 
-        if (cooldownTimer <= 0f)
-        {
-            HandleInput();
-        }
-
         UpdateBatteryUsage();
-        UpdateFogForMemoryVision();  // ★ Fog処理を毎フレーム実行
+        UpdateFogForMemoryVision();
     }
 
-    // ============================
-    //      Fog の制御
-    // ============================
+    // =============================
+    // Fog 制御
+    // =============================
     void UpdateFogForMemoryVision()
     {
         if (CurrentVision == VisionType.MemoryVision)
@@ -96,44 +96,23 @@ public class VisionManager : MonoBehaviour
         }
     }
 
-    void HandleInput()
+    // =============================
+    // アニメーション・イベント用
+    // =============================
+    public void SetVision(VisionType vision)
     {
-        if (IsTeleporting) return;
-
-        if (Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            TryToggleVision(VisionType.NightScope);
-        }
-        else if (Input.GetButtonDown("Fire2") || Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            TryToggleVision(VisionType.Inverted);
-        }
-        else if (Input.GetButtonDown("Fire3") || Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            TryToggleVision(VisionType.MemoryVision);
-        }
-    }
-
-    void TryToggleVision(VisionType vision)
-    {
-        var data = GetVisionData(vision);
-
-        if (data != null && data.IsDepleted)
-        {
-            Debug.LogWarning($"⚠ {data.visionName} のバッテリーが切れています！");
-            return;
-        }
-
         if (CurrentVision == vision)
-            CurrentVision = VisionType.Normal;
-        else
-            CurrentVision = vision;
+            return;
 
+        CurrentVision = vision;
         cooldownTimer = visionCooldown;
 
-        Debug.Log($"▶ 現在の視界: {CurrentVision}");
+        Debug.Log($"👁 Vision 強制切り替え → {vision}");
     }
 
+    // =============================
+    // バッテリー消費
+    // =============================
     void UpdateBatteryUsage()
     {
         if (CurrentVision == VisionType.Normal || IsTeleporting)
@@ -147,29 +126,26 @@ public class VisionManager : MonoBehaviour
         if (data.currentBattery <= 0f)
         {
             data.currentBattery = 0f;
-            CurrentVision = VisionType.Normal;
-            Debug.Log($"⚠ {data.visionName} のバッテリーが切れました。通常視界に戻ります。");
+            SetVision(VisionType.Normal);
+            Debug.Log($"⚠ {data.visionName} のバッテリー切れ");
         }
     }
 
+    // =============================
+    // データ取得
+    // =============================
     public VisionData GetVisionData(VisionType type)
     {
         foreach (var data in visionDataList)
         {
-            if (data.visionName.Equals(type.ToString(), System.StringComparison.OrdinalIgnoreCase))
+            if (data.visionName.Equals(type.ToString(), StringComparison.OrdinalIgnoreCase))
                 return data;
         }
-
         return null;
     }
 
     public VisionData GetCurrentVisionData()
     {
         return GetVisionData(CurrentVision);
-    }
-
-    internal void SetVision(VisionType normal)
-    {
-        throw new NotImplementedException();
     }
 }

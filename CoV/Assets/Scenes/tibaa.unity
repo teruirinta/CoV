@@ -546,6 +546,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: d382ed26bc4f7cd48abffeeedd987b5c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: d382ed26bc4f7cd48abffeeedd987b5c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: d382ed26bc4f7cd48abffeeedd987b5c, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: d382ed26bc4f7cd48abffeeedd987b5c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4280.5156
       objectReference: {fileID: 0}
@@ -584,6 +596,10 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: d382ed26bc4f7cd48abffeeedd987b5c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: d382ed26bc4f7cd48abffeeedd987b5c, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d382ed26bc4f7cd48abffeeedd987b5c, type: 3}
       propertyPath: m_Name
@@ -2601,9 +2617,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 1625044688}
-  glassA: Glass_A
-  glassB: Glass_B
-  glassC: Glass_C
+  glassAOverride: {fileID: 22100000, guid: f1462c7adff05ab49ac0a0cafedf5a53, type: 2}
+  glassBOverride: {fileID: 22100000, guid: b2622daf047d57146a39b4998ecb9b3f, type: 2}
+  glassCOverride: {fileID: 22100000, guid: 6eda636ded086db4b8805c3d6ce53b17, type: 2}
   visionA: 1
   visionB: 2
   visionC: 3
