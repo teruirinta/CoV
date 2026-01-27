@@ -16,6 +16,14 @@ public class GlassesAnimationController : MonoBehaviour
     public VisionType visionB = VisionType.Inverted;
     public VisionType visionC = VisionType.MemoryVision;
 
+    [Header("透明化対象 Renderer")]
+    public Renderer[] glassesRenderers;
+    public Renderer[] playerRenderers;
+
+    [Header("透明度設定")]
+    [Range(0f, 1f)]
+    public float invisibleAlpha = 0.2f;
+
     VisionType currentVision = VisionType.Normal;
     bool isPlaying = false;
 
@@ -42,17 +50,11 @@ public class GlassesAnimationController : MonoBehaviour
         if (isPlaying) return;
 
         if (currentVision == VisionType.Normal)
-        {
             StartCoroutine(WearRoutine(nextOverride, nextVision));
-        }
         else if (currentVision == nextVision)
-        {
             StartCoroutine(RemoveRoutine());
-        }
         else
-        {
             StartCoroutine(SwapRoutine(nextOverride, nextVision));
-        }
     }
 
     // =============================
@@ -68,12 +70,12 @@ public class GlassesAnimationController : MonoBehaviour
 
         yield return WaitForAnimationEnd("Wear");
 
-        if (VisionManager.Instance != null)
-        {
-            VisionManager.Instance.SetVision(vision);
-        }
-
+        VisionManager.Instance.SetVision(vision);
         currentVision = vision;
+
+        // ★ アニメ終了後に透明化
+        SetInvisible(true);
+
         isPlaying = false;
     }
 
@@ -84,17 +86,17 @@ public class GlassesAnimationController : MonoBehaviour
     {
         isPlaying = true;
 
+        // ★ 先に見た目を戻す
+        SetInvisible(false);
+
         animator.ResetTrigger("Wear");
         animator.SetTrigger("Remove");
 
         yield return WaitForAnimationEnd("Remove");
 
-        if (VisionManager.Instance != null)
-        {
-            VisionManager.Instance.SetVision(VisionType.Normal);
-        }
-
+        VisionManager.Instance.SetVision(VisionType.Normal);
         currentVision = VisionType.Normal;
+
         isPlaying = false;
     }
 
@@ -105,41 +107,62 @@ public class GlassesAnimationController : MonoBehaviour
     {
         isPlaying = true;
 
-        animator.ResetTrigger("Wear");
+        // 外す
+        SetInvisible(false);
         animator.SetTrigger("Remove");
         yield return WaitForAnimationEnd("Remove");
 
+        // 付ける
         animator.runtimeAnimatorController = nextOverride;
-        animator.ResetTrigger("Remove");
         animator.SetTrigger("Wear");
         yield return WaitForAnimationEnd("Wear");
 
-        if (VisionManager.Instance != null)
-        {
-            VisionManager.Instance.SetVision(nextVision);
-        }
-
+        VisionManager.Instance.SetVision(nextVision);
         currentVision = nextVision;
+
+        // ★ 透明化
+        SetInvisible(true);
+
         isPlaying = false;
     }
 
     // =============================
-    // アニメーション終了待ち（安全版）
+    // アニメーション終了待ち
     // =============================
     IEnumerator WaitForAnimationEnd(string stateName)
     {
-        // 遷移完了待ち
         yield return null;
 
         while (!animator.GetCurrentAnimatorStateInfo(0).IsName(stateName))
-        {
             yield return null;
-        }
 
-        // 再生完了待ち
         while (animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
-        {
             yield return null;
+    }
+
+    // =============================
+    // 透明化制御
+    // =============================
+    void SetInvisible(bool invisible)
+    {
+        float alpha = invisible ? invisibleAlpha : 1f;
+
+        SetAlpha(glassesRenderers, alpha);
+        SetAlpha(playerRenderers, alpha);
+    }
+
+    void SetAlpha(Renderer[] renderers, float alpha)
+    {
+        if (renderers == null) return;
+
+        foreach (var r in renderers)
+        {
+            foreach (var mat in r.materials)
+            {
+                Color c = mat.color;
+                c.a = alpha;
+                mat.color = c;
+            }
         }
     }
 }
