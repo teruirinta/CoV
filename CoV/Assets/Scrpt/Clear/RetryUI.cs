@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Text.RegularExpressions;
 
 public class RetryUI : MonoBehaviour
 {
@@ -31,7 +32,8 @@ public class RetryUI : MonoBehaviour
         optionTexts[2].text = "やり直し";
 
         string stageName = PlayerPrefs.GetString("LastStageName", "不明なステージ");
-        resultText.text = $"{stageName}階";
+        string floorDisplay = ExtractFloorNumber(stageName);
+        resultText.text = $"{floorDisplay}階";
 
         UpdateSelector();
     }
@@ -40,9 +42,25 @@ public class RetryUI : MonoBehaviour
     {
         if (Time.time - lastInputTime < inputCooldown) return;
 
-        bool left = Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A);
-        bool right = Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D);
-        bool decide = Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space);
+        float dpadX = Input.GetAxisRaw("DPadX");
+        float horizontal = Input.GetAxisRaw("Horizontal");
+
+        bool left =
+            dpadX < -0.5f ||
+            horizontal < -0.5f ||
+            Input.GetKeyDown(KeyCode.LeftArrow) ||
+            Input.GetKeyDown(KeyCode.A);
+
+        bool right =
+            dpadX > 0.5f ||
+            horizontal > 0.5f ||
+            Input.GetKeyDown(KeyCode.RightArrow) ||
+            Input.GetKeyDown(KeyCode.D);
+
+        bool decide =
+            Input.GetKeyDown(KeyCode.Return) ||
+            Input.GetKeyDown(KeyCode.Space) ||
+            Input.GetKeyDown(KeyCode.JoystickButton0); // Aボタンなど
 
         if (left)
         {
@@ -114,5 +132,18 @@ public class RetryUI : MonoBehaviour
     void PlayDecideSE()
     {
         if (decideSE != null) decideSE.Play();
+    }
+
+    string ExtractFloorNumber(string stageName)
+    {
+        // 例: "Floor3" → "3"
+        string numberPart = Regex.Match(stageName, @"\d+").Value;
+
+        if (!string.IsNullOrEmpty(numberPart))
+        {
+            return numberPart;
+        }
+
+        return "不明な";
     }
 }
