@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.Video;
 
 public class FloorSelectUI : MonoBehaviour
 {
@@ -22,7 +23,8 @@ public class FloorSelectUI : MonoBehaviour
         [Range(1, 5)]
         public int difficultyLevel;
 
-        public Sprite stageSprite;
+        public VideoClip stageVideo;   // ★動画のみ
+
         public string sceneName;
     }
 
@@ -33,9 +35,11 @@ public class FloorSelectUI : MonoBehaviour
     public Color selectedColor = Color.red;
     public Color normalColor = Color.white;
 
-    [Header("難易度・画像")]
+    [Header("難易度表示")]
     public Text difficultyText;
-    public Image stageImage;
+
+    [Header("ステージ動画")]
+    public VideoPlayer stageVideoPlayer;
 
     [Header("開始ボタン")]
     public Image startButtonBackground;
@@ -56,6 +60,13 @@ public class FloorSelectUI : MonoBehaviour
     void Start()
     {
         startButtonBackground.gameObject.SetActive(false);
+
+        if (stageVideoPlayer != null)
+        {
+            stageVideoPlayer.isLooping = true;
+            stageVideoPlayer.playOnAwake = false;
+        }
+
         UpdateUI();
 
         if (fadeCanvas != null)
@@ -154,10 +165,20 @@ public class FloorSelectUI : MonoBehaviour
                 selected ? Vector3.one * selectedScale : Vector3.one;
         }
 
-        difficultyText.text =
-            GetDifficultyStars(floors[currentIndex].difficultyLevel);
+        var floor = floors[currentIndex];
 
-        stageImage.sprite = floors[currentIndex].stageSprite;
+        difficultyText.text = GetDifficultyStars(floor.difficultyLevel);
+
+        // ▼ 動画を常に再生
+        if (stageVideoPlayer != null && floor.stageVideo != null)
+        {
+            if (stageVideoPlayer.clip != floor.stageVideo)
+            {
+                stageVideoPlayer.Stop();
+                stageVideoPlayer.clip = floor.stageVideo;
+                stageVideoPlayer.Play();
+            }
+        }
     }
 
     void UpdateStartButton(bool selected)

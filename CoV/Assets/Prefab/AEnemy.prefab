@@ -250,6 +250,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3144488978522960207}
+  - {fileID: 7092308271953040987}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4848123410074515715
@@ -398,3 +399,65 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1001 &2357466813149431918
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 6117521622065847205}
+    m_Modifications:
+    - target: {fileID: 4817610632978767413, guid: 3255e792711fb4940974c997565af963, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.1863
+      objectReference: {fileID: 0}
+    - target: {fileID: 4817610632978767413, guid: 3255e792711fb4940974c997565af963, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.82599986
+      objectReference: {fileID: 0}
+    - target: {fileID: 4817610632978767413, guid: 3255e792711fb4940974c997565af963, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.019967556
+      objectReference: {fileID: 0}
+    - target: {fileID: 4817610632978767413, guid: 3255e792711fb4940974c997565af963, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4817610632978767413, guid: 3255e792711fb4940974c997565af963, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4817610632978767413, guid: 3255e792711fb4940974c997565af963, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4817610632978767413, guid: 3255e792711fb4940974c997565af963, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4817610632978767413, guid: 3255e792711fb4940974c997565af963, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4817610632978767413, guid: 3255e792711fb4940974c997565af963, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4817610632978767413, guid: 3255e792711fb4940974c997565af963, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5300815875088598159, guid: 3255e792711fb4940974c997565af963, type: 3}
+      propertyPath: m_Name
+      value: Anime_A_Col_Walk_Ver3
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3255e792711fb4940974c997565af963, type: 3}
+--- !u!4 &7092308271953040987 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4817610632978767413, guid: 3255e792711fb4940974c997565af963, type: 3}
+  m_PrefabInstance: {fileID: 2357466813149431918}
+  m_PrefabAsset: {fileID: 0}
