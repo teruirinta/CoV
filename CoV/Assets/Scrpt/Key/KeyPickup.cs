@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
 public class KeyPickup : MonoBehaviour
 {
     [Header("設定")]
@@ -11,6 +10,9 @@ public class KeyPickup : MonoBehaviour
     public bool autoSaveOnPickup = true;
     public float pickupRange = 3f;
     public float viewAngleThreshold = 30f; // 視線の角度許容範囲
+
+    [Header("関連オブジェクト")]
+    public GameObject imageObject; // 一緒に消したい画像オブジェクト
 
     private GameObject player;
     private Camera playerCamera;
@@ -35,7 +37,7 @@ public class KeyPickup : MonoBehaviour
         Vector3 toKey = (transform.position - playerCamera.transform.position).normalized;
         float angle = Vector3.Angle(playerCamera.transform.forward, toKey);
 
-        if (angle <= viewAngleThreshold && Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("Jump"))
+        if (angle <= viewAngleThreshold && (Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("Jump")))
         {
             TryPickup();
         }
@@ -55,8 +57,6 @@ public class KeyPickup : MonoBehaviour
         if (pickupSound)
             AudioSource.PlayClipAtPoint(pickupSound, transform.position);
 
-
-
         if (pickupEfect)
         {
             var effect = Instantiate(pickupEfect, transform.position, Quaternion.identity);
@@ -67,6 +67,9 @@ public class KeyPickup : MonoBehaviour
             SaveManager.Instance?.SaveKeyObtained(keyId);
 
         EnemySpawner.Instance?.OnKeyPickedUp(keyId);
+
+        if (imageObject != null)
+            Destroy(imageObject);
 
         Destroy(gameObject);
     }

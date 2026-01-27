@@ -225,7 +225,6 @@ public class player : MonoBehaviour
         if (VisionManager.Instance == null) return;
         bool isNightScope = (VisionManager.Instance.CurrentVision == VisionType.NightScope);
 
-        // 再帰処理に変更
         SetObjectsVisibilityRecursive(wallsToDisableInNightScope, !isNightScope);
         SetObjectsVisibilityRecursive(wallsToEnableInNightScope, isNightScope);
     }
@@ -235,7 +234,6 @@ public class player : MonoBehaviour
         if (VisionManager.Instance == null) return;
         bool isMemory = (VisionManager.Instance.CurrentVision == VisionType.MemoryVision);
 
-        // 再帰処理に変更
         SetObjectsVisibilityRecursive(wallsToDisableMemoryVision, !isMemory);
         SetObjectsVisibilityRecursive(wallsToEnableMemoryVision, isMemory);
     }
