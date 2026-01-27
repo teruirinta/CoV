@@ -3,22 +3,30 @@ using UnityEngine.SceneManagement;
 
 public static class SceneController
 {
-    public static string sceneName;
-
+    /// <summary>
+    /// 現在のシーン名を保存する（ゲームオーバー前などに呼び出す）
+    /// </summary>
     public static void CurrentSceneName()
     {
-        sceneName = SceneManager.GetActiveScene().name;
+        string currentScene = SceneManager.GetActiveScene().name;
+        PlayerPrefs.SetString("PreviousScene", currentScene);
+        PlayerPrefs.Save();
     }
 
-    public static void BackToBeforeScene()
+    /// <summary>
+    /// 保存された前のシーンに戻る（やり直し時に呼び出す）
+    /// </summary>
+    public static void ReturnToPreviousScene()
     {
-        if (!string.IsNullOrEmpty(sceneName))
+        string previousScene = PlayerPrefs.GetString("PreviousScene", "");
+
+        if (!string.IsNullOrEmpty(previousScene) && Application.CanStreamedLevelBeLoaded(previousScene))
         {
-            SceneManager.LoadScene(sceneName);
+            SceneManager.LoadScene(previousScene);
         }
         else
         {
-            Debug.LogWarning("戻るシーンが記録されていません！");
+            Debug.LogWarning("前のシーンが見つからないか、ビルド設定に含まれていません！");
         }
     }
 }
