@@ -20,6 +20,17 @@ public class ClearSceneController : MonoBehaviour
         StartCoroutine(FadeIn());
     }
 
+
+    void OnStageClear()
+    {
+        string currentScene = SceneManager.GetActiveScene().name;
+        PlayerPrefs.SetString("ClearedStage", currentScene);
+        PlayerPrefs.Save();
+
+        SceneManager.LoadScene("EscapeResult");
+    }
+
+
     void Update()
     {
         if (isTransitioning) return;
@@ -61,13 +72,6 @@ public class ClearSceneController : MonoBehaviour
         SceneManager.LoadScene(nextSceneName);
     }
 
-    void OnStageClear()
-    {
-        string currentScene = SceneManager.GetActiveScene().name;
-        PlayerPrefs.SetString("ClearedStage", currentScene);
-        PlayerPrefs.Save();
-
-        SceneManager.LoadScene("EscapeResult");
-    }
+   
 
 }

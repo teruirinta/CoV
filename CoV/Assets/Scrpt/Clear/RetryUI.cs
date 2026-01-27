@@ -1,18 +1,18 @@
-ï»¿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class EscapeResultUI : MonoBehaviour
+public class RetryUI : MonoBehaviour
 {
-    [Header("UIè¦ç´ ")]
-    public Text[] optionTexts; // [0] = ã‚²ãƒ¼ãƒ çµ‚äº†, [1] = éšŽå±¤é¸æŠž
+    [Header("UI—v‘f")]
+    public Text[] optionTexts; // [0] = ƒQ[ƒ€I—¹, [1] = ŠK‘w‘I‘ð, [2] = ‚â‚è’¼‚µ
     public Image selectorImage;
 
-    [Header("è¡¨ç¤ºå†…å®¹")]
+    [Header("•\Ž¦“à—e")]
     public Text resultText;
     public Image resultImage;
 
-    [Header("ã‚µã‚¦ãƒ³ãƒ‰")]
+    [Header("ƒTƒEƒ“ƒh")]
     public AudioSource successSE;
     public AudioSource moveSE;
     public AudioSource decideSE;
@@ -26,13 +26,12 @@ public class EscapeResultUI : MonoBehaviour
         if (successSE != null)
             successSE.Play();
 
-        optionTexts[0].text = "ã‚²ãƒ¼ãƒ çµ‚äº†";
-        optionTexts[1].text = "éšŽå±¤é¸æŠž";
+        optionTexts[0].text = "ƒQ[ƒ€I—¹";
+        optionTexts[1].text = "ŠK‘w‘I‘ð";
+        optionTexts[2].text = "‚â‚è’¼‚µ";
 
-        // ä¿å­˜ã•ã‚ŒãŸã‚¹ãƒ†ãƒ¼ã‚¸åã‚’å–å¾—ã—ã¦è¡¨ç¤º
-        string stageName = PlayerPrefs.GetString("LastStageName", "ä¸æ˜Žãªã‚¹ãƒ†ãƒ¼ã‚¸");
-        resultText.text = $"{stageName}éšŽã‚¯ãƒªã‚¢ï¼";
-
+        string stageName = PlayerPrefs.GetString("LastStageName", "•s–¾‚ÈƒXƒe[ƒW");
+        resultText.text = $"{stageName}ŠK";
 
         UpdateSelector();
     }
@@ -64,10 +63,18 @@ public class EscapeResultUI : MonoBehaviour
         if (decide)
         {
             PlayDecideSE();
-            if (selectedOption == 0)
-                EndGame();
-            else if (selectedOption == 1)
-                ReturnToStageSelect();
+            switch (selectedOption)
+            {
+                case 0:
+                    EndGame();
+                    break;
+                case 1:
+                    ReturnToStageSelect();
+                    break;
+                case 2:
+                    RetryStage();
+                    break;
+            }
         }
     }
 
@@ -75,7 +82,7 @@ public class EscapeResultUI : MonoBehaviour
     {
         if (selectorImage != null && optionTexts.Length > selectedOption)
         {
-            selectorImage.transform.position = optionTexts[selectedOption].transform.position + new Vector3(-350f, 0f, 0f);
+            selectorImage.transform.position = optionTexts[selectedOption].transform.position + new Vector3(-300f, 0f, 0f);
         }
 
         for (int i = 0; i < optionTexts.Length; i++)
@@ -92,6 +99,11 @@ public class EscapeResultUI : MonoBehaviour
     void ReturnToStageSelect()
     {
         SceneManager.LoadScene("StageSelect");
+    }
+
+    void RetryStage()
+    {
+        SceneController.ReturnToPreviousScene();
     }
 
     void PlayMoveSE()

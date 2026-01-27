@@ -55,6 +55,8 @@ public class GoalDoor : MonoBehaviour
         if (inv.HasKey(requiredKeyId))
         {
             Debug.Log($"[DoorTrigger] 鍵「{requiredKeyId}」が使われました。シーンを切り替えます！");
+            // 現在のステージ名を保存
+            PlayerPrefs.SetString("LastStageName", SceneManager.GetActiveScene().name);
             SceneManager.LoadScene(sceneToLoad);
         }
         else
