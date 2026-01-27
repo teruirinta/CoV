@@ -69,8 +69,69 @@ public class VisionManager : MonoBehaviour
         CooldownTimer = Mathf.Max(cooldownTimer, 0f);
         CooldownDuration = visionCooldown;
 
+        // クールタイムが終わっていれば入力を受け付ける
+        if (cooldownTimer <= 0f)
+        {
+            HandleInput();
+        }
+
         UpdateBatteryUsage();
         UpdateFogForMemoryVision();
+    }
+
+    // =============================
+    // ★ 追加：キー入力処理
+    // =============================
+    void HandleInput()
+    {
+        if (IsTeleporting) return;
+
+        // 1キー: ナイトスコープ
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetButtonDown("Fire1"))
+        {
+            ToggleVision(VisionType.NightScope);
+        }
+        // 2キー: 反転
+        else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetButtonDown("Fire2"))
+        {
+            ToggleVision(VisionType.Inverted);
+        }
+        // 3キー: 記憶メガネ
+        else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetButtonDown("Fire3"))
+        {
+            ToggleVision(VisionType.MemoryVision);
+        }
+    }
+
+    // =============================
+    // ★ 追加：ON/OFFを切り替えるロジック
+    // =============================
+    void ToggleVision(VisionType vision)
+    {
+        // 切り替え先のバッテリーをチェック
+        var data = GetVisionData(vision);
+        if (data != null && data.currentBattery <= 0f)
+        {
+            Debug.LogWarning($"⚠ {vision} はバッテリー不足です");
+            return;
+        }
+
+        // 同じ視界をもう一度押したら Normal に戻す
+        VisionType nextVision = (CurrentVision == vision) ? VisionType.Normal : vision;
+        SetVision(nextVision);
+    }
+
+    // =============================
+    // 視界の確定切り替え
+    // =============================
+    public void SetVision(VisionType vision)
+    {
+        if (CurrentVision == vision) return;
+
+        CurrentVision = vision;
+        cooldownTimer = visionCooldown; // クールタイム開始
+
+        Debug.Log($"👁 Vision 切り替え → {vision}");
     }
 
     // =============================
@@ -94,20 +155,6 @@ public class VisionManager : MonoBehaviour
                 RenderSettings.fogDensity = originalFogDensity;
             }
         }
-    }
-
-    // =============================
-    // アニメーション・イベント用
-    // =============================
-    public void SetVision(VisionType vision)
-    {
-        if (CurrentVision == vision)
-            return;
-
-        CurrentVision = vision;
-        cooldownTimer = visionCooldown;
-
-        Debug.Log($"👁 Vision 強制切り替え → {vision}");
     }
 
     // =============================
