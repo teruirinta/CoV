@@ -235940,6 +235940,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1778027445844186217, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
   m_PrefabInstance: {fileID: 7905894}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1148104501 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3559546518171584175, guid: fdf89d3ee25fb4f45866f7214935bc8b, type: 3}
+  m_PrefabInstance: {fileID: 7905894}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e299a3eef17373f40b492cacaf356023, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!43 &1150268881
 Mesh:
   m_ObjectHideFlags: 0
@@ -438802,6 +438813,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3004189018324725605, guid: 6c2f0fa7fd3e3064f83772a3aa6b931f, type: 3}
+      propertyPath: ballThrower
+      value: 
+      objectReference: {fileID: 1148104501}
     - target: {fileID: 4824524770616768144, guid: 6c2f0fa7fd3e3064f83772a3aa6b931f, type: 3}
       propertyPath: flashSpeed
       value: 4

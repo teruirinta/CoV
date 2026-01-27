@@ -55,6 +55,10 @@ MonoBehaviour:
   gaugeImage: {fileID: 189907665052991646}
   iconImage: {fileID: 2213149754252237214}
   batteryCD: {fileID: 1910069616502694001}
+  emptyIndicationUI: {fileID: 0}
+  emptyFillAmount: 1
+  flashTargets: []
+  flashSpeed: 8
   targetVision: 2
   visibleAnchoredPos: {x: 1774, y: 469}
   hiddenAnchoredPos: {x: 1974.228, y: 469}
@@ -93,8 +97,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 831.13135, y: 479}
-  m_SizeDelta: {x: 82.1005, y: 52.8}
+  m_AnchoredPosition: {x: 839.57983, y: 479}
+  m_SizeDelta: {x: 98.9975, y: 52.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3788919141924995252
 CanvasRenderer:
@@ -790,7 +794,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -116, y: -17.400002}
+  m_AnchoredPosition: {x: -110, y: -17.400002}
   m_SizeDelta: {x: 90, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8816003284675931818
@@ -1040,6 +1044,10 @@ MonoBehaviour:
   gaugeImage: {fileID: 7062276670347456195}
   iconImage: {fileID: 868711258380445608}
   batteryCD: {fileID: 8845222642096744149}
+  emptyIndicationUI: {fileID: 0}
+  emptyFillAmount: 1
+  flashTargets: []
+  flashSpeed: 8
   targetVision: 1
   visibleAnchoredPos: {x: 1774, y: 798}
   hiddenAnchoredPos: {x: 1974.228, y: 798}
@@ -1405,6 +1413,10 @@ MonoBehaviour:
   gaugeImage: {fileID: 4929339246554118811}
   iconImage: {fileID: 1337851050753619542}
   batteryCD: {fileID: 505592840424678201}
+  emptyIndicationUI: {fileID: 0}
+  emptyFillAmount: 1
+  flashTargets: []
+  flashSpeed: 8
   targetVision: 3
   visibleAnchoredPos: {x: 1774, y: 124}
   hiddenAnchoredPos: {x: 1974.228, y: 124}
@@ -1443,7 +1455,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -113.1, y: -11}
+  m_AnchoredPosition: {x: -108, y: -11}
   m_SizeDelta: {x: 90, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1323343984471248651
@@ -1689,7 +1701,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 530d9c36575c54140a3bb6bed8e9c5ec, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 54793d77b49f5f04f94065e0e6e8a86d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2040,14 +2052,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.8301887, g: 0.8301887, b: 0.8301887, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 530d9c36575c54140a3bb6bed8e9c5ec, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 54793d77b49f5f04f94065e0e6e8a86d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2122,7 +2134,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 530d9c36575c54140a3bb6bed8e9c5ec, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 54793d77b49f5f04f94065e0e6e8a86d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

@@ -5,6 +5,14 @@ using System.Collections;
 
 public class FloorSelectUI : MonoBehaviour
 {
+    enum SelectState
+    {
+        FloorSelect,
+        StartSelect
+    }
+
+    SelectState currentState = SelectState.FloorSelect;
+
     [System.Serializable]
     public class FloorItem
     {
@@ -12,7 +20,7 @@ public class FloorSelectUI : MonoBehaviour
         public Text text;
 
         [Range(1, 5)]
-        public int difficultyLevel;   // ★の数（1〜5）
+        public int difficultyLevel;
 
         public Sprite stageSprite;
         public string sceneName;
@@ -20,14 +28,21 @@ public class FloorSelectUI : MonoBehaviour
 
     public FloorItem[] floors;
 
-    [Header("表示")]
+    [Header("フロア表示")]
     public float selectedScale = 1.15f;
-    public Color selectedColor = Color.white;
-    public Color normalColor = Color.gray;
+    public Color selectedColor = Color.red;
+    public Color normalColor = Color.white;
 
-    [Header("難易度・画像表示")]
+    [Header("難易度・画像")]
     public Text difficultyText;
     public Image stageImage;
+
+    [Header("開始ボタン")]
+    public Image startButtonBackground;
+    public Text startButtonText;
+
+    [Header("サウンド")]
+    public AudioSource decideSE;
 
     [Header("フェード")]
     public CanvasGroup fadeCanvas;
@@ -40,6 +55,7 @@ public class FloorSelectUI : MonoBehaviour
 
     void Start()
     {
+        startButtonBackground.gameObject.SetActive(false);
         UpdateUI();
 
         if (fadeCanvas != null)
@@ -55,42 +71,61 @@ public class FloorSelectUI : MonoBehaviour
         if (floors.Length == 0) return;
         if (Time.time - lastInputTime < inputCooldown) return;
 
-        // コントローラー 十字キー上下
         float dpadY = Input.GetAxisRaw("DPadX");
 
-        if (dpadY > 0.5f)
-        {
-            ChangeSelection(-1); // 上
-            return;
-        }
-        else if (dpadY < -0.5f)
-        {
-            ChangeSelection(1);  // 下
-            return;
-        }
+        bool up =
+            dpadY > 0.5f ||
+            Input.GetKeyDown(KeyCode.UpArrow) ||
+            Input.GetKeyDown(KeyCode.W);
 
-        // キーボード 上
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
-        {
-            ChangeSelection(-1);
-            return;
-        }
+        bool down =
+            dpadY < -0.5f ||
+            Input.GetKeyDown(KeyCode.DownArrow) ||
+            Input.GetKeyDown(KeyCode.S);
 
-        // キーボード 下
-        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
-        {
-            ChangeSelection(1);
-            return;
-        }
-
-        // 決定
-        if (
+        bool decide =
             Input.GetKeyDown(KeyCode.Return) ||
             Input.GetKeyDown(KeyCode.Space) ||
-            Input.GetKeyDown(KeyCode.JoystickButton0)
-        )
+            Input.GetKeyDown(KeyCode.JoystickButton0);
+
+        if (currentState == SelectState.FloorSelect)
         {
-            DecideFloor();
+            if (up)
+            {
+                ChangeSelection(-1);
+                return;
+            }
+
+            if (down)
+            {
+                ChangeSelection(1);
+                return;
+            }
+
+            if (decide)
+            {
+                currentState = SelectState.StartSelect;
+                startButtonBackground.gameObject.SetActive(true);
+                UpdateStartButton(true);
+                lastInputTime = Time.time;
+                return;
+            }
+        }
+        else if (currentState == SelectState.StartSelect)
+        {
+            if (up || down)
+            {
+                currentState = SelectState.FloorSelect;
+                startButtonBackground.gameObject.SetActive(false);
+                UpdateStartButton(false);
+                lastInputTime = Time.time;
+                return;
+            }
+
+            if (decide)
+            {
+                DecideFloor();
+            }
         }
     }
 
@@ -125,21 +160,26 @@ public class FloorSelectUI : MonoBehaviour
         stageImage.sprite = floors[currentIndex].stageSprite;
     }
 
+    void UpdateStartButton(bool selected)
+    {
+        startButtonText.color = selected ? Color.red : Color.white;
+    }
+
     string GetDifficultyStars(int level)
     {
-        int maxStars = 5;
         string result = "";
-
-        for (int i = 0; i < maxStars; i++)
+        for (int i = 0; i < 5; i++)
         {
             result += (i < level) ? "★" : "☆";
         }
-
         return result;
     }
 
     void DecideFloor()
     {
+        if (decideSE != null)
+            decideSE.Play();
+
         isTransitioning = true;
         StartCoroutine(FadeOutAndLoad(floors[currentIndex].sceneName));
     }
