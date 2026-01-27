@@ -11,13 +11,11 @@ public class ClearSceneController : MonoBehaviour
     public CanvasGroup fadeCanvasGroup;
     public float fadeSpeed = 1.5f;
 
-    [Header("クリアした階（1〜3）")]
-    public int clearedFloor = 1; // ← ここでステージ番号を指定！
-
     private bool isTransitioning = false;
 
     void Start()
     {
+        // 最初は真っ黒（フェードイン開始）
         fadeCanvasGroup.alpha = 1f;
         StartCoroutine(FadeIn());
     }
@@ -26,12 +24,20 @@ public class ClearSceneController : MonoBehaviour
     {
         if (isTransitioning) return;
 
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0))
+        // キーボード：スペースキー
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine(FadeOutAndLoad());
+        }
+
+        // Xboxコントローラー：Aボタン
+        if (Input.GetKeyDown(KeyCode.JoystickButton0))
         {
             StartCoroutine(FadeOutAndLoad());
         }
     }
 
+    // ✅ フェードイン（暗 → 明）
     IEnumerator FadeIn()
     {
         while (fadeCanvasGroup.alpha > 0f)
@@ -41,23 +47,10 @@ public class ClearSceneController : MonoBehaviour
         }
     }
 
+    // ✅ フェードアウト → 次のシーンへ
     IEnumerator FadeOutAndLoad()
     {
         isTransitioning = true;
-
-        // ✅ ここでクリア情報を記録！
-        switch (clearedFloor)
-        {
-            case 1:
-                GameProgress.floor1Cleared = true;
-                break;
-            case 2:
-                GameProgress.floor2Cleared = true;
-                break;
-            case 3:
-                GameProgress.floor3Cleared = true;
-                break;
-        }
 
         while (fadeCanvasGroup.alpha < 1f)
         {
@@ -67,4 +60,14 @@ public class ClearSceneController : MonoBehaviour
 
         SceneManager.LoadScene(nextSceneName);
     }
+
+    void OnStageClear()
+    {
+        string currentScene = SceneManager.GetActiveScene().name;
+        PlayerPrefs.SetString("ClearedStage", currentScene);
+        PlayerPrefs.Save();
+
+        SceneManager.LoadScene("EscapeResult");
+    }
+
 }
