@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 92005870}
   - component: {fileID: 92005872}
   m_Layer: 5
-  m_Name: Image
+  m_Name: 1maru
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -308,7 +308,7 @@ GameObject:
   - component: {fileID: 192579689}
   - component: {fileID: 192579688}
   m_Layer: 5
-  m_Name: Image (4)
+  m_Name: 2maru
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -822,6 +822,56 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!1 &697139262
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 697139264}
+  - component: {fileID: 697139263}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &697139263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 697139262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64a722d54bb3c6e40a0434f1177e3db5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  floor1Circle: {fileID: 92005870}
+  floor2Circle: {fileID: 192579688}
+  floor3Circle: {fileID: 1332054692}
+  floor1Cleared: 0
+  floor2Cleared: 0
+  floor3Cleared: 0
+--- !u!4 &697139264
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 697139262}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1044.5394, y: 601.2118, z: 441.51144}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &707421834
 GameObject:
   m_ObjectHideFlags: 0
@@ -1079,8 +1129,8 @@ RectTransform:
   - {fileID: 505831522}
   - {fileID: 1888215177}
   - {fileID: 92005869}
-  - {fileID: 1332054691}
   - {fileID: 192579687}
+  - {fileID: 1332054691}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1312,7 +1362,7 @@ GameObject:
   - component: {fileID: 1332054693}
   - component: {fileID: 1332054692}
   m_Layer: 5
-  m_Name: Image (3)
+  m_Name: 3maru
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1957,3 +2007,4 @@ SceneRoots:
   - {fileID: 253655040}
   - {fileID: 4930083082364832008}
   - {fileID: 2106737609}
+  - {fileID: 697139264}
