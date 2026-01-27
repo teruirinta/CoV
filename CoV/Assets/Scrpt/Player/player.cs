@@ -24,9 +24,9 @@ public class player : MonoBehaviour
     public float cameraCollisionRadius = 0.2f;
     public float cameraAdjustSpeed = 10f;
 
-    [Header("ナイトスコープ時に表示する壁")]
+    [Header("ナイトスコープ時に表示する壁(グループ可)")]
     public GameObject[] wallsToEnableInNightScope;
-    [Header("ナイトスコープ時に非表示にする壁")]
+    [Header("ナイトスコープ時に非表示にする壁(グループ可)")]
     public GameObject[] wallsToDisableInNightScope;
     public Light cameraSpotlight;
 
@@ -43,9 +43,9 @@ public class player : MonoBehaviour
     [Header("インタラクト可能時の表示")]
     public TMPIndicatorByTag[] tmpIndicatorsByTag;
 
-    [Header("記憶メガネ時に表示するオブジェクト、ヒント")]
+    [Header("記憶メガネ時に表示するオブジェクト(グループ可)")]
     public GameObject[] wallsToEnableMemoryVision;
-    [Header("記憶メガネ時に非表示にするオブジェクト")]
+    [Header("記憶メガネ時に非表示にするオブジェクト(グループ可)")]
     public GameObject[] wallsToDisableMemoryVision;
 
     void Start()
@@ -74,6 +74,29 @@ public class player : MonoBehaviour
         HandleIndicators();
         HandleCameraCollision();
         HandleEnemyCollision();
+    }
+
+    // --- 新設：子どもまで含めて一括切り替えする汎用メソッド ---
+    void SetObjectsVisibilityRecursive(GameObject[] groups, bool visible)
+    {
+        foreach (GameObject rootObj in groups)
+        {
+            if (rootObj == null) continue;
+
+            // rootObj自身とその子ども全員から Renderer を取得して切り替え
+            Renderer[] renderers = rootObj.GetComponentsInChildren<Renderer>(true);
+            foreach (Renderer r in renderers)
+            {
+                r.enabled = visible;
+            }
+
+            // rootObj自身とその子ども全員から Collider を取得して切り替え
+            Collider[] colliders = rootObj.GetComponentsInChildren<Collider>(true);
+            foreach (Collider c in colliders)
+            {
+                c.enabled = visible;
+            }
+        }
     }
 
     void HandleMove()
@@ -192,7 +215,6 @@ public class player : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, interactRange))
         {
-            Debug.Log("ヒット: " + hit.collider.name);
             return hit.collider.gameObject;
         }
         return null;
@@ -203,60 +225,19 @@ public class player : MonoBehaviour
         if (VisionManager.Instance == null) return;
         bool isNightScope = (VisionManager.Instance.CurrentVision == VisionType.NightScope);
 
-        foreach (GameObject wall in wallsToDisableInNightScope)
-        {
-            if (wall != null)
-            {
-                var renderer = wall.GetComponent<Renderer>();
-                if (renderer != null) renderer.enabled = !isNightScope;
-
-                var collider = wall.GetComponent<Collider>();
-                if (collider != null) collider.enabled = !isNightScope;
-            }
-        }
-
-        foreach (GameObject wall in wallsToEnableInNightScope)
-        {
-            if (wall != null)
-            {
-                var renderer = wall.GetComponent<Renderer>();
-                if (renderer != null) renderer.enabled = isNightScope;
-
-                var collider = wall.GetComponent<Collider>();
-                if (collider != null) collider.enabled = isNightScope;
-            }
-        }
+        // 再帰処理に変更
+        SetObjectsVisibilityRecursive(wallsToDisableInNightScope, !isNightScope);
+        SetObjectsVisibilityRecursive(wallsToEnableInNightScope, isNightScope);
     }
 
     void HandleMemoryVisionVisibility()
     {
         if (VisionManager.Instance == null) return;
-
         bool isMemory = (VisionManager.Instance.CurrentVision == VisionType.MemoryVision);
 
-        foreach (GameObject obj in wallsToDisableMemoryVision)
-        {
-            if (obj != null)
-            {
-                var renderer = obj.GetComponent<Renderer>();
-                if (renderer != null) renderer.enabled = !isMemory;
-
-                var collider = obj.GetComponent<Collider>();
-                if (collider != null) collider.enabled = !isMemory;
-            }
-        }
-
-        foreach (GameObject obj in wallsToEnableMemoryVision)
-        {
-            if (obj != null)
-            {
-                var renderer = obj.GetComponent<Renderer>();
-                if (renderer != null) renderer.enabled = isMemory;
-
-                var collider = obj.GetComponent<Collider>();
-                if (collider != null) collider.enabled = isMemory;
-            }
-        }
+        // 再帰処理に変更
+        SetObjectsVisibilityRecursive(wallsToDisableMemoryVision, !isMemory);
+        SetObjectsVisibilityRecursive(wallsToEnableMemoryVision, isMemory);
     }
 
     void HandleSpotlight()
@@ -285,8 +266,8 @@ public class player : MonoBehaviour
         {
             if (hit.CompareTag("Enemy"))
             {
-                SceneController.CurrentSceneName(); // 今のシーン名を記録！
-                SceneManager.LoadScene("GameOver"); // ゲームオーバー画面へ
+                SceneController.CurrentSceneName();
+                SceneManager.LoadScene("GameOver");
             }
         }
     }
