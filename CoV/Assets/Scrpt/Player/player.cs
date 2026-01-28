@@ -48,6 +48,18 @@ public class player : MonoBehaviour
     [Header("記憶メガネ時に非表示にするオブジェクト(グループ可)")]
     public GameObject[] wallsToDisableMemoryVision;
 
+    public GameObject interactUIKeyboard;
+    public GameObject interactUIGamepad;
+
+    private InputDeviceType currentInputDevice = InputDeviceType.KeyboardMouse;
+
+    public enum InputDeviceType
+    {
+        KeyboardMouse,
+        Gamepad
+    }
+
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -74,6 +86,7 @@ public class player : MonoBehaviour
         HandleIndicators();
         HandleCameraCollision();
         HandleEnemyCollision();
+        DetectInputDevice();
     }
 
     // --- 新設：子どもまで含めて一括切り替えする汎用メソッド ---
@@ -98,6 +111,26 @@ public class player : MonoBehaviour
             }
         }
     }
+
+    void DetectInputDevice()
+    {
+        // キーボード or マウス
+        if (Input.anyKeyDown ||
+            Input.GetMouseButtonDown(0) ||
+            Input.GetMouseButtonDown(1))
+        {
+            currentInputDevice = InputDeviceType.KeyboardMouse;
+        }
+
+        // ゲームパッド
+        if (Input.GetKeyDown(KeyCode.JoystickButton0) ||
+            Mathf.Abs(Input.GetAxis("RightStickX")) > 0.1f ||
+            Mathf.Abs(Input.GetAxis("RightStickY")) > 0.1f)
+        {
+            currentInputDevice = InputDeviceType.Gamepad;
+        }
+    }
+
 
     void HandleMove()
     {
@@ -129,6 +162,7 @@ public class player : MonoBehaviour
         transform.Rotate(Vector3.up * lookX * lookSpeed);
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
     }
+
 
     void HandleInteract()
     {
@@ -190,7 +224,8 @@ public class player : MonoBehaviour
 
         if (target.GetComponent<BatteryItem>() != null) return "Battery";
         if (target.GetComponent<OpenDoor>() != null) return "Door";
-        if (target.CompareTag("TP")) return "TP";
+        if (target.CompareTag("TP")) return "TP"; 
+        if (target.CompareTag("Key")) return "Key";
 
         return target.tag;
     }
@@ -295,4 +330,26 @@ public class player : MonoBehaviour
             });
         }
     }
+
+    void UpdateInteractUI(bool canInteract)
+    {
+        if (!canInteract)
+        {
+            interactUIKeyboard.SetActive(false);
+            interactUIGamepad.SetActive(false);
+            return;
+        }
+
+        if (currentInputDevice == InputDeviceType.KeyboardMouse)
+        {
+            interactUIKeyboard.SetActive(true);
+            interactUIGamepad.SetActive(false);
+        }
+        else
+        {
+            interactUIKeyboard.SetActive(false);
+            interactUIGamepad.SetActive(true);
+        }
+    }
+
 }

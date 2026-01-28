@@ -452,12 +452,12 @@ MonoBehaviour:
   - arrow: {fileID: 361202031}
     text: {fileID: 1774593734}
     difficultyLevel: 5
-    stageVideo: {fileID: 32900000, guid: 0899c358da5c1d441a867075a3fd1c19, type: 3}
+    stageVideo: {fileID: 32900000, guid: 414725a817174b7498eb30ebf5a108e9, type: 3}
     sceneName: Floor1
   - arrow: {fileID: 255737117}
     text: {fileID: 1419261496}
     difficultyLevel: 3
-    stageVideo: {fileID: 0}
+    stageVideo: {fileID: 32900000, guid: 3ba854d96b7cdad4692cd2c07037bf33, type: 3}
     sceneName: Floor2
   - arrow: {fileID: 840674180}
     text: {fileID: 1850157301}
@@ -468,7 +468,7 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0, b: 0, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   difficultyText: {fileID: 1754406364}
-  stageVideoPlayer: {fileID: 0}
+  stageVideoPlayer: {fileID: 860312142}
   startButtonBackground: {fileID: 1866779459}
   startButtonText: {fileID: 1922415955}
   decideSE: {fileID: 610533541}
@@ -802,7 +802,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 649.21, y: -391.16}
+  m_AnchoredPosition: {x: 562, y: -391.16}
   m_SizeDelta: {x: 513.91, y: 196.62}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &384188807
@@ -1156,7 +1156,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -151, y: -446}
+  m_AnchoredPosition: {x: -523, y: -423}
   m_SizeDelta: {x: 430.8318, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &716454887
@@ -1301,18 +1301,18 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 860312141}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 3ba854d96b7cdad4692cd2c07037bf33, type: 3}
+  m_VideoClip: {fileID: 0}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
-  m_TargetTexture: {fileID: 8400000, guid: f4d1b96b62ebde34abe2164d64f2f661, type: 2}
+  m_TargetTexture: {fileID: 8400000, guid: 93e815b09c8ab6d41917c23358d7ecdd, type: 2}
   m_TimeReference: 0
   m_TargetMaterialRenderer: {fileID: 0}
   m_TargetMaterialProperty: <noninit>
   m_RenderMode: 2
   m_AspectRatio: 2
   m_DataSource: 0
-  m_TimeUpdateMode: 2
+  m_TimeUpdateMode: 1
   m_PlaybackSpeed: 1
   m_AudioOutputMode: 2
   m_TargetAudioSources:
@@ -1323,7 +1323,7 @@ VideoPlayer:
   m_EnabledAudioTracks: 01
   m_DirectAudioMutes: 00
   m_ControlledAudioTrackCount: 1
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_SkipOnDrop: 1
   m_Looping: 1
   m_WaitForFirstFrame: 1
@@ -1715,7 +1715,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1350855425
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1890,8 +1890,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -366, y: 22.6}
-  m_SizeDelta: {x: 600, y: 150}
+  m_AnchoredPosition: {x: -436.79, y: 58}
+  m_SizeDelta: {x: 614.15, y: 131.24}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1419261496
 MonoBehaviour:
@@ -1920,7 +1920,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 0
     m_MaxSize: 300
-    m_Alignment: 0
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -1992,7 +1992,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: f4d1b96b62ebde34abe2164d64f2f661, type: 2}
+  m_Texture: {fileID: 8400000, guid: 93e815b09c8ab6d41917c23358d7ecdd, type: 2}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -2116,7 +2116,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 223.92993, y: -446}
+  m_AnchoredPosition: {x: -161.04999, y: -423}
   m_SizeDelta: {x: 528.9888, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1754406364
@@ -2195,8 +2195,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -374, y: 235}
-  m_SizeDelta: {x: 600, y: 150}
+  m_AnchoredPosition: {x: -438.62, y: 270.13}
+  m_SizeDelta: {x: 614.7, y: 129.74}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1774593734
 MonoBehaviour:
@@ -2225,7 +2225,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 0
     m_MaxSize: 300
-    m_Alignment: 0
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -2274,8 +2274,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -366, y: -173.1}
-  m_SizeDelta: {x: 600, y: 150}
+  m_AnchoredPosition: {x: -437.56, y: -139}
+  m_SizeDelta: {x: 612.59, y: 131.24}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1850157301
 MonoBehaviour:
@@ -2304,7 +2304,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 0
     m_MaxSize: 300
-    m_Alignment: 0
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -2353,7 +2353,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 649.2072, y: -391.16003}
+  m_AnchoredPosition: {x: 562, y: -391.16}
   m_SizeDelta: {x: 513.9106, y: 196.6131}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1866779459
@@ -2411,7 +2411,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1887895740
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2578,8 +2578,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 744.58, y: -406}
-  m_SizeDelta: {x: 430.8318, y: 150}
+  m_AnchoredPosition: {x: 556.27, y: -391.16}
+  m_SizeDelta: {x: 525.37, y: 196.62}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1922415955
 MonoBehaviour:
@@ -2608,7 +2608,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 0
     m_MaxSize: 300
-    m_Alignment: 0
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
