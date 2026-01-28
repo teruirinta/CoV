@@ -457,7 +457,7 @@ MonoBehaviour:
   - arrow: {fileID: 255737117}
     text: {fileID: 1419261496}
     difficultyLevel: 3
-    stageVideo: {fileID: 0}
+    stageVideo: {fileID: 32900000, guid: 3ba854d96b7cdad4692cd2c07037bf33, type: 3}
     sceneName: Floor2
   - arrow: {fileID: 840674180}
     text: {fileID: 1850157301}
@@ -468,7 +468,7 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 0, b: 0, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   difficultyText: {fileID: 1754406364}
-  stageVideoPlayer: {fileID: 0}
+  stageVideoPlayer: {fileID: 860312142}
   startButtonBackground: {fileID: 1866779459}
   startButtonText: {fileID: 1922415955}
   decideSE: {fileID: 610533541}
@@ -1301,18 +1301,18 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 860312141}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 3ba854d96b7cdad4692cd2c07037bf33, type: 3}
+  m_VideoClip: {fileID: 0}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
-  m_TargetTexture: {fileID: 8400000, guid: f4d1b96b62ebde34abe2164d64f2f661, type: 2}
+  m_TargetTexture: {fileID: 8400000, guid: 93e815b09c8ab6d41917c23358d7ecdd, type: 2}
   m_TimeReference: 0
   m_TargetMaterialRenderer: {fileID: 0}
   m_TargetMaterialProperty: <noninit>
   m_RenderMode: 2
   m_AspectRatio: 2
   m_DataSource: 0
-  m_TimeUpdateMode: 2
+  m_TimeUpdateMode: 1
   m_PlaybackSpeed: 1
   m_AudioOutputMode: 2
   m_TargetAudioSources:
@@ -1323,7 +1323,7 @@ VideoPlayer:
   m_EnabledAudioTracks: 01
   m_DirectAudioMutes: 00
   m_ControlledAudioTrackCount: 1
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_SkipOnDrop: 1
   m_Looping: 1
   m_WaitForFirstFrame: 1
@@ -1992,7 +1992,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: f4d1b96b62ebde34abe2164d64f2f661, type: 2}
+  m_Texture: {fileID: 8400000, guid: 93e815b09c8ab6d41917c23358d7ecdd, type: 2}
   m_UVRect:
     serializedVersion: 2
     x: 0
