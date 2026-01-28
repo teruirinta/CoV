@@ -16,16 +16,25 @@ public class GlassesAnimationController : MonoBehaviour
     public VisionType visionB = VisionType.Inverted;
     public VisionType visionC = VisionType.MemoryVision;
 
-    [Header("透明化対象 Renderer")]
-    public Renderer[] glassesRenderers;
-    public Renderer[] playerRenderers;
+    [Header("非表示にするオブジェクト（メガネ3つ）")]
+    public GameObject[] glassesRoots;
+    public GameObject playerModelRoot;
 
-    [Header("透明度設定")]
-    [Range(0f, 1f)]
-    public float invisibleAlpha = 0.2f;
+    [Header("消えるまでの余韻")]
+    public float hideDelayAfterAnimation = 0.3f;
+
+    [Header("SE")]
+    public AudioSource audioSource;
+    public AudioClip hideSE;
+    public float hideSEDelay = 0.1f;
 
     VisionType currentVision = VisionType.Normal;
     bool isPlaying = false;
+
+    void Start()
+    {
+        SetVisible(false);
+    }
 
     void Update()
     {
@@ -58,78 +67,78 @@ public class GlassesAnimationController : MonoBehaviour
     }
 
     // =============================
-    // 装着
+    // 装着（Wear）
     // =============================
     IEnumerator WearRoutine(AnimatorOverrideController overrideController, VisionType vision)
     {
         isPlaying = true;
 
-        animator.runtimeAnimatorController = overrideController;
-        animator.ResetTrigger("Remove");
-        animator.SetTrigger("Wear");
+        SetVisible(true);
 
-        yield return WaitForAnimationEnd("Wear");
+        animator.runtimeAnimatorController = overrideController;
+        animator.Play("Wear", 0, 0f);
+
+        yield return WaitForStateEnd("Wear");
 
         VisionManager.Instance.SetVision(vision);
         currentVision = vision;
 
-        // ★ アニメ終了後に透明化
-        SetInvisible(true);
+        yield return HideWithSE();
 
         isPlaying = false;
     }
 
     // =============================
-    // 取り外し
+    // 取り外し（Remove）
     // =============================
     IEnumerator RemoveRoutine()
     {
         isPlaying = true;
 
-        // ★ 先に見た目を戻す
-        SetInvisible(false);
+        SetVisible(true);
 
-        animator.ResetTrigger("Wear");
-        animator.SetTrigger("Remove");
+        animator.Play("Remove", 0, 0f);
 
-        yield return WaitForAnimationEnd("Remove");
+        yield return WaitForStateEnd("Remove");
 
         VisionManager.Instance.SetVision(VisionType.Normal);
         currentVision = VisionType.Normal;
+
+        yield return HideWithSE();
 
         isPlaying = false;
     }
 
     // =============================
-    // 切り替え（外す → 付ける）
+    // 切り替え（Remove → Wear）
     // =============================
     IEnumerator SwapRoutine(AnimatorOverrideController nextOverride, VisionType nextVision)
     {
         isPlaying = true;
 
+        SetVisible(true);
+
         // 外す
-        SetInvisible(false);
-        animator.SetTrigger("Remove");
-        yield return WaitForAnimationEnd("Remove");
+        animator.Play("Remove", 0, 0f);
+        yield return WaitForStateEnd("Remove");
 
         // 付ける
         animator.runtimeAnimatorController = nextOverride;
-        animator.SetTrigger("Wear");
-        yield return WaitForAnimationEnd("Wear");
+        animator.Play("Wear", 0, 0f);
+        yield return WaitForStateEnd("Wear");
 
         VisionManager.Instance.SetVision(nextVision);
         currentVision = nextVision;
 
-        // ★ 透明化
-        SetInvisible(true);
+        yield return HideWithSE();
 
         isPlaying = false;
     }
 
     // =============================
-    // アニメーション終了待ち
+    // State 再生完了待ち
     // =============================
-    IEnumerator WaitForAnimationEnd(string stateName)
+    IEnumerator WaitForStateEnd(string stateName)
     {
         yield return null;
 
@@ -141,28 +150,34 @@ public class GlassesAnimationController : MonoBehaviour
     }
 
     // =============================
-    // 透明化制御
+    // 非表示 + SE
     // =============================
-    void SetInvisible(bool invisible)
+    IEnumerator HideWithSE()
     {
-        float alpha = invisible ? invisibleAlpha : 1f;
+        yield return new WaitForSeconds(hideDelayAfterAnimation);
 
-        SetAlpha(glassesRenderers, alpha);
-        SetAlpha(playerRenderers, alpha);
+        SetVisible(false);
+
+        yield return new WaitForSeconds(hideSEDelay);
+
+        if (audioSource && hideSE)
+            audioSource.PlayOneShot(hideSE);
     }
 
-    void SetAlpha(Renderer[] renderers, float alpha)
+    // =============================
+    // 表示切り替え
+    // =============================
+    void SetVisible(bool visible)
     {
-        if (renderers == null) return;
-
-        foreach (var r in renderers)
+        if (glassesRoots != null)
         {
-            foreach (var mat in r.materials)
+            foreach (var g in glassesRoots)
             {
-                Color c = mat.color;
-                c.a = alpha;
-                mat.color = c;
+                if (g) g.SetActive(visible);
             }
         }
+
+        if (playerModelRoot)
+            playerModelRoot.SetActive(visible);
     }
 }
