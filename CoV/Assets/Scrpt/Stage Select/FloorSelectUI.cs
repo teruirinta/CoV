@@ -23,7 +23,7 @@ public class FloorSelectUI : MonoBehaviour
         [Range(1, 5)]
         public int difficultyLevel;
 
-        public VideoClip stageVideo;   // ★動画のみ
+        public VideoClip stageVideo;   // ステージごとの動画
 
         public string sceneName;
     }
@@ -53,6 +53,8 @@ public class FloorSelectUI : MonoBehaviour
     public float fadeTime = 0.5f;
 
     int currentIndex = 0;
+    int lastVideoIndex = -1;
+
     float inputCooldown = 0.2f;
     float lastInputTime;
     bool isTransitioning = false;
@@ -61,11 +63,8 @@ public class FloorSelectUI : MonoBehaviour
     {
         startButtonBackground.gameObject.SetActive(false);
 
-        if (stageVideoPlayer != null)
-        {
-            stageVideoPlayer.isLooping = true;
-            stageVideoPlayer.playOnAwake = false;
-        }
+        stageVideoPlayer.playOnAwake = false;
+        stageVideoPlayer.isLooping = true;
 
         UpdateUI();
 
@@ -122,7 +121,7 @@ public class FloorSelectUI : MonoBehaviour
                 return;
             }
         }
-        else if (currentState == SelectState.StartSelect)
+        else
         {
             if (up || down)
             {
@@ -165,20 +164,31 @@ public class FloorSelectUI : MonoBehaviour
                 selected ? Vector3.one * selectedScale : Vector3.one;
         }
 
-        var floor = floors[currentIndex];
+        difficultyText.text =
+            GetDifficultyStars(floors[currentIndex].difficultyLevel);
 
-        difficultyText.text = GetDifficultyStars(floor.difficultyLevel);
+        PlayStageVideo(currentIndex);
+    }
 
-        // ▼ 動画を常に再生
-        if (stageVideoPlayer != null && floor.stageVideo != null)
-        {
-            if (stageVideoPlayer.clip != floor.stageVideo)
-            {
-                stageVideoPlayer.Stop();
-                stageVideoPlayer.clip = floor.stageVideo;
-                stageVideoPlayer.Play();
-            }
-        }
+    // ★ ステージごとに動画を確実に再生する
+    void PlayStageVideo(int index)
+    {
+        if (index == lastVideoIndex) return;
+        if (floors[index].stageVideo == null) return;
+
+        lastVideoIndex = index;
+
+        stageVideoPlayer.Stop();
+        stageVideoPlayer.clip = floors[index].stageVideo;
+
+        stageVideoPlayer.Prepare();
+        stageVideoPlayer.prepareCompleted += OnVideoPrepared;
+    }
+
+    void OnVideoPrepared(VideoPlayer vp)
+    {
+        vp.prepareCompleted -= OnVideoPrepared;
+        vp.Play();
     }
 
     void UpdateStartButton(bool selected)
