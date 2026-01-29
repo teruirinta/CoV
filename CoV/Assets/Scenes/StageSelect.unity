@@ -355,6 +355,7 @@ GameObject:
   - component: {fileID: 255737118}
   - component: {fileID: 255737120}
   - component: {fileID: 255737119}
+  - component: {fileID: 255737121}
   m_Layer: 5
   m_Name: "\u4E09\u89D2\u3000\uFF12\u968E"
   m_TagString: Untagged
@@ -419,6 +420,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 255737117}
   m_CullTransparentMesh: 1
+--- !u!225 &255737121
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 255737117}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &265624321
 GameObject:
   m_ObjectHideFlags: 0
@@ -450,16 +463,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   floors:
   - arrow: {fileID: 361202031}
+    arrowCanvasGroup: {fileID: 361202035}
     text: {fileID: 1774593734}
     difficultyLevel: 5
     stageVideo: {fileID: 32900000, guid: 414725a817174b7498eb30ebf5a108e9, type: 3}
     sceneName: Floor1
   - arrow: {fileID: 255737117}
+    arrowCanvasGroup: {fileID: 255737121}
     text: {fileID: 1419261496}
     difficultyLevel: 3
     stageVideo: {fileID: 32900000, guid: 3ba854d96b7cdad4692cd2c07037bf33, type: 3}
     sceneName: Floor2
   - arrow: {fileID: 840674180}
+    arrowCanvasGroup: {fileID: 840674184}
     text: {fileID: 1850157301}
     difficultyLevel: 1
     stageVideo: {fileID: 32900000, guid: 05d541c4307287042954f7fe44dfdc69, type: 3}
@@ -467,6 +483,9 @@ MonoBehaviour:
   selectedScale: 1.15
   selectedColor: {r: 1, g: 0, b: 0, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
+  arrowFadeSpeed: 1
+  arrowMinAlpha: 0.3
+  arrowMaxAlpha: 1
   difficultyText: {fileID: 1754406364}
   stageVideoPlayer: {fileID: 860312142}
   startButtonBackground: {fileID: 1866779459}
@@ -704,6 +723,7 @@ GameObject:
   - component: {fileID: 361202032}
   - component: {fileID: 361202034}
   - component: {fileID: 361202033}
+  - component: {fileID: 361202035}
   m_Layer: 5
   m_Name: "\u4E09\u89D2\u3000\uFF11\u968E"
   m_TagString: Untagged
@@ -768,6 +788,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 361202031}
   m_CullTransparentMesh: 1
+--- !u!225 &361202035
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361202031}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &384188805
 GameObject:
   m_ObjectHideFlags: 0
@@ -1212,6 +1244,7 @@ GameObject:
   - component: {fileID: 840674181}
   - component: {fileID: 840674183}
   - component: {fileID: 840674182}
+  - component: {fileID: 840674184}
   m_Layer: 5
   m_Name: "\u4E09\u89D2\u3000\uFF13\u968E"
   m_TagString: Untagged
@@ -1276,6 +1309,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 840674180}
   m_CullTransparentMesh: 1
+--- !u!225 &840674184
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840674180}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &860312141
 GameObject:
   m_ObjectHideFlags: 0
@@ -2823,7 +2868,6 @@ RectTransform:
   m_Children:
   - {fileID: 194976033}
   - {fileID: 1111695487}
-  - {fileID: 4905777280820933609}
   - {fileID: 1915572182}
   - {fileID: 1754406363}
   - {fileID: 716454886}
@@ -2848,6 +2892,7 @@ RectTransform:
   - {fileID: 1966323715}
   - {fileID: 1850157300}
   - {fileID: 1578988819}
+  - {fileID: 4905777280820933609}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

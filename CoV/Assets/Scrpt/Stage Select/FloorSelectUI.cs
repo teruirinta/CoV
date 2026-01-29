@@ -18,13 +18,13 @@ public class FloorSelectUI : MonoBehaviour
     public class FloorItem
     {
         public GameObject arrow;
+        public CanvasGroup arrowCanvasGroup;
         public Text text;
 
         [Range(1, 5)]
         public int difficultyLevel;
 
-        public VideoClip stageVideo;   // ステージごとの動画
-
+        public VideoClip stageVideo;
         public string sceneName;
     }
 
@@ -34,6 +34,11 @@ public class FloorSelectUI : MonoBehaviour
     public float selectedScale = 1.15f;
     public Color selectedColor = Color.red;
     public Color normalColor = Color.white;
+
+    [Header("矢印フェード")]
+    public float arrowFadeSpeed = 2.0f;
+    public float arrowMinAlpha = 0.3f;
+    public float arrowMaxAlpha = 1.0f;
 
     [Header("難易度表示")]
     public Text difficultyText;
@@ -55,9 +60,10 @@ public class FloorSelectUI : MonoBehaviour
     int currentIndex = 0;
     int lastVideoIndex = -1;
 
-    float inputCooldown = 0.2f;
-    float lastInputTime;
     bool isTransitioning = false;
+
+    // ★ 左スティック制御用
+    bool stickNeutral = true;
 
     void Start()
     {
@@ -79,17 +85,22 @@ public class FloorSelectUI : MonoBehaviour
     {
         if (isTransitioning) return;
         if (floors.Length == 0) return;
-        if (Time.time - lastInputTime < inputCooldown) return;
 
-        float dpadY = Input.GetAxisRaw("DPadX");
+        float stickY = Input.GetAxisRaw("Vertical");
+
+        // スティックが戻ったら入力解禁
+        if (Mathf.Abs(stickY) < 0.3f)
+        {
+            stickNeutral = true;
+        }
 
         bool up =
-            dpadY > 0.5f ||
+            (stickY > 0.5f && stickNeutral) ||
             Input.GetKeyDown(KeyCode.UpArrow) ||
             Input.GetKeyDown(KeyCode.W);
 
         bool down =
-            dpadY < -0.5f ||
+            (stickY < -0.5f && stickNeutral) ||
             Input.GetKeyDown(KeyCode.DownArrow) ||
             Input.GetKeyDown(KeyCode.S);
 
@@ -103,12 +114,14 @@ public class FloorSelectUI : MonoBehaviour
             if (up)
             {
                 ChangeSelection(-1);
+                stickNeutral = false;
                 return;
             }
 
             if (down)
             {
                 ChangeSelection(1);
+                stickNeutral = false;
                 return;
             }
 
@@ -117,7 +130,6 @@ public class FloorSelectUI : MonoBehaviour
                 currentState = SelectState.StartSelect;
                 startButtonBackground.gameObject.SetActive(true);
                 UpdateStartButton(true);
-                lastInputTime = Time.time;
                 return;
             }
         }
@@ -128,7 +140,7 @@ public class FloorSelectUI : MonoBehaviour
                 currentState = SelectState.FloorSelect;
                 startButtonBackground.gameObject.SetActive(false);
                 UpdateStartButton(false);
-                lastInputTime = Time.time;
+                stickNeutral = false;
                 return;
             }
 
@@ -137,6 +149,21 @@ public class FloorSelectUI : MonoBehaviour
                 DecideFloor();
             }
         }
+    }
+
+    void LateUpdate()
+    {
+        if (currentState != SelectState.FloorSelect) return;
+
+        var floor = floors[currentIndex];
+        if (floor.arrowCanvasGroup == null) return;
+
+        float alpha = Mathf.PingPong(
+            Time.time * arrowFadeSpeed,
+            arrowMaxAlpha - arrowMinAlpha
+        ) + arrowMinAlpha;
+
+        floor.arrowCanvasGroup.alpha = alpha;
     }
 
     void ChangeSelection(int dir)
@@ -148,7 +175,6 @@ public class FloorSelectUI : MonoBehaviour
         else if (currentIndex >= floors.Length)
             currentIndex = 0;
 
-        lastInputTime = Time.time;
         UpdateUI();
     }
 
@@ -158,7 +184,14 @@ public class FloorSelectUI : MonoBehaviour
         {
             bool selected = (i == currentIndex);
 
-            floors[i].arrow.SetActive(selected);
+            floors[i].arrow.SetActive(true);
+
+            if (floors[i].arrowCanvasGroup != null)
+            {
+                floors[i].arrowCanvasGroup.alpha =
+                    selected ? arrowMaxAlpha : 0f;
+            }
+
             floors[i].text.color = selected ? selectedColor : normalColor;
             floors[i].text.transform.localScale =
                 selected ? Vector3.one * selectedScale : Vector3.one;
@@ -170,7 +203,6 @@ public class FloorSelectUI : MonoBehaviour
         PlayStageVideo(currentIndex);
     }
 
-    // ★ ステージごとに動画を確実に再生する
     void PlayStageVideo(int index)
     {
         if (index == lastVideoIndex) return;
