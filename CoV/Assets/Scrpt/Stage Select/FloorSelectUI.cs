@@ -18,7 +18,7 @@ public class FloorSelectUI : MonoBehaviour
     public class FloorItem
     {
         public GameObject arrow;
-        public CanvasGroup arrowCanvasGroup;   // ★追加
+        public CanvasGroup arrowCanvasGroup;
         public Text text;
 
         [Range(1, 5)]
@@ -60,9 +60,10 @@ public class FloorSelectUI : MonoBehaviour
     int currentIndex = 0;
     int lastVideoIndex = -1;
 
-    float inputCooldown = 0.2f;
-    float lastInputTime;
     bool isTransitioning = false;
+
+    // ★ 左スティック制御用
+    bool stickNeutral = true;
 
     void Start()
     {
@@ -84,17 +85,22 @@ public class FloorSelectUI : MonoBehaviour
     {
         if (isTransitioning) return;
         if (floors.Length == 0) return;
-        if (Time.time - lastInputTime < inputCooldown) return;
 
-        float dpadY = Input.GetAxisRaw("DPadX");
+        float stickY = Input.GetAxisRaw("Vertical");
+
+        // スティックが戻ったら入力解禁
+        if (Mathf.Abs(stickY) < 0.3f)
+        {
+            stickNeutral = true;
+        }
 
         bool up =
-            dpadY > 0.5f ||
+            (stickY > 0.5f && stickNeutral) ||
             Input.GetKeyDown(KeyCode.UpArrow) ||
             Input.GetKeyDown(KeyCode.W);
 
         bool down =
-            dpadY < -0.5f ||
+            (stickY < -0.5f && stickNeutral) ||
             Input.GetKeyDown(KeyCode.DownArrow) ||
             Input.GetKeyDown(KeyCode.S);
 
@@ -108,12 +114,14 @@ public class FloorSelectUI : MonoBehaviour
             if (up)
             {
                 ChangeSelection(-1);
+                stickNeutral = false;
                 return;
             }
 
             if (down)
             {
                 ChangeSelection(1);
+                stickNeutral = false;
                 return;
             }
 
@@ -122,7 +130,6 @@ public class FloorSelectUI : MonoBehaviour
                 currentState = SelectState.StartSelect;
                 startButtonBackground.gameObject.SetActive(true);
                 UpdateStartButton(true);
-                lastInputTime = Time.time;
                 return;
             }
         }
@@ -133,7 +140,7 @@ public class FloorSelectUI : MonoBehaviour
                 currentState = SelectState.FloorSelect;
                 startButtonBackground.gameObject.SetActive(false);
                 UpdateStartButton(false);
-                lastInputTime = Time.time;
+                stickNeutral = false;
                 return;
             }
 
@@ -168,7 +175,6 @@ public class FloorSelectUI : MonoBehaviour
         else if (currentIndex >= floors.Length)
             currentIndex = 0;
 
-        lastInputTime = Time.time;
         UpdateUI();
     }
 
@@ -178,7 +184,6 @@ public class FloorSelectUI : MonoBehaviour
         {
             bool selected = (i == currentIndex);
 
-            // 矢印は常に表示（αで制御）
             floors[i].arrow.SetActive(true);
 
             if (floors[i].arrowCanvasGroup != null)
