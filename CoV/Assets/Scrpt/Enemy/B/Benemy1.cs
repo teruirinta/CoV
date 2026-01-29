@@ -2,22 +2,23 @@ using UnityEngine;
 
 public class Benemy1 : MonoBehaviour
 {
-    [Header("”½“]‘ÎÛ")]
+    [Header("åè»¢å¯¾è±¡")]
     public Transform normalObject;
 
-    [Header("ƒ}ƒlƒLƒ“")]
+    [Header("ãƒãƒã‚­ãƒ³")]
     public GameObject mannequinObject;
+    public Animator mannequinAnimator;
 
-    [Header("ƒvƒŒƒCƒ„[")]
+    [Header("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼")]
     public Transform playerTransform;
 
-    [Header("•\¦‹——£")]
+    [Header("è¡¨ç¤ºè·é›¢")]
     public float showDistance;
 
-    [Header("’I‚Ì—h‚êƒXƒNƒŠƒvƒg")]
+    [Header("æ£šã®æºã‚Œã‚¹ã‚¯ãƒªãƒ—ãƒˆ")]
     public ShelfShaker shelfShaker;
 
-    [Header("’ÇÕİ’è")]
+    [Header("è¿½è·¡è¨­å®š")]
     public float chaseDistance = 5f;
     public float moveSpeed = 2f;
 
@@ -28,7 +29,7 @@ public class Benemy1 : MonoBehaviour
     private Vector3 invertedPos;
     private bool hasBeenShown = false;
 
-    [Header("”½“]‚Ì‚‚³•â³")]
+    [Header("åè»¢æ™‚ã®é«˜ã•è£œæ­£")]
     public float verticalOffset;
 
     private Vector3 mannequinStartPos;
@@ -40,12 +41,16 @@ public class Benemy1 : MonoBehaviour
     {
         if (normalObject == null)
         {
-            Debug.LogWarning("normalObject ‚ªİ’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñI");
+            Debug.LogWarning("normalObject ãŒè¨­å®šã•ã‚Œã¦ã„ã¾ã›ã‚“ï¼");
             return;
         }
 
         defaultRot = normalObject.localRotation;
-        invertedRot = Quaternion.Euler(defaultRot.eulerAngles.x, defaultRot.eulerAngles.y, defaultRot.eulerAngles.z + 180f);
+        invertedRot = Quaternion.Euler(
+            defaultRot.eulerAngles.x,
+            defaultRot.eulerAngles.y,
+            defaultRot.eulerAngles.z + 180f
+        );
 
         defaultPos = normalObject.localPosition;
         invertedPos = defaultPos + new Vector3(0, verticalOffset, 0);
@@ -60,11 +65,6 @@ public class Benemy1 : MonoBehaviour
 
     void Update()
     {
-        // normalObject ‚ª‰ó‚ê‚½‚ç mannequinObject ‚à‰ó‚·
-        if (normalObject == null && mannequinObject != null)
-        {
-            Destroy(mannequinObject);
-        }
 
         if (VisionManager.Instance == null) return;
 
@@ -83,10 +83,18 @@ public class Benemy1 : MonoBehaviour
         offset.y *= 0.5f;
         float adjustedDistance = offset.magnitude;
 
+        // ===== è·é›¢ã§å‡ºç¾ï¼‹ã‚¢ãƒ‹ãƒ¡å†ç”Ÿ =====
         if (!hasBeenShown && adjustedDistance <= showDistance)
         {
             mannequinObject.SetActive(true);
             hasBeenShown = true;
+
+            Debug.Log("Mannequin Appear");
+
+            if (mannequinAnimator != null)
+            {
+                mannequinAnimator.Play("Appear", 0, 0f);
+            }
 
             if (normalObject != null)
             {
@@ -98,104 +106,14 @@ public class Benemy1 : MonoBehaviour
         {
             shelfShaker.enabled = !shouldInvert;
         }
-
-        if (mannequinObject.activeSelf)
-        {
-            bool canSeePlayer = false;
-
-            Vector3 directionToPlayer = playerTransform.position - mannequinObject.transform.position;
-            Ray ray = new Ray(mannequinObject.transform.position, directionToPlayer.normalized);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, 100f))
-            {
-                if (hit.transform == playerTransform)
-                {
-                    canSeePlayer = true;
-                }
-            }
-
-            if (canSeePlayer)
-            {
-                Vector3 direction;
-
-                if (shouldInvert)
-                {
-                    direction = directionToPlayer.normalized;
-
-                    if (mannequinRb.useGravity)
-                    {
-                        mannequinRb.useGravity = false;
-                    }
-                }
-                else
-                {
-                    Vector3 flatDirection = directionToPlayer;
-                    flatDirection.y = 0;
-                    direction = flatDirection.normalized;
-
-                    if (!mannequinRb.useGravity)
-                    {
-                        mannequinRb.useGravity = true;
-                    }
-                }
-
-                mannequinRb.MovePosition(mannequinRb.position + direction * moveSpeed * Time.deltaTime);
-                isReturning = false;
-            }
-            else
-            {
-                if (!mannequinRb.useGravity)
-                {
-                    mannequinRb.useGravity = true;
-                }
-
-                Vector3 returnPos = Vector3.MoveTowards(
-                    mannequinRb.position,
-                    mannequinStartPos,
-                    moveSpeed * Time.deltaTime
-                );
-                mannequinRb.MovePosition(returnPos);
-
-                isReturning = true;
-
-                if (Vector3.Distance(mannequinObject.transform.position, mannequinStartPos) < 0.01f)
-                {
-                    mannequinObject.SetActive(false);
-                    hasBeenShown = false;
-                    isReturning = false;
-
-                    if (normalObject != null)
-                    {
-                        normalObject.gameObject.SetActive(true);
-                    }
-                }
-            }
-        }
-
-        if (normalObject != null && mannequinObject.activeSelf)
-        {
-            float moveDistance = Vector3.Distance(mannequinObject.transform.position, mannequinStartPos);
-            if (moveDistance > 0.01f)
-            {
-                normalObject.gameObject.SetActive(false);
-            }
-            else if (!normalObject.gameObject.activeSelf)
-            {
-                normalObject.gameObject.SetActive(true);
-            }
-        }
     }
 
     void OnDestroy()
     {
         if (normalObject != null)
-        {
             Destroy(normalObject.gameObject);
-        }
+
         if (mannequinObject != null)
-        {
             Destroy(mannequinObject);
-        }
     }
 }

@@ -112,7 +112,6 @@ public class aEnemy : MonoBehaviour
 
     void Attack()
     {
-        isDead = true;
 
         if (animator)
             animator.SetTrigger("Attack");
