@@ -48,13 +48,13 @@ public class Fade : MonoBehaviour
     // テスト用：Fキーでフェード確認
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            // 通常のフェード
-            // FadeOutIn(() => Debug.Log("フェード中に何かするよ！"));
+        //if (Input.GetKeyDown(KeyCode.F))
+        //{
+        //    // 通常のフェード
+        //    // FadeOutIn(() => Debug.Log("フェード中に何かするよ！"));
 
-            //  即座に暗転 → 明るく
-            FadeInstantOutThenIn(() => Debug.Log("真っ暗の中で処理！"));
-        }
+        //    //  即座に暗転 → 明るく
+        //    FadeInstantOutThenIn(() => Debug.Log("真っ暗の中で処理！"));
+        //}
     }
 }
