@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Benemy1 : MonoBehaviour
 {
@@ -65,7 +66,6 @@ public class Benemy1 : MonoBehaviour
 
     void Update()
     {
-
         if (VisionManager.Instance == null) return;
 
         bool shouldInvert = (VisionManager.Instance.CurrentVision == VisionType.Inverted);
@@ -105,6 +105,16 @@ public class Benemy1 : MonoBehaviour
         if (shelfShaker != null)
         {
             shelfShaker.enabled = !shouldInvert;
+        }
+    }
+
+    // ★★★ 追加：トリガーでプレイヤー即死 ★★★
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Player Killed by Mannequin");
+            SceneManager.LoadScene("GameOver");
         }
     }
 
