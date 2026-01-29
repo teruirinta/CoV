@@ -8,8 +8,8 @@ public class ShelfShaker : MonoBehaviour
     [Header("ÉKÉ^ÉKÉ^ê›íË")]
     public float shakeAmount = 0.1f;
     public float shakeSpeed = 10f;
-    public float minShakeInterval = 2f;
-    public float maxShakeInterval = 5f;
+    public float minShakeInterval = 1f;
+    public float maxShakeInterval = 1f;
     public float shakeDuration = 1f;
 
     [Header("ÉKÉ^ÉKÉ^âπ")]

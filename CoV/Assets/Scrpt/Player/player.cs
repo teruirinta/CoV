@@ -230,6 +230,8 @@ public class player : MonoBehaviour
         if (target.CompareTag("TP")) return "TP"; 
         if (target.CompareTag("Key")) return "Key";
         if (target.CompareTag("Salt")) return "Salt";
+        if (target.CompareTag("Goal")) return "Goal";
+        if (target.CompareTag("Battery")) return "Battery";
 
         return target.tag;
     }
@@ -262,6 +264,7 @@ public class player : MonoBehaviour
                 obj.CompareTag("Battery") ||
                 obj.CompareTag("Key") ||
                 obj.CompareTag("Salt") ||
+                obj.CompareTag("Goal") ||
                 obj.CompareTag("TP")
                 )
 
