@@ -195,4 +195,10 @@ public class VisionManager : MonoBehaviour
     {
         return GetVisionData(CurrentVision);
     }
+
+    public bool IsNightVisionActive
+    {
+        get { return CurrentVision == VisionType.NightScope; }
+    }
+
 }

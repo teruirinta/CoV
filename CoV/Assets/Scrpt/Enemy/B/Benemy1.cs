@@ -68,6 +68,17 @@ public class Benemy1 : MonoBehaviour
     {
         if (VisionManager.Instance == null) return;
 
+        // normalObject が破壊されたらマネキンも破壊
+        if (normalObject == null)
+        {
+            if (mannequinObject != null)
+            {
+                Destroy(mannequinObject);
+            }
+            Destroy(gameObject); // このスクリプトを持つオブジェクトも破壊
+            return;
+        }
+
         bool shouldInvert = (VisionManager.Instance.CurrentVision == VisionType.Inverted);
 
         if (normalObject != null && shouldInvert != isInverted)
@@ -83,7 +94,6 @@ public class Benemy1 : MonoBehaviour
         offset.y *= 0.5f;
         float adjustedDistance = offset.magnitude;
 
-        // ===== 距離で出現＋アニメ再生 =====
         if (!hasBeenShown && adjustedDistance <= showDistance)
         {
             mannequinObject.SetActive(true);
@@ -107,6 +117,7 @@ public class Benemy1 : MonoBehaviour
             shelfShaker.enabled = !shouldInvert;
         }
     }
+
 
     // ★★★ 追加：トリガーでプレイヤー即死 ★★★
     void OnTriggerEnter(Collider other)

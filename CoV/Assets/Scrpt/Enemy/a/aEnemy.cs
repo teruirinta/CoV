@@ -3,7 +3,7 @@
 public class aEnemy : MonoBehaviour
 {
     [Header("Animator")]
-    public Animator animator;   // 歩き・攻撃のみ
+    public Animator animator;
 
     [Header("プレイヤー")]
     public Transform player;
@@ -31,15 +31,17 @@ public class aEnemy : MonoBehaviour
     // =====================
     // 初期化
     // =====================
-
     void Start()
     {
         renderers = GetComponentsInChildren<Renderer>();
 
-        // 最初は完全透明
+        // 最初は透明
         SetVisibility(false);
     }
 
+    // =====================
+    // 更新
+    // =====================
     void Update()
     {
         if (isDead || player == null) return;
@@ -49,8 +51,15 @@ public class aEnemy : MonoBehaviour
         // プレイヤー検知
         isChasing = distance <= detectionRange && CanSeePlayer();
 
-        // 表示制御（発見した瞬間に出現）
-        SetVisibility(isChasing);
+        // ★ 暗視カメラ中は強制可視化
+        if (VisionManager.Instance != null && VisionManager.Instance.IsNightVisionActive)
+        {
+            SetVisibility(true);
+        }
+        else
+        {
+            SetVisibility(isChasing);
+        }
 
         // 即死攻撃
         if (isChasing && distance <= attackRange)
@@ -72,7 +81,6 @@ public class aEnemy : MonoBehaviour
     // =====================
     // 移動
     // =====================
-
     void MoveAlongRoute()
     {
         if (waypoints == null || waypoints.Length == 0) return;
@@ -109,24 +117,21 @@ public class aEnemy : MonoBehaviour
     // =====================
     // 攻撃（即死）
     // =====================
-
     void Attack()
     {
-
         if (animator)
             animator.SetTrigger("Attack");
 
         if (footstepAudio && footstepAudio.isPlaying)
             footstepAudio.Stop();
 
-        // プレイヤー即死
+        // プレイヤー即死処理
         // player.GetComponent<PlayerLife>().Die();
     }
 
     // =====================
     // アニメーション
     // =====================
-
     void UpdateAnimation()
     {
         if (!animator) return;
@@ -138,7 +143,6 @@ public class aEnemy : MonoBehaviour
     // =====================
     // 透明制御（URP）
     // =====================
-
     void SetVisibility(bool visible)
     {
         float alpha = visible ? 1f : 0f;
@@ -160,7 +164,6 @@ public class aEnemy : MonoBehaviour
     // =====================
     // 足音
     // =====================
-
     void HandleFootstepAudio(float distance)
     {
         if (!footstepAudio) return;
@@ -185,7 +188,6 @@ public class aEnemy : MonoBehaviour
     // =====================
     // 視線判定
     // =====================
-
     bool CanSeePlayer()
     {
         Vector3 dir = (player.position - transform.position).normalized;
