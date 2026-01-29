@@ -87,6 +87,9 @@ public class player : MonoBehaviour
         HandleCameraCollision();
         HandleEnemyCollision();
         DetectInputDevice();
+        UpdateInteractUI(RaycastInteractable() != null);
+
+
     }
 
     // --- 新設：子どもまで含めて一括切り替えする汎用メソッド ---
@@ -248,12 +251,23 @@ public class player : MonoBehaviour
     {
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
         RaycastHit hit;
+
         if (Physics.Raycast(ray, out hit, interactRange))
         {
-            return hit.collider.gameObject;
+            GameObject obj = hit.collider.gameObject;
+
+            // ★ インタラクト対象のタグだけ通す
+            if (obj.CompareTag("Door") ||
+                obj.CompareTag("Battery") ||
+                obj.CompareTag("Key") ||
+                obj.CompareTag("TP"))
+            {
+                return obj;
+            }
         }
         return null;
     }
+
 
     void HandleWallVisibility()
     {
