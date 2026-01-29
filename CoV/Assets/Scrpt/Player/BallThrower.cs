@@ -3,19 +3,21 @@
 public class BallThrower : MonoBehaviour
 {
     [Header("粉の設定")]
-    public ParticleSystem powderEffectPrefab;   // 粉のパーティクル
-    public Transform throwPoint;                 // 投げる位置
-    public int maxStock = 10;                    // 最大所持数
-    private int currentStock = 10;               // 現在の所持数
+    public ParticleSystem powderEffectPrefab;
+    public Transform throwPoint;
+    public int maxStock = 10;
+    private int currentStock = 10;
 
     [Header("エイム設定")]
-    public float zoomFOV = 30f;                  // エイム時FOV
-    public float zoomSpeed = 5f;                 // ズーム速度
+    public float zoomFOV = 30f;
+    public float zoomSpeed = 5f;
 
     private bool isAiming = false;
-
     private Camera mainCamera;
     private float normalFOV;
+
+    // ★追加：トリガーが押しっぱなしの状態かを記録する変数
+    private bool isRTDown = false;
 
     void Start()
     {
@@ -25,37 +27,42 @@ public class BallThrower : MonoBehaviour
 
     void Update()
     {
-        // Xbox LT / RT（旧InputManager）
         float lt = Input.GetAxis("LT");
         float rt = Input.GetAxis("RT");
 
-        // =========================
-        // エイム処理（LT / 右クリック）
-        // =========================
+        // エイム処理
         if (lt > 0.2f || Input.GetMouseButton(1) || Input.GetButton("LT"))
         {
             isAiming = true;
-            mainCamera.fieldOfView = Mathf.Lerp(
-                mainCamera.fieldOfView,
-                zoomFOV,
-                Time.deltaTime * zoomSpeed
-            );
+            mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, zoomFOV, Time.deltaTime * zoomSpeed);
         }
         else
         {
             isAiming = false;
-            mainCamera.fieldOfView = Mathf.Lerp(
-                mainCamera.fieldOfView,
-                normalFOV,
-                Time.deltaTime * zoomSpeed
-            );
+            mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, normalFOV, Time.deltaTime * zoomSpeed);
         }
 
         // =========================
-        // 粉を投げる（RT / 左クリック）
+        // 粉を投げる（修正ポイント）
         // =========================
-        if (isAiming &&
-            (rt > 0.5f || Input.GetMouseButtonDown(0) || Input.GetButtonDown("RT")))
+
+        // ★RTが一定以上押し込まれていて、かつ「前のフレームでは押されていなかった」場合のみ実行
+        bool rtJustPressed = false;
+        if (rt > 0.5f)
+        {
+            if (!isRTDown) // まだ「押しっぱなし状態」として記録されていなければ
+            {
+                rtJustPressed = true; // 今回のフレームで初めて押されたと判定
+                isRTDown = true;      // 押しっぱなし状態にセット
+            }
+        }
+        else
+        {
+            isRTDown = false; // トリガーを離したらリセット
+        }
+
+        // マウスの左クリック、またはRTが新しく押された瞬間
+        if (isAiming && (rtJustPressed || Input.GetMouseButtonDown(0)))
         {
             if (currentStock > 0)
             {
@@ -70,52 +77,29 @@ public class BallThrower : MonoBehaviour
         }
     }
 
-    // =========================
-    // 粉を投げる処理
-    // =========================
     void ThrowPowder()
     {
-        Ray ray = Camera.main.ScreenPointToRay(
-            new Vector3(Screen.width / 2f, Screen.height / 2f, 0)
-        );
-
+        Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0));
         Vector3 direction = ray.direction;
         Quaternion rotation = Quaternion.LookRotation(direction);
 
-        ParticleSystem powder =
-            Instantiate(powderEffectPrefab, throwPoint.position, rotation);
-
+        ParticleSystem powder = Instantiate(powderEffectPrefab, throwPoint.position, rotation);
         powder.Play();
 
-        // パーティクル終了後に削除
-        Destroy(
-            powder.gameObject,
-            powder.main.duration + powder.main.startLifetime.constantMax
-        );
+        Destroy(powder.gameObject, powder.main.duration + powder.main.startLifetime.constantMax);
 
-        // 前方向に飛ばす
         Rigidbody rb = powder.GetComponent<Rigidbody>();
         if (rb != null)
         {
             float throwForce = 10f;
-            rb.linearVelocity = direction * throwForce;   // ← Unity標準
+            rb.linearVelocity = direction * throwForce;
         }
     }
 
-    // =========================
-    // ストック補充（アイテム用）
-    // =========================
     public void AddStock(int amount)
     {
         currentStock = Mathf.Min(currentStock + amount, maxStock);
-        Debug.Log("粉を補充！現在のストック: " + currentStock);
     }
 
-    // =========================
-    // UI表示用（読み取り専用）
-    // =========================
-    public int CurrentStock
-    {
-        get { return currentStock; }
-    }
+    public int CurrentStock => currentStock;
 }
