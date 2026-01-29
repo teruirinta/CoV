@@ -229,6 +229,7 @@ public class player : MonoBehaviour
         if (target.GetComponent<OpenDoor>() != null) return "Door";
         if (target.CompareTag("TP")) return "TP"; 
         if (target.CompareTag("Key")) return "Key";
+        if (target.CompareTag("Salt")) return "Salt";
 
         return target.tag;
     }
@@ -260,7 +261,10 @@ public class player : MonoBehaviour
             if (obj.CompareTag("Door") ||
                 obj.CompareTag("Battery") ||
                 obj.CompareTag("Key") ||
-                obj.CompareTag("TP"))
+                obj.CompareTag("Salt") ||
+                obj.CompareTag("TP")
+                )
+
             {
                 return obj;
             }

@@ -24,6 +24,7 @@ public class RetryUI : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("LastStageName = " + PlayerPrefs.GetString("LastStageName"));
         if (successSE != null)
             successSE.Play();
 
