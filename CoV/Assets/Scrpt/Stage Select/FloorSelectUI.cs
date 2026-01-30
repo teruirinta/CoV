@@ -46,9 +46,6 @@ public class FloorSelectUI : MonoBehaviour
     [Header("ステージ動画")]
     public VideoPlayer stageVideoPlayer;
 
-    [Header("開始ボタン")]
-    public Image startButtonBackground;
-    public Text startButtonText;
 
     [Header("サウンド")]
     public AudioSource decideSE;
@@ -67,7 +64,6 @@ public class FloorSelectUI : MonoBehaviour
 
     void Start()
     {
-        startButtonBackground.gameObject.SetActive(false);
 
         stageVideoPlayer.playOnAwake = false;
         stageVideoPlayer.isLooping = true;
@@ -127,21 +123,14 @@ public class FloorSelectUI : MonoBehaviour
 
             if (decide)
             {
-                currentState = SelectState.StartSelect;
-                startButtonBackground.gameObject.SetActive(true);
-                UpdateStartButton(true);
-                return;
+                DecideFloor();
             }
         }
         else
         {
             if (up || down)
             {
-                currentState = SelectState.FloorSelect;
-                startButtonBackground.gameObject.SetActive(false);
-                UpdateStartButton(false);
-                stickNeutral = false;
-                return;
+
             }
 
             if (decide)
@@ -223,10 +212,6 @@ public class FloorSelectUI : MonoBehaviour
         vp.Play();
     }
 
-    void UpdateStartButton(bool selected)
-    {
-        startButtonText.color = selected ? Color.red : Color.white;
-    }
 
     string GetDifficultyStars(int level)
     {
