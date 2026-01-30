@@ -1,22 +1,20 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-[RequireComponent(typeof(QuickOutline))]
 public class BatteryItem : MonoBehaviour
 {
     [Header("設定")]
-    public float pickupRange = 3f; // プレイヤーがこの距離以内で取得可能
-    public KeyCode pickupKey = KeyCode.E; // キーボード操作（デバッグ用）
+    public float pickupRange = 3f;
+    public KeyCode pickupKey = KeyCode.E;
 
-    [Header("エフェクト関連（任意）")]
-    public GameObject pickupEffect; // 回収時エフェクト（任意）
+    [Header("エフェクト・音響")]
+    public GameObject pickupEffect;
+    public AudioClip pickupSound; // 回復時の効果音
+    [Range(0f, 1f)] public float volume = 1f;
 
     private VisionManager visionManager;
     private Transform playerTransform;
-    private QuickOutline outline;
 
-    private bool isHighlighted = false; // 現在アウトラインが表示中かどうか
-    
     void Start()
     {
         visionManager = VisionManager.Instance;
@@ -25,11 +23,7 @@ public class BatteryItem : MonoBehaviour
         if (player != null)
             playerTransform = player.transform;
         else
-            Debug.LogWarning("⚠ Playerタグのオブジェクトが見つかりません。BatteryItemが動作しません。");
-
-        outline = GetComponent<QuickOutline>();
-        outline.enabled = false; // 初期状態では非表示
-        
+            Debug.LogWarning("⚠ Playerタグのオブジェクトが見つかりません。");
     }
 
     void Update()
@@ -41,33 +35,18 @@ public class BatteryItem : MonoBehaviour
         // プレイヤーがこっちを向いているかチェック
         Vector3 toBattery = (transform.position - playerTransform.position).normalized;
         float dot = Vector3.Dot(playerTransform.forward, toBattery);
-        bool isLookingAt = dot > 0.7f; // 角度調整（0.7〜1.0が正面）
+        bool isLookingAt = dot > 0.7f;
 
         if (distance <= pickupRange && isLookingAt)
         {
-            if (!isHighlighted)
-            {
-                outline.enabled = true;
-                isHighlighted = true;
-            }
-
-            // 向いているときだけ拾える！
+            // 向いているときだけ拾える
             if (Input.GetKeyDown(pickupKey) || Input.GetKeyDown(KeyCode.JoystickButton0))
             {
                 RecoverAllVisions();
                 HandlePickup();
             }
         }
-        else
-        {
-            if (isHighlighted)
-            {
-                outline.enabled = false;
-                isHighlighted = false;
-            }
-        }
     }
-
 
     void RecoverAllVisions()
     {
@@ -76,7 +55,14 @@ public class BatteryItem : MonoBehaviour
             data.currentBattery = data.maxBattery;
         }
 
-        Debug.Log("🔋 全視界のバッテリーを全回復しました！");
+        // --- 効果音の再生 ---
+        if (pickupSound != null)
+        {
+            // アイテムが消えても音が鳴るように、カメラの位置で再生
+            AudioSource.PlayClipAtPoint(pickupSound, Camera.main.transform.position, volume);
+        }
+
+        Debug.Log("🔋 全視界のバッテリーを全回復 & SE再生");
     }
 
     void HandlePickup()
@@ -86,6 +72,7 @@ public class BatteryItem : MonoBehaviour
             Instantiate(pickupEffect, transform.position, Quaternion.identity);
         }
 
+        // 自身を削除
         Destroy(gameObject);
     }
 
