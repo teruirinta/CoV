@@ -7340,6 +7340,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100006, guid: ebf1d1e987b0e2a44ab7a755cdba2b47, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1162579681}
+    - targetCorrespondingSourceObject: {fileID: 100006, guid: ebf1d1e987b0e2a44ab7a755cdba2b47, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1162579683}
   m_SourcePrefab: {fileID: 100100000, guid: ebf1d1e987b0e2a44ab7a755cdba2b47, type: 3}
 --- !u!1001 &108658916
 PrefabInstance:
@@ -79385,7 +79388,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 81190e04404eef54780553f71dc7b116, type: 3}
   m_Resource: {fileID: 8300000, guid: 81190e04404eef54780553f71dc7b116, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.4
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -79429,7 +79432,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -79488,6 +79491,27 @@ MonoBehaviour:
   maxShakeInterval: 1
   shakeDuration: 1
   shakeAudio: {fileID: 1162579681}
+--- !u!65 &1162579683
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1162579679}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.93, z: 1}
+  m_Center: {x: 0, y: 1.11, z: 0}
 --- !u!1 &1163371215
 GameObject:
   m_ObjectHideFlags: 0

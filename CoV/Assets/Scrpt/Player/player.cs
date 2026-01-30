@@ -143,7 +143,7 @@ public class player : MonoBehaviour
             var battery = target.GetComponent<BatteryItem>();
             if (battery != null)
             {
-                Destroy(battery.gameObject);
+                //Destroy(battery.gameObject);
                 return;
             }
         }
