@@ -39,6 +39,10 @@ public class VisionManager : MonoBehaviour
 
     public bool IsTeleporting { get; set; } = false;
 
+    // ★ 追加：視界切り替え効果音
+    [Header("効果音")]
+    public AudioSource visionChangeSE;
+
     // =============================
     // 初期化
     // =============================
@@ -69,7 +73,6 @@ public class VisionManager : MonoBehaviour
         CooldownTimer = Mathf.Max(cooldownTimer, 0f);
         CooldownDuration = visionCooldown;
 
-        // クールタイムが終わっていれば入力を受け付ける
         if (cooldownTimer <= 0f)
         {
             HandleInput();
@@ -80,35 +83,31 @@ public class VisionManager : MonoBehaviour
     }
 
     // =============================
-    // ★ 追加：キー入力処理
+    // 入力処理
     // =============================
     void HandleInput()
     {
         if (IsTeleporting) return;
 
-        // 1キー: ナイトスコープ
-        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetButtonDown("Fire1"))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             ToggleVision(VisionType.NightScope);
         }
-        // 2キー: 反転
-        else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetButtonDown("Fire2"))
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             ToggleVision(VisionType.Inverted);
         }
-        // 3キー: 記憶メガネ
-        else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetButtonDown("Fire3"))
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             ToggleVision(VisionType.MemoryVision);
         }
     }
 
     // =============================
-    // ★ 追加：ON/OFFを切り替えるロジック
+    // ON/OFF 切り替え
     // =============================
     void ToggleVision(VisionType vision)
     {
-        // 切り替え先のバッテリーをチェック
         var data = GetVisionData(vision);
         if (data != null && data.currentBattery <= 0f)
         {
@@ -116,7 +115,6 @@ public class VisionManager : MonoBehaviour
             return;
         }
 
-        // 同じ視界をもう一度押したら Normal に戻す
         VisionType nextVision = (CurrentVision == vision) ? VisionType.Normal : vision;
         SetVision(nextVision);
     }
@@ -129,7 +127,11 @@ public class VisionManager : MonoBehaviour
         if (CurrentVision == vision) return;
 
         CurrentVision = vision;
-        cooldownTimer = visionCooldown; // クールタイム開始
+        cooldownTimer = visionCooldown;
+
+        // ★ 効果音を再生
+        if (visionChangeSE != null)
+            visionChangeSE.Play();
 
         Debug.Log($"👁 Vision 切り替え → {vision}");
     }
@@ -200,5 +202,4 @@ public class VisionManager : MonoBehaviour
     {
         get { return CurrentVision == VisionType.NightScope; }
     }
-
 }
