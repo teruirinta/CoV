@@ -126,7 +126,7 @@ public class Benemy1 : MonoBehaviour
             {
                 // プレイヤー方向へ移動
                 Vector3 direction = (playerTransform.position - mannequinObject.transform.position).normalized;
-                direction.y = 0; // 上下方向の移動を抑制
+               
 
                 mannequinObject.transform.position += direction * moveSpeed * Time.deltaTime;
 
