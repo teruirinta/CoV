@@ -24,9 +24,9 @@ public class player : MonoBehaviour
     public float cameraCollisionRadius = 0.2f;
     public float cameraAdjustSpeed = 10f;
 
-    [Header("ナイトスコープ時に表示する壁(グループ可)")]
+    [Header("ナイトスコープ時に表示する壁")]
     public GameObject[] wallsToEnableInNightScope;
-    [Header("ナイトスコープ時に非表示にする壁(グループ可)")]
+    [Header("ナイトスコープ時に非表示にする壁")]
     public GameObject[] wallsToDisableInNightScope;
     public Light cameraSpotlight;
 
@@ -43,22 +43,12 @@ public class player : MonoBehaviour
     [Header("インタラクト可能時の表示")]
     public TMPIndicatorByTag[] tmpIndicatorsByTag;
 
-    [Header("記憶メガネ時に表示するオブジェクト(グループ可)")]
+    [Header("記憶メガネ時に表示するオブジェクト")]
     public GameObject[] wallsToEnableMemoryVision;
-    [Header("記憶メガネ時に非表示にするオブジェクト(グループ可)")]
+    [Header("記憶メガネ時に非表示にするオブジェクト")]
     public GameObject[] wallsToDisableMemoryVision;
 
     public GameObject interactUIKeyboard;
-    public GameObject interactUIGamepad;
-
-    private InputDeviceType currentInputDevice = InputDeviceType.KeyboardMouse;
-
-    public enum InputDeviceType
-    {
-        KeyboardMouse,
-        Gamepad
-    }
-
 
     void Start()
     {
@@ -86,54 +76,24 @@ public class player : MonoBehaviour
         HandleIndicators();
         HandleCameraCollision();
         HandleEnemyCollision();
-        DetectInputDevice();
+
         UpdateInteractUI(RaycastInteractable() != null);
-
-
     }
 
-    // --- 新設：子どもまで含めて一括切り替えする汎用メソッド ---
+    // --- 子オブジェクト含めて表示切替 ---
     void SetObjectsVisibilityRecursive(GameObject[] groups, bool visible)
     {
         foreach (GameObject rootObj in groups)
         {
             if (rootObj == null) continue;
 
-            // rootObj自身とその子ども全員から Renderer を取得して切り替え
             Renderer[] renderers = rootObj.GetComponentsInChildren<Renderer>(true);
-            foreach (Renderer r in renderers)
-            {
-                r.enabled = visible;
-            }
+            foreach (Renderer r in renderers) r.enabled = visible;
 
-            // rootObj自身とその子ども全員から Collider を取得して切り替え
             Collider[] colliders = rootObj.GetComponentsInChildren<Collider>(true);
-            foreach (Collider c in colliders)
-            {
-                c.enabled = visible;
-            }
+            foreach (Collider c in colliders) c.enabled = visible;
         }
     }
-
-    void DetectInputDevice()
-    {
-        // キーボード or マウス
-        if (Input.anyKeyDown ||
-            Input.GetMouseButtonDown(0) ||
-            Input.GetMouseButtonDown(1))
-        {
-            currentInputDevice = InputDeviceType.KeyboardMouse;
-        }
-
-        // ゲームパッド
-        if (Input.GetKeyDown(KeyCode.JoystickButton0) ||
-            Mathf.Abs(Input.GetAxis("RightStickX")) > 0.1f ||
-            Mathf.Abs(Input.GetAxis("RightStickY")) > 0.1f)
-        {
-            currentInputDevice = InputDeviceType.Gamepad;
-        }
-    }
-
 
     void HandleMove()
     {
@@ -158,18 +118,17 @@ public class player : MonoBehaviour
 
     void HandleLook()
     {
-        float lookX = Input.GetAxis("Mouse X") + Input.GetAxis("RightStickX");
-        float lookY = Input.GetAxis("Mouse Y") - Input.GetAxis("RightStickY");
+        float lookX = Input.GetAxis("Mouse X");
+        float lookY = Input.GetAxis("Mouse Y");
 
         cameraPitch = Mathf.Clamp(cameraPitch - lookY * lookSpeed, -cameraPitchLimit, cameraPitchLimit);
         transform.Rotate(Vector3.up * lookX * lookSpeed);
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
     }
 
-
     void HandleInteract()
     {
-        if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.JoystickButton0))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             GameObject target = RaycastInteractable();
             if (target == null) return;
@@ -184,7 +143,6 @@ public class player : MonoBehaviour
             var battery = target.GetComponent<BatteryItem>();
             if (battery != null)
             {
-                Debug.Log("バッテリーを拾った！");
                 Destroy(battery.gameObject);
                 return;
             }
@@ -227,7 +185,7 @@ public class player : MonoBehaviour
 
         if (target.GetComponent<BatteryItem>() != null) return "Battery";
         if (target.GetComponent<OpenDoor>() != null) return "Door";
-        if (target.CompareTag("TP")) return "TP"; 
+        if (target.CompareTag("TP")) return "TP";
         if (target.CompareTag("Key")) return "Key";
         if (target.CompareTag("Salt")) return "Salt";
         if (target.CompareTag("Goal")) return "Goal";
@@ -241,7 +199,7 @@ public class player : MonoBehaviour
         foreach (var entry in indicators)
         {
             var tagProp = entry.GetType().GetField("tag");
-            var objProp = entry.GetType().GetField("indicator") ?? entry.GetType().GetField("panel");
+            var objProp = entry.GetType().GetField("indicator");
             if (tagProp == null || objProp == null) continue;
 
             string tag = tagProp.GetValue(entry) as string;
@@ -259,22 +217,18 @@ public class player : MonoBehaviour
         {
             GameObject obj = hit.collider.gameObject;
 
-            // ★ インタラクト対象のタグだけ通す
             if (obj.CompareTag("Door") ||
                 obj.CompareTag("Battery") ||
                 obj.CompareTag("Key") ||
                 obj.CompareTag("Salt") ||
                 obj.CompareTag("Goal") ||
-                obj.CompareTag("TP")
-                )
-
+                obj.CompareTag("TP"))
             {
                 return obj;
             }
         }
         return null;
     }
-
 
     void HandleWallVisibility()
     {
@@ -354,23 +308,6 @@ public class player : MonoBehaviour
 
     void UpdateInteractUI(bool canInteract)
     {
-        if (!canInteract)
-        {
-            interactUIKeyboard.SetActive(false);
-            interactUIGamepad.SetActive(false);
-            return;
-        }
-
-        if (currentInputDevice == InputDeviceType.KeyboardMouse)
-        {
-            interactUIKeyboard.SetActive(true);
-            interactUIGamepad.SetActive(false);
-        }
-        else
-        {
-            interactUIKeyboard.SetActive(false);
-            interactUIGamepad.SetActive(true);
-        }
+        interactUIKeyboard.SetActive(canInteract);
     }
-
 }

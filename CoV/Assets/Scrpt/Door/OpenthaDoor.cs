@@ -31,9 +31,7 @@ public class OpenTheDoor : MonoBehaviour
     {
         float distance = Vector3.Distance(player.position, transform.position);
 
-        // ★ 修正：距離条件を括弧でまとめてバグ防止
-        if (distance <= activationDistance &&
-            (Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("Jump")))
+        if (distance <= activationDistance && Input.GetKeyDown(KeyCode.E) || Input.GetButtonDown("Jump"))
         {
             ToggleDoor();
         }
@@ -50,12 +48,9 @@ public class OpenTheDoor : MonoBehaviour
         // プレイヤーが前面にいれば奥向き（＋）、背面なら手前向き（−）
         float direction = (dot > 0) ? 1f : -1f;
 
-        // ★ 修正：初期角度を基準に開く角度を作る（ズレ防止）
-        Quaternion leftOpenedRotation =
-            leftClosedRotation * Quaternion.Euler(0f, -openAngle * direction, 0f);
-
-        Quaternion rightOpenedRotation =
-            rightClosedRotation * Quaternion.Euler(0f, openAngle * direction, 0f);
+        // 各ドアの最終回転角を動的に計算
+        Quaternion leftOpenedRotation = Quaternion.Euler(leftDoor.localEulerAngles + new Vector3(0f, -openAngle * direction, 0f));
+        Quaternion rightOpenedRotation = Quaternion.Euler(rightDoor.localEulerAngles + new Vector3(0f, openAngle * direction, 0f));
 
         StartCoroutine(RotateDoors(leftOpenedRotation, rightOpenedRotation));
 

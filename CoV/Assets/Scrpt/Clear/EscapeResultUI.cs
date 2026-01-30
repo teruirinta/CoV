@@ -44,25 +44,21 @@ public class EscapeResultUI : MonoBehaviour
     {
         if (Time.time - lastInputTime < inputCooldown) return;
 
-        float dpadX = Input.GetAxisRaw("DPadX");
         float horizontal = Input.GetAxisRaw("Horizontal");
 
         bool left =
-            dpadX < -0.5f ||
             horizontal < -0.5f ||
             Input.GetKeyDown(KeyCode.LeftArrow) ||
             Input.GetKeyDown(KeyCode.A);
 
         bool right =
-            dpadX > 0.5f ||
             horizontal > 0.5f ||
             Input.GetKeyDown(KeyCode.RightArrow) ||
             Input.GetKeyDown(KeyCode.D);
 
         bool decide =
             Input.GetKeyDown(KeyCode.Return) ||
-            Input.GetKeyDown(KeyCode.Space) ||
-            Input.GetKeyDown(KeyCode.JoystickButton0); // Aボタンなど
+            Input.GetKeyDown(KeyCode.Space);
 
         if (left)
         {
@@ -90,6 +86,8 @@ public class EscapeResultUI : MonoBehaviour
         }
     }
 
+
+
     void UpdateSelector()
     {
         if (selectorImage != null && optionTexts.Length > selectedOption)
@@ -99,7 +97,7 @@ public class EscapeResultUI : MonoBehaviour
 
         for (int i = 0; i < optionTexts.Length; i++)
         {
-            optionTexts[i].color = (i == selectedOption) ? Color.red : Color.black;
+            optionTexts[i].color = (i == selectedOption) ? Color.red : Color.white;
         }
     }
 
