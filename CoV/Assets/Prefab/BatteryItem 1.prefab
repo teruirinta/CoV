@@ -30,8 +30,8 @@ Transform:
   m_GameObject: {fileID: 3151450861826693100}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.11, y: 0.11, z: 0.11}
+  m_LocalPosition: {x: 0, y: 0.02741, z: 0}
+  m_LocalScale: {x: 0.11, y: 0.0825858, z: 0.11}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2240723315507966156}
@@ -52,7 +52,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3151450861826693100}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -110,7 +110,7 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5000001
-  m_Height: 1.5
+  m_Height: 1.56
   m_Direction: 1
   m_Center: {x: 0, y: 0.17, z: 0}
 --- !u!114 &2318603808575549012
@@ -158,7 +158,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fd28f84cec40d984c88556fab6914c58, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.3668394
+      value: 1.7641758
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fd28f84cec40d984c88556fab6914c58, type: 3}
       propertyPath: m_LocalScale.z
@@ -170,7 +170,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fd28f84cec40d984c88556fab6914c58, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.322
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fd28f84cec40d984c88556fab6914c58, type: 3}
       propertyPath: m_LocalPosition.z
@@ -211,7 +211,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: fd28f84cec40d984c88556fab6914c58, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b424f141f69060a449f4ec9840f9d860, type: 2}
+      objectReference: {fileID: 2100000, guid: 2d5b7b2a7aff0ee42b3bcc1a2bb92403, type: 2}
     - target: {fileID: 919132149155446097, guid: fd28f84cec40d984c88556fab6914c58, type: 3}
       propertyPath: m_Name
       value: BatteryC
