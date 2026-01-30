@@ -116,6 +116,26 @@ public class Benemy1 : MonoBehaviour
         {
             shelfShaker.enabled = !shouldInvert;
         }
+
+        // ★★★ 追跡処理 ★★★
+        if (hasBeenShown) // 出現後のみ追跡
+        {
+            float distanceToPlayer = Vector3.Distance(playerTransform.position, mannequinObject.transform.position);
+
+            if (distanceToPlayer <= chaseDistance)
+            {
+                // プレイヤー方向へ移動
+                Vector3 direction = (playerTransform.position - mannequinObject.transform.position).normalized;
+                direction.y = 0; // 上下方向の移動を抑制
+
+                mannequinObject.transform.position += direction * moveSpeed * Time.deltaTime;
+
+                // プレイヤーの方向を向く
+                mannequinObject.transform.rotation = Quaternion.LookRotation(direction);
+            }
+        }
+
+
     }
 
 
