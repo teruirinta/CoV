@@ -143,22 +143,17 @@ public class player : MonoBehaviour
             var battery = target.GetComponentInParent<BatteryItem>();
             if (battery != null)
             {
-                Destroy(battery.gameObject);  // BatteryItem が付いている親を削除
+                Destroy(battery.gameObject);
                 return;
             }
-
-
 
             if (target.CompareTag("Salt"))
             {
-                // 子に当たっても親ごと削除
                 Destroy(target.transform.root.gameObject);
                 return;
             }
-            
         }
     }
-
 
     void HandleBatteryHighlight()
     {
@@ -219,12 +214,15 @@ public class player : MonoBehaviour
         }
     }
 
+    // ★★★ SphereCast に変更したインタラクト判定 ★★★
     GameObject RaycastInteractable()
     {
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, interactRange))
+        float radius = 0.2f;
+
+        if (Physics.SphereCast(ray, radius, out hit, interactRange))
         {
             GameObject obj = hit.collider.gameObject;
 

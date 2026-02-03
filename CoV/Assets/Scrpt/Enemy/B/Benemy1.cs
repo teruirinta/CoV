@@ -124,15 +124,20 @@ public class Benemy1 : MonoBehaviour
 
             if (distanceToPlayer <= chaseDistance)
             {
-                // プレイヤー方向へ移動
-                Vector3 direction = (playerTransform.position - mannequinObject.transform.position).normalized;
-               
+                // プレイヤーの足元方向へ移動（高さをマネキンに合わせる）
+                Vector3 targetPos = playerTransform.position;
+
+                // プレイヤーが天井にいても、マネキンの高さに合わせて水平追跡
+                targetPos.y = mannequinObject.transform.position.y;
+
+                Vector3 direction = (targetPos - mannequinObject.transform.position).normalized;
 
                 mannequinObject.transform.position += direction * moveSpeed * Time.deltaTime;
 
-                // プレイヤーの方向を向く
+                // プレイヤーの足元方向を向く
                 mannequinObject.transform.rotation = Quaternion.LookRotation(direction);
             }
+
         }
 
 
