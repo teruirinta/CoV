@@ -143,11 +143,21 @@ public class player : MonoBehaviour
             var battery = target.GetComponent<BatteryItem>();
             if (battery != null)
             {
-                //Destroy(battery.gameObject);
+                Destroy(battery.gameObject);
                 return;
             }
+
+           
+            if (target.CompareTag("Salt"))
+            {
+                // 子に当たっても親ごと削除
+                Destroy(target.transform.root.gameObject);
+                return;
+            }
+            
         }
     }
+
 
     void HandleBatteryHighlight()
     {
