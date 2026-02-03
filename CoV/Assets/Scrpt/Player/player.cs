@@ -140,14 +140,15 @@ public class player : MonoBehaviour
                 return;
             }
 
-            var battery = target.GetComponent<BatteryItem>();
+            var battery = target.GetComponentInParent<BatteryItem>();
             if (battery != null)
             {
-                Destroy(battery.gameObject);
+                Destroy(battery.gameObject);  // BatteryItem が付いている親を削除
                 return;
             }
 
-           
+
+
             if (target.CompareTag("Salt"))
             {
                 // 子に当たっても親ごと削除
