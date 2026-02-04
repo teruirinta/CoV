@@ -149,9 +149,17 @@ public class player : MonoBehaviour
 
             if (target.CompareTag("Salt"))
             {
-                Destroy(target.transform.root.gameObject);
+                // BallThrower を探す（プレイヤーに付いている想定）
+                BallThrower thrower = GetComponent<BallThrower>();
+                if (thrower != null)
+                {
+                    thrower.AddStock(1);  // ← ストックを1増やす！
+                }
+
+                Destroy(target.transform.root.gameObject); // 塩アイテムを消す
                 return;
             }
+
         }
     }
 
