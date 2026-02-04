@@ -126,6 +126,7 @@ public class player : MonoBehaviour
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
     }
 
+    // ★★★ 塩を拾う処理はここだけに書く（正しい場所） ★★★
     void HandleInteract()
     {
         if (Input.GetKeyDown(KeyCode.E))
@@ -147,16 +148,16 @@ public class player : MonoBehaviour
                 return;
             }
 
+            // ★★★ 塩の処理（ストック +1） ★★★
             if (target.CompareTag("Salt"))
             {
-                // BallThrower を探す（プレイヤーに付いている想定）
                 BallThrower thrower = GetComponent<BallThrower>();
                 if (thrower != null)
                 {
-                    thrower.AddStock(1);  // ← ストックを1増やす！
+                    thrower.AddStock(1);
                 }
 
-                Destroy(target.transform.root.gameObject); // 塩アイテムを消す
+                Destroy(target.gameObject);   // ★ root を壊さない！
                 return;
             }
 
@@ -192,10 +193,11 @@ public class player : MonoBehaviour
         UpdateIndicators(tmpIndicatorsByTag, tag);
     }
 
+    // ★★★ UI 表示のためだけの関数（拾う処理は絶対に書かない） ★★★
     string DetectInteractTag()
     {
         GameObject target = RaycastInteractable();
-        if (target == null) return null;
+        if (target == null) return "";
 
         if (target.GetComponent<BatteryItem>() != null) return "Battery";
         if (target.GetComponent<OpenDoor>() != null) return "Door";
@@ -222,7 +224,7 @@ public class player : MonoBehaviour
         }
     }
 
-    // ★★★ SphereCast に変更したインタラクト判定 ★★★
+    // ★★★ SphereCast によるインタラクト判定（目の前の1つだけ） ★★★
     GameObject RaycastInteractable()
     {
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);

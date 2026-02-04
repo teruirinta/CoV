@@ -16,9 +16,6 @@ public class BallThrower : MonoBehaviour
     private Camera mainCamera;
     private float normalFOV;
 
-    // ★追加：トリガーが押しっぱなしの状態かを記録する変数
-    private bool isRTDown = false;
-
     void Start()
     {
         mainCamera = Camera.main;
@@ -27,11 +24,10 @@ public class BallThrower : MonoBehaviour
 
     void Update()
     {
-        float lt = Input.GetAxis("LT");
-        float rt = Input.GetAxis("RT");
-
-        // エイム処理
-        if (lt > 0.2f || Input.GetMouseButton(1) || Input.GetButton("LT"))
+        // =========================
+        // エイム処理（右クリック）
+        // =========================
+        if (Input.GetMouseButton(1))
         {
             isAiming = true;
             mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, zoomFOV, Time.deltaTime * zoomSpeed);
@@ -43,26 +39,9 @@ public class BallThrower : MonoBehaviour
         }
 
         // =========================
-        // 粉を投げる（修正ポイント）
+        // 粉を投げる（左クリック）
         // =========================
-
-        // ★RTが一定以上押し込まれていて、かつ「前のフレームでは押されていなかった」場合のみ実行
-        bool rtJustPressed = false;
-        if (rt > 0.5f)
-        {
-            if (!isRTDown) // まだ「押しっぱなし状態」として記録されていなければ
-            {
-                rtJustPressed = true; // 今回のフレームで初めて押されたと判定
-                isRTDown = true;      // 押しっぱなし状態にセット
-            }
-        }
-        else
-        {
-            isRTDown = false; // トリガーを離したらリセット
-        }
-
-        // マウスの左クリック、またはRTが新しく押された瞬間
-        if (isAiming && (rtJustPressed || Input.GetMouseButtonDown(0)))
+        if (isAiming && Input.GetMouseButtonDown(0))
         {
             if (currentStock > 0)
             {
