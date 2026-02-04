@@ -162,6 +162,8 @@ public class VisionManager : MonoBehaviour
     // =============================
     // バッテリー消費
     // =============================
+    // VisionManager.cs 内に追加・修正
+
     void UpdateBatteryUsage()
     {
         if (CurrentVision == VisionType.Normal || IsTeleporting)
@@ -170,14 +172,31 @@ public class VisionManager : MonoBehaviour
         var data = GetVisionData(CurrentVision);
         if (data == null) return;
 
+        // バッテリー消費
         data.currentBattery -= data.drainRate * Time.deltaTime;
 
         if (data.currentBattery <= 0f)
         {
             data.currentBattery = 0f;
             SetVision(VisionType.Normal);
-            Debug.Log($"⚠ {data.visionName} のバッテリー切れ");
+            Debug.Log($"⚠ {data.visionName} のバッテリー切れ。5秒後にリチャージします。");
+
+            // ★ 5秒後に25%回復するコルーチンを開始
+            StartCoroutine(RechargeBatteryRoutine(data));
         }
+    }
+
+    // 自動リチャージ用の処理
+    private System.Collections.IEnumerator RechargeBatteryRoutine(VisionData data)
+    {
+        // 5秒待機
+        yield return new WaitForSeconds(5f);
+
+        // 最大値の25%まで回復
+        float rechargeAmount = data.maxBattery * 0.15f;
+        data.currentBattery = rechargeAmount;
+
+        Debug.Log($"🔋 {data.visionName} が25%まで自動回復しました！");
     }
 
     // =============================
