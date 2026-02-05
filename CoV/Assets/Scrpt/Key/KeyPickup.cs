@@ -9,10 +9,14 @@ public class KeyPickup : MonoBehaviour
     public ParticleSystem pickupEfect;
     public bool autoSaveOnPickup = true;
     public float pickupRange = 3f;
-    public float viewAngleThreshold = 30f; // 視線の角度許容範囲
+    public float viewAngleThreshold = 30f;
 
     [Header("関連オブジェクト")]
-    public GameObject imageObject; // 一緒に消したい画像オブジェクト
+    public GameObject imageObject;
+
+    [Header("UI")]
+    public GameObject pickupMessageUI;
+    public float messageDuration = 2f;
 
     private GameObject player;
     private Camera playerCamera;
@@ -25,6 +29,9 @@ public class KeyPickup : MonoBehaviour
 
         if (playerCamera == null)
             Debug.LogWarning("[KeyPickup] プレイヤーのカメラが見つかりません！");
+
+        if (pickupMessageUI != null)
+            pickupMessageUI.SetActive(false);
     }
 
     private void Update()
@@ -70,6 +77,20 @@ public class KeyPickup : MonoBehaviour
 
         if (imageObject != null)
             Destroy(imageObject);
+
+        // ★★★ メッセージ表示（別オブジェクトで実行） ★★★
+        if (pickupMessageUI != null)
+            StartCoroutine(ShowMessageAndDestroy());
+
+        else
+            Destroy(gameObject);
+    }
+
+    private System.Collections.IEnumerator ShowMessageAndDestroy()
+    {
+        pickupMessageUI.SetActive(true);
+        yield return new WaitForSeconds(messageDuration);
+        pickupMessageUI.SetActive(false);
 
         Destroy(gameObject);
     }
