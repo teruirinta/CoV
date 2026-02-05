@@ -152,7 +152,7 @@ public class player : MonoBehaviour
                 return;
             }
 
-
+            
             if (target.CompareTag("Salt"))
             {
                 BallThrower thrower = GetComponent<BallThrower>();
