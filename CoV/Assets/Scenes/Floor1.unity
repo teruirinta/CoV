@@ -14,7 +14,7 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 0
+  m_Fog: 1
   m_FogColor: {r: 0, g: 0, b: 0, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.3
@@ -110425,6 +110425,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6711869363147686955, guid: c48002cf0cb6be848aa0a591a588435e, type: 3}
+      propertyPath: pickupMessageUI
+      value: 
+      objectReference: {fileID: 1729812911}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -134549,6 +134553,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: af715c89e8a97d1408c8948be5171220, type: 3}
+--- !u!1 &1729812911 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5833631801160729104, guid: af715c89e8a97d1408c8948be5171220, type: 3}
+  m_PrefabInstance: {fileID: 1729812910}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1730770826 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 594113435990397914, guid: af715c89e8a97d1408c8948be5171220, type: 3}
@@ -146932,7 +146941,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8957123526836591599, guid: aff452878480a8846b5b4ea51c9a7411, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
