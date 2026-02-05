@@ -76,8 +76,12 @@ public class player : MonoBehaviour
         HandleIndicators();
         HandleCameraCollision();
         HandleEnemyCollision();
-
         UpdateInteractUI(RaycastInteractable() != null);
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            SceneManager.LoadScene("Title");
+        }
+
     }
 
     // --- 子オブジェクト含めて表示切替 ---
@@ -126,7 +130,7 @@ public class player : MonoBehaviour
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
     }
 
-    // ★★★ 塩を拾う処理はここだけに書く（正しい場所） ★★★
+ 
     void HandleInteract()
     {
         if (Input.GetKeyDown(KeyCode.E))
@@ -148,7 +152,7 @@ public class player : MonoBehaviour
                 return;
             }
 
-            // ★★★ 塩の処理（ストック +1） ★★★
+            
             if (target.CompareTag("Salt"))
             {
                 BallThrower thrower = GetComponent<BallThrower>();
@@ -157,7 +161,7 @@ public class player : MonoBehaviour
                     thrower.AddStock(1);
                 }
 
-                Destroy(target.gameObject);   // ★ root を壊さない！
+                Destroy(target.gameObject);
                 return;
             }
 
