@@ -61,11 +61,15 @@ public class BatteryUI : MonoBehaviour
         Vector2 targetPos = isCurrentMode ? visibleAnchoredPos : hiddenAnchoredPos;
         rectTransform.anchoredPosition = Vector2.Lerp(rectTransform.anchoredPosition, targetPos, Time.deltaTime * lerpSpeed);
 
-        // スリープ判定 (隠れている、CDなし、ピンチ/空でもない)
+        // --- ★修正ポイント：スリープ判定を緩和 ---
+        // UIが表示中（isCurrentMode）の時は、常に以下の更新処理を通るようにします。
+        // これにより、アイテム取得時の「isEmptyから1.0への変化」を逃さずキャッチできます。
         if (!isCurrentMode &&
             Vector2.Distance(rectTransform.anchoredPosition, hiddenAnchoredPos) < 0.1f &&
             cd <= 0f && !isPinch && !isEmpty)
         {
+            // さらに、もし「空表示」が残ってしまっていたら、ここでトドメを刺して消す
+            if (emptyIndicationUI != null && emptyIndicationUI.enabled) emptyIndicationUI.enabled = false;
             return;
         }
 

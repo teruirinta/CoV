@@ -187,16 +187,25 @@ public class VisionManager : MonoBehaviour
     }
 
     // 自動リチャージ用の処理
+    // 自動リチャージ用の処理
     private System.Collections.IEnumerator RechargeBatteryRoutine(VisionData data)
     {
         // 5秒待機
         yield return new WaitForSeconds(5f);
 
-        // 最大値の25%まで回復
+        // ★ 修正ポイント：現在のバッテリーがリチャージ量(15%)より少ない場合のみ上書きする
         float rechargeAmount = data.maxBattery * 0.15f;
-        data.currentBattery = rechargeAmount;
 
-        Debug.Log($"🔋 {data.visionName} が25%まで自動回復しました！");
+        if (data.currentBattery < rechargeAmount)
+        {
+            data.currentBattery = rechargeAmount;
+            Debug.Log($"🔋 {data.visionName} が自動回復しました！");
+        }
+        else
+        {
+            // すでにアイテム等で回復している場合は何もしない
+            Debug.Log($"🔋 {data.visionName} は既に回復済みのため、自動リチャージをスキップします。");
+        }
     }
 
     // =============================
